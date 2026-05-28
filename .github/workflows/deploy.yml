@@ -47,7 +47,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            source ~/.bashrc
+            export NVM_DIR="$HOME/.nvm"
+            source "$NVM_DIR/nvm.sh"
             cd ~/LOCAL_BALANCE_TRIP_FRONT
             pnpm install --prod --config.minimumReleaseAge=0
             pm2 reload nextjs
