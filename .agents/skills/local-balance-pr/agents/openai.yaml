@@ -1,0 +1,4 @@
+interface:
+  display_name: "Local Balance PR Publish"
+  short_description: "로컬밸런스 이슈·커밋·PR 발행 워크플로 자동화"
+  default_prompt: "Use $local-balance-pr to publish the current LOCAL_BALANCE_TRIP_FRONT work as a Korean issue, logical commits, and a pull request."
