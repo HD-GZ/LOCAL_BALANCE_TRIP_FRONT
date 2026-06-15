@@ -1,17 +1,19 @@
-name: 작업
-description: 신규 기능, UI 구현, API 연결, 리팩토링 등 일반 작업
+name: 작업 요청
+description: 기능, 리팩터링, 테스트, 문서, 배포, 환경 설정 작업
 title: "[작업] "
 body:
   - type: dropdown
     id: task-type
     attributes:
       label: 작업 유형
+      description: 선택한 유형에 맞는 라벨이 자동으로 추가됩니다.
       options:
-        - 신규 기능
-        - UI 구현
-        - API 연결
-        - 리팩토링
-        - 기타
+        - 기능 구현
+        - 리팩터링
+        - 테스트
+        - 문서
+        - 배포
+        - 개발 환경 설정
     validations:
       required: true
 
