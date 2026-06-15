@@ -1,0 +1,104 @@
+name: Automate issues and pull requests
+
+on:
+  issues:
+    types: [opened, edited]
+  pull_request_target:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  automate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign author and apply labels
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const labelsByTaskType = {
+              '기능 구현': '✨ Feature',
+              '리팩터링': '🔨 Refactor',
+              '테스트': '✅ Test',
+              '문서': '📃 Docs',
+              '배포': '🌏 Deploy',
+              '개발 환경 설정': '⚙ Setting',
+              '버그 수정': '🐞 BugFix',
+            };
+            const item = context.payload.issue ?? context.payload.pull_request;
+            const itemNumber = item.number;
+
+            if (context.payload.action === 'opened') {
+              try {
+                await github.rest.issues.addAssignees({
+                  ...context.repo,
+                  issue_number: itemNumber,
+                  assignees: [item.user.login],
+                });
+              } catch (error) {
+                core.warning(
+                  `작성자 ${item.user.login}을 담당자로 지정하지 못했습니다: ${error.message}`
+                );
+              }
+            }
+
+            const body = item.body ?? '';
+            let selectedTaskTypes = [];
+            let shouldSyncLabels = false;
+
+            if (context.eventName === 'issues') {
+              const match = body.match(
+                /(?:^|\r?\n)### 작업 유형\r?\n\r?\n([^\r\n]+)/
+              );
+              if (match) {
+                shouldSyncLabels = true;
+                selectedTaskTypes = [match[1].trim()];
+              }
+            } else {
+              shouldSyncLabels = /(?:^|\r?\n)## 작업 유형\r?\n/.test(body);
+              selectedTaskTypes = [...body.matchAll(
+                /^- \[[xX]\] (.+)$/gm
+              )].map((match) => match[1].trim());
+            }
+
+            if (!shouldSyncLabels) {
+              core.info('작업 유형 영역이 없어 라벨 동기화를 건너뜁니다.');
+              return;
+            }
+
+            const targetLabels = selectedTaskTypes
+              .map((taskType) => labelsByTaskType[taskType])
+              .filter(Boolean);
+
+            if (targetLabels.length === 0) {
+              core.info('선택된 작업 유형이 없어 자동 라벨을 제거합니다.');
+            }
+
+            const managedLabels = new Set(Object.values(labelsByTaskType));
+            const currentLabels = item.labels
+              .map((label) => typeof label === 'string' ? label : label.name)
+              .filter(Boolean);
+
+            for (const label of currentLabels) {
+              if (managedLabels.has(label) && !targetLabels.includes(label)) {
+                await github.rest.issues.removeLabel({
+                  ...context.repo,
+                  issue_number: itemNumber,
+                  name: label,
+                });
+              }
+            }
+
+            const labelsToAdd = targetLabels.filter(
+              (label) => !currentLabels.includes(label)
+            );
+            if (labelsToAdd.length > 0) {
+              await github.rest.issues.addLabels({
+                ...context.repo,
+                issue_number: itemNumber,
+                labels: labelsToAdd,
+              });
+            }
