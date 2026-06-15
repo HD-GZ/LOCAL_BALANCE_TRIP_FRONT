@@ -26,7 +26,7 @@ Follow the body structures in `references/conventions.md` exactly. Their heading
 3. Resolve the work type from `references/conventions.md`. Support multiple PR work types when the diff genuinely spans multiple categories.
 4. Reuse an existing issue when the current branch begins with its number or the user names one. Otherwise create the issue first.
 5. Write the issue body to a temporary Markdown file using the exact task or bug structure in `references/conventions.md`. Keep the `### 작업 유형` heading and mapped value unchanged for task issues.
-6. Create the issue with a Korean title matching the repository issue form. For bug issues, explicitly add `🐞 BugFix` because CLI-created bodies do not inherit YAML form metadata.
+6. Create task issues with the selected task value as the title prefix, such as `[기능 구현]` or `[개발 환경 설정]`. Create bug issues with `[버그]`. For bug issues, explicitly add `🐞 BugFix` because CLI-created bodies do not inherit YAML form metadata.
 7. Create or reuse a branch named `{issue-number}-{description-kebab-case}`. Base new work on the GitHub default branch, currently `develop`.
 8. Split changes into logical commits. Use Korean Conventional Commit messages in the form `type: 설명`.
 9. Run the validation commands required by `references/conventions.md`. Do not mark a PR checklist item complete unless that command passed.

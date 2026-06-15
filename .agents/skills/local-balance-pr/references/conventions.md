@@ -38,17 +38,22 @@ For mixed work, select one primary type for commits, but check every applicable 
 
 ## Titles
 
-Issue titles follow the issue form:
+Task issue titles use the exact selected task value as the prefix. Bug issue titles keep the bug prefix:
 
 ```text
-[작업] 설명
+[기능 구현] 설명
+[리팩터링] 설명
+[테스트] 설명
+[문서] 설명
+[배포] 설명
+[개발 환경 설정] 설명
 [버그] 설명
 ```
 
-PR titles must exactly match the linked issue title, including the issue form prefix:
+PR titles must exactly match the linked issue title, including its work type prefix:
 
 ```text
-[작업] 설명
+[개발 환경 설정] 설명
 [버그] 설명
 ```
 
@@ -125,7 +130,7 @@ Write bug issue bodies with this exact structure:
 
 Bug description, reproduction steps, expected behavior, and actual behavior are required.
 
-Create task issues without a manual label and let the workflow parse `### 작업 유형`.
+Create task issues without a manual label and let the workflow parse `### 작업 유형`. Prefix the title with the same exact task value used in that section rather than the generic `[작업]` prefix from the issue form.
 
 For bug issues, pass `--label "🐞 BugFix"` when using `gh issue create`; YAML form metadata is not applied when a body file is submitted directly through the CLI.
 
