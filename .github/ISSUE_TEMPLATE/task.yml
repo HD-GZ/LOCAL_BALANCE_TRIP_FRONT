@@ -1,7 +1,6 @@
 name: 작업
 description: 신규 기능, UI 구현, API 연결, 리팩토링 등 일반 작업
 title: "[작업] "
-labels: []
 body:
   - type: dropdown
     id: task-type
