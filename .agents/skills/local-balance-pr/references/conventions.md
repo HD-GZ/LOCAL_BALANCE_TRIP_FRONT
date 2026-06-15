@@ -34,7 +34,7 @@ Choose:
 - `deploy` for deployment workflow or release infrastructure.
 - `setting` for dependencies, tooling, project configuration, or development environment changes.
 
-For mixed work, select one primary type for the PR title and commits, but check every applicable PR type so all relevant labels are applied.
+For mixed work, select one primary type for commits, but check every applicable PR type so all relevant labels are applied.
 
 ## Titles
 
@@ -45,18 +45,14 @@ Issue titles follow the issue form:
 [버그] 설명
 ```
 
-PR titles follow the primary commit type:
+PR titles must exactly match the linked issue title, including the issue form prefix:
 
 ```text
-feat: 설명
-fix: 설명
-refactor: 설명
-test: 설명
-docs: 설명
-chore: 설명
+[작업] 설명
+[버그] 설명
 ```
 
-Write descriptions in Korean. Keep technical identifiers such as API, PR, OAuth, and component names unchanged when that is clearer.
+Do not convert PR titles to Conventional Commit format. Write descriptions in Korean. Keep technical identifiers such as API, PR, OAuth, and component names unchanged when that is clearer.
 
 ## Branches
 
@@ -212,6 +208,7 @@ closes #12
 Keep every work type checkbox in the template. Check all applicable types. Only check validation items that actually passed.
 
 Use `closes #<issue-number>` exactly in the related issue section. Open against the repository default branch.
+Use the linked issue title exactly as the PR title.
 
 The workflow supports multiple checked PR work types and applies multiple labels. It also removes managed labels when the PR body is edited and types are unchecked.
 

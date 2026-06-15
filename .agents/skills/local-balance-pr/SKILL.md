@@ -32,7 +32,7 @@ Follow the body structures in `references/conventions.md` exactly. Their heading
 9. Run the validation commands required by `references/conventions.md`. Do not mark a PR checklist item complete unless that command passed.
 10. Push the current branch with upstream tracking.
 11. Write the PR body to a temporary Markdown file from the repository template. Check every applicable work type and link the issue with `closes #<number>`.
-12. Open a PR against the GitHub default branch. Default to a ready PR unless the user requests a draft or the work is incomplete.
+12. Open a PR against the GitHub default branch using the linked issue title exactly as the PR title. Default to a ready PR unless the user requests a draft or the work is incomplete.
 13. Wait briefly, then verify the issue and PR labels and assignees. The repository workflow should assign the author and synchronize labels.
 14. If automation did not reach the required state, inspect the workflow run. Fall back to `gh issue edit` or `gh pr edit` only when the workflow is unavailable, failed, or permissions prevented the update.
 
