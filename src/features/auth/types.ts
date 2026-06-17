@@ -28,7 +28,6 @@ export type SignupRequest = {
   email: string;
   password: string;
   passwordConfirm: string;
-  phoneNumber: string;
   birthDate: string;
   gender: Gender;
   termsAgreed: boolean;
@@ -40,6 +39,10 @@ export type AuthUserResponse = {
   userId: number;
   email: string;
   status: UserStatus;
+};
+
+export type EmailVerificationPendingResponse = AuthUserResponse & {
+  verificationCodeExpiresIn: number;
 };
 
 export type TokenRefreshRequest = {

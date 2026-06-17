@@ -1,6 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -8,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { ApiError, isApiError } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api/types";
 
 const schema = z.object({
   email: z.email("올바른 이메일 형식을 입력해 주세요."),
@@ -16,17 +20,70 @@ const schema = z.object({
 
 type LoginFormValues = z.infer<typeof schema>;
 
+async function loginWithCookie(body: LoginFormValues) {
+  const response = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  const payload = (await response.json().catch(() => null)) as ApiResponse<null> | null;
+
+  if (!payload) {
+    throw new ApiError({
+      code: "INVALID_API_RESPONSE",
+      data: null,
+      message: "API 응답 형식이 올바르지 않습니다.",
+      status: response.status,
+    });
+  }
+
+  if (payload.result === "ERROR" || !response.ok) {
+    throw new ApiError({
+      code: payload.result === "ERROR" ? payload.error.code : "HTTP_ERROR",
+      data: payload.result === "ERROR" ? payload.error.data : null,
+      message: payload.result === "ERROR" ? payload.error.message : "로그인 요청에 실패했습니다.",
+      response: payload,
+      status: response.status,
+    });
+  }
+}
+
 export default function LoginForm() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const loginMutation = useMutation({
+    mutationFn: loginWithCookie,
+    onSuccess: () => {
+      router.push("/");
+    },
+    onError: (error) => {
+      setError("root", {
+        message: isApiError(error) ? error.message : "로그인 중 오류가 발생했습니다.",
+      });
+    },
   });
 
   const onSubmit = (data: LoginFormValues) => {
-    console.warn("login submit", data);
+    clearErrors("root");
+    loginMutation.mutate({
+      email: data.email.trim(),
+      password: data.password,
+    });
   };
 
   return (
@@ -37,8 +94,13 @@ export default function LoginForm() {
       <FormField label="비밀번호" error={errors.password?.message}>
         <PasswordInput {...register("password")} placeholder="비밀번호 입력" />
       </FormField>
-      <Button type="submit" className="h-auto w-full rounded-lg py-3.25 text-[14px] font-semibold">
-        로그인
+      {errors.root?.message && <p className="text-[12px] text-red-500">{errors.root.message}</p>}
+      <Button
+        type="submit"
+        disabled={loginMutation.isPending}
+        className="h-auto w-full rounded-lg py-3.25 text-[14px] font-semibold"
+      >
+        {loginMutation.isPending ? "로그인 중..." : "로그인"}
       </Button>
     </form>
   );
