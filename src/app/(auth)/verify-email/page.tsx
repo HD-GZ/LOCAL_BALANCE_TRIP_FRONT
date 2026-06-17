@@ -46,6 +46,7 @@ export default function VerifyEmailPage() {
           {code.map((digit, index) => (
             <Input
               key={index}
+              aria-label={`인증 코드 ${index + 1}번째 자리`}
               ref={(element) => {
                 inputRefs.current[index] = element;
               }}
