@@ -2,6 +2,7 @@ import type {
   AuthToken,
   AuthUserResponse,
   EmailVerificationConfirmRequest,
+  EmailVerificationPendingResponse,
   EmailVerificationResendRequest,
   LoginRequest,
   SignupRequest,
@@ -16,7 +17,7 @@ export function login(body: LoginRequest) {
 }
 
 export function signup(body: SignupRequest) {
-  return apiClient.post<AuthUserResponse, SignupRequest>("/auth/signup", {
+  return apiClient.post<EmailVerificationPendingResponse, SignupRequest>("/auth/signup", {
     body,
   });
 }
@@ -45,7 +46,7 @@ export function confirmEmailVerification(body: EmailVerificationConfirmRequest) 
 }
 
 export function resendEmailVerification(body: EmailVerificationResendRequest) {
-  return apiClient.post<AuthUserResponse, EmailVerificationResendRequest>(
+  return apiClient.post<EmailVerificationPendingResponse, EmailVerificationResendRequest>(
     "/auth/email-verifications/resend",
     {
       body,
