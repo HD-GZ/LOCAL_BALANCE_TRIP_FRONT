@@ -113,15 +113,20 @@ export function useSignupForm() {
         return;
       }
 
+      let hasMappedFieldError = false;
+
       getFieldErrors(error).forEach(({ field, message }) => {
         const formField = field === "passwordConfirm" ? "confirmPassword" : field;
 
         if (formField in schema.shape) {
           setError(formField as keyof SignupFormValues, { message });
+          hasMappedFieldError = true;
         }
       });
 
-      setError("root", { message: error.message });
+      if (!hasMappedFieldError) {
+        setError("root", { message: error.message });
+      }
     },
   });
 
