@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import PropensityQuestionList from "./PropensityQuestionList";
@@ -92,7 +92,7 @@ const PROPENSITY_QUESTIONS = {
   ],
 };
 
-export default function Propensity() {
+function PropensityContent() {
   const [answers, setAnswers] = useState({
     preference: {
       locality: 0,
@@ -199,5 +199,13 @@ export default function Propensity() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Propensity() {
+  return (
+    <Suspense>
+      <PropensityContent />
+    </Suspense>
   );
 }
