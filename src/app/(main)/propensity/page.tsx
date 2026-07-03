@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 import PropensityQuestionList from "./PropensityQuestionList";
 import PropensityStep from "./PropensityStep";
 
@@ -116,6 +117,9 @@ export default function Propensity() {
   const currentStep = Number(searchParams.get("step") ?? "1");
   const questions = currentStep === 1 || currentStep === 2 ? PROPENSITY_QUESTIONS[currentStep] : [];
   const currentAnswers = currentStep === 1 ? answers.preference : answers.valueConsumption;
+  const isAllAnswered = Object.values(answers).every((group) =>
+    Object.values(group).every((value) => value !== 0),
+  );
   const handleChangeAnswer = (questionId: string, answerValue: number) => {
     setAnswers((prev) => {
       if (currentStep === 1) {
@@ -151,7 +155,7 @@ export default function Propensity() {
         <div className="flex w-full flex-col items-center self-stretch pt-5">
           {currentStep === 1 && (
             <button
-              className="shadow-[0_8px_18px_-10px_rgba(47, 111, 79, 0.55)] cursor-pointer flex h-13.5 w-75 min-w-75 items-center justify-center rounded-[12px] bg-[#2F6F4F] px-5.5 text-white"
+              className="shadow-[0_8px_18px_-10px_rgba(47, 111, 79, 0.55)] flex h-13.5 w-75 min-w-75 cursor-pointer items-center justify-center rounded-[12px] bg-[#2F6F4F] px-5.5 text-white"
               onClick={() => goStep(2)}
             >
               가치소비 설정하기
@@ -166,7 +170,13 @@ export default function Propensity() {
                 전으로 돌아가기
               </button>
               <button
-                className="shadow-[0_8px_18px_-10px_rgba(47, 111, 79, 0.55)] flex h-12.5 w-75 min-w-75 cursor-pointer items-center justify-center rounded-[12px] bg-[#2F6F4F] px-5.5 text-white"
+                className={cn(
+                  "lex h-12.5 w-75 min-w-75 items-center justify-center rounded-[12px] px-5.5 text-white",
+                  isAllAnswered
+                    ? "shadow-[0_8px_18px_-10px_rgba(47, 111, 79, 0.55)] cursor-pointer bg-[#2F6F4F]"
+                    : "bg-gray-200",
+                )}
+                disabled={!isAllAnswered}
                 onClick={() => goStep(3)}
               >
                 결과보기
