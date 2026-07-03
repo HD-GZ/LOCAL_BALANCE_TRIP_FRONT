@@ -28,7 +28,7 @@ export async function GET() {
     method: "GET",
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer ${ACCESS_TOKEN_COOKIE_NAME}`,
+      Authorization: `Bearer ${accessToken}`,
     },
     cache: "no-store",
   });
