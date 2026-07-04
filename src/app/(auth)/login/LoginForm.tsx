@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { userQueryKeys } from "@/features/user/queries";
 import { ApiError, isApiError } from "@/lib/api";
 import type { ApiResponse } from "@/lib/api/types";
 
@@ -52,6 +53,7 @@ async function loginWithCookie(body: LoginFormValues) {
 
 export default function LoginForm() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -68,7 +70,8 @@ export default function LoginForm() {
 
   const loginMutation = useMutation({
     mutationFn: loginWithCookie,
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: userQueryKeys.me() });
       router.push("/");
     },
     onError: (error) => {
