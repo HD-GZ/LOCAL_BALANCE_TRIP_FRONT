@@ -153,7 +153,7 @@ function PropensityContent() {
   return (
     <div className="flex w-full flex-col items-center">
       <PropensityStep currentStep={currentStep} />
-      <div className="shadow-[0_1px_2px_0_rgba(40, 36, 28, 0.04), 0_12px_32px_-12px_rgba(40, 36, 28, 0.14)] mt-6 flex w-170 flex-col items-start gap-5.5 rounded-[18px] border border-[#EBE7DF] bg-white px-7.5 pt-7 pb-6">
+      <div className="shadow-[0_1px_2px_0_rgba(40,36,28,0.04), 0_12px_32px_-12px_rgba(40,36,28,0.14)] mt-6 flex w-170 flex-col items-start gap-5.5 rounded-[18px] border border-[#EBE7DF] bg-white px-7.5 pt-7 pb-6">
         <PropensityQuestionList
           questions={questions}
           answers={currentAnswers}
