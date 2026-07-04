@@ -1,10 +1,32 @@
 "use client";
-import { Suspense, useState } from "react";
+
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import PropensityQuestionList from "./PropensityQuestionList";
 import PropensityStep from "./PropensityStep";
 
+const SAVE_SPEND_OPTIONS = [
+  { value: "save", label: "아끼기", description: "SAVE" },
+  { value: "spend", label: "투자", description: "SPEND" },
+];
+const INITIAL_ANSWERS = {
+  preference: {
+    locality: 0,
+    frugality: 0,
+    experientiality: 0,
+    vitality: 0,
+    sociality: 0,
+  },
+  valueConsumption: {
+    accommodation: 0,
+    food: 0,
+    experience: 0,
+    transportation: 0,
+    cafeExhibition: 0,
+  },
+};
 const PROPENSITY_QUESTIONS = {
   1: [
     {
@@ -52,74 +74,52 @@ const PROPENSITY_QUESTIONS = {
     {
       id: "accommodation",
       title: "숙소",
-      options: [
-        { value: "save", label: "아끼기", description: "SAVE" },
-        { value: "spend", label: "투자", description: "SPEND" },
-      ],
+      options: SAVE_SPEND_OPTIONS,
     },
     {
       id: "food",
       title: "음식",
-      options: [
-        { value: "save", label: "아끼기", description: "SAVE" },
-        { value: "spend", label: "투자", description: "SPEND" },
-      ],
+      options: SAVE_SPEND_OPTIONS,
     },
     {
       id: "experience",
       title: "체험",
-      options: [
-        { value: "save", label: "아끼기", description: "SAVE" },
-        { value: "spend", label: "투자", description: "SPEND" },
-      ],
+      options: SAVE_SPEND_OPTIONS,
     },
     {
       id: "transportation",
       title: "이동",
-      options: [
-        { value: "save", label: "아끼기", description: "SAVE" },
-        { value: "spend", label: "투자", description: "SPEND" },
-      ],
+      options: SAVE_SPEND_OPTIONS,
     },
     {
       id: "cafeExhibition",
       title: "카페·전시",
-      options: [
-        { value: "save", label: "아끼기", description: "SAVE" },
-        { value: "spend", label: "투자", description: "SPEND" },
-      ],
+      options: SAVE_SPEND_OPTIONS,
     },
   ],
 };
+const VALID_STEPS = [1, 2, 3];
 
 function PropensityContent() {
-  const [answers, setAnswers] = useState({
-    preference: {
-      locality: 0,
-      frugality: 0,
-      experientiality: 0,
-      vitality: 0,
-      sociality: 0,
-    },
-    valueConsumption: {
-      accommodation: 0,
-      food: 0,
-      experience: 0,
-      transportation: 0,
-      cafeExhibition: 0,
-    },
-  });
   const router = useRouter();
-  const goStep = (step: number) => {
-    router.push(`/propensity?step=${step}`);
-  };
+  const [answers, setAnswers] = useState(INITIAL_ANSWERS);
   const searchParams = useSearchParams();
-  const currentStep = Number(searchParams.get("step") ?? "1");
+
+  const rawStep = Number(searchParams.get("step") ?? "1");
+  const currentStep = VALID_STEPS.includes(rawStep) ? rawStep : 1;
   const questions = currentStep === 1 || currentStep === 2 ? PROPENSITY_QUESTIONS[currentStep] : [];
   const currentAnswers = currentStep === 1 ? answers.preference : answers.valueConsumption;
   const isAllAnswered = Object.values(answers).every((group) =>
     Object.values(group).every((value) => value !== 0),
   );
+
+  const goStep = (step: number) => {
+    if (step === 1 || step === 2 || step === 3) {
+      router.push(`/propensity?step=${step}`);
+    } else {
+      router.push("/propensity?step=1");
+    }
+  };
   const handleChangeAnswer = (questionId: string, answerValue: number) => {
     setAnswers((prev) => {
       if (currentStep === 1) {
@@ -143,6 +143,13 @@ function PropensityContent() {
       return prev;
     });
   };
+
+  useEffect(() => {
+    if (!VALID_STEPS.includes(rawStep)) {
+      router.replace("/propensity?stpe=1");
+    }
+  }, [rawStep, router]);
+
   return (
     <div className="flex w-full flex-col items-center">
       <PropensityStep currentStep={currentStep} />
@@ -154,46 +161,39 @@ function PropensityContent() {
         />
         <div className="flex w-full flex-col items-center self-stretch pt-5">
           {currentStep === 1 && (
-            <button
-              className="shadow-[0_8px_18px_-10px_rgba(47, 111, 79, 0.55)] flex h-13.5 w-75 min-w-75 cursor-pointer items-center justify-center rounded-[12px] bg-[#2F6F4F] px-5.5 text-white"
-              onClick={() => goStep(2)}
-            >
+            <Button className="h-13.5 min-w-75 text-[15.5px]" onClick={() => goStep(2)}>
               가치소비 설정하기
-            </button>
+            </Button>
           )}
           {currentStep === 2 && (
             <div className="flex w-full gap-3">
-              <button
-                className="flex h-12.5 flex-1 cursor-pointer items-center justify-center rounded-[12px] border border-[#C3BDB3] bg-white"
+              <Button
+                className="h-12.5 flex-1 border border-[#C3BDB3] bg-white text-[#222019] hover:bg-gray-200"
                 onClick={() => goStep(1)}
               >
                 전으로 돌아가기
-              </button>
-              <button
-                className={cn(
-                  "lex h-12.5 w-75 min-w-75 items-center justify-center rounded-[12px] px-5.5 text-white",
-                  isAllAnswered
-                    ? "shadow-[0_8px_18px_-10px_rgba(47, 111, 79, 0.55)] cursor-pointer bg-[#2F6F4F]"
-                    : "bg-gray-200",
-                )}
+              </Button>
+              <Button
+                className={cn("h-12.5 min-w-75 text-[15.5px]", !isAllAnswered && "bg-gray-300")}
                 disabled={!isAllAnswered}
                 onClick={() => goStep(3)}
               >
                 결과보기
-              </button>
+              </Button>
             </div>
           )}
           {currentStep === 3 && (
             <div className="flex w-full gap-3">
-              <button
-                className="flex h-12.5 flex-1 cursor-pointer items-center justify-center rounded-[12px] border border-[#C3BDB3] bg-white"
-                onClick={() => goStep(1)}
+              <Button
+                className="h-12.5 flex-1 border border-[#C3BDB3] bg-white text-[#222019] hover:bg-gray-200"
+                onClick={() => {
+                  setAnswers(INITIAL_ANSWERS);
+                  goStep(1);
+                }}
               >
                 처음부터 다시
-              </button>
-              <button className="shadow-[0_8px_18px_-10px_rgba(47, 111, 79, 0.55)] flex h-12.5 w-75 min-w-75 cursor-pointer items-center justify-center rounded-[12px] bg-[#2F6F4F] px-5.5 text-white">
-                코스 추천받기
-              </button>
+              </Button>
+              <Button className="h-12.5 min-w-75">코스 추천받기</Button>
             </div>
           )}
         </div>

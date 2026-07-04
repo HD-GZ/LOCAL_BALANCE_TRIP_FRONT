@@ -1,3 +1,5 @@
+import type { Gender } from "@/features/auth/types";
+
 export type EmailAvailabilityRequest = {
   email: string;
 };
@@ -11,7 +13,7 @@ export type MeResponse = {
   name: string;
   email: string;
   birthDate: string;
-  gender: string;
+  gender: Gender;
   status: string;
-  marketingAgreed: boolean;
+  marketingAgreed?: boolean;
 };
