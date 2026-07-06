@@ -24,7 +24,14 @@ function errorResponse(status: number, code: string, message: string) {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
+  let body: unknown;
+
+  try {
+    body = await request.json();
+  } catch {
+    return errorResponse(400, "INVALID_REQUEST_BODY", "요청 본문이 올바르지 않습니다.");
+  }
+  
   const accessToken = (await cookies()).get(ACCESS_TOKEN_COOKIE_NAME)?.value;
 
   if (!accessToken) {
