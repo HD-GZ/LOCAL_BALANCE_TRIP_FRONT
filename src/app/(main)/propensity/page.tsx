@@ -3,6 +3,8 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { usePostPropensityMutation } from "@/features/propensity/queries";
+import { isApiError } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import PropensityQuestionList from "./PropensityQuestionList";
 import PropensityStep from "./PropensityStep";
@@ -104,6 +106,7 @@ function PropensityContent() {
   const router = useRouter();
   const [answers, setAnswers] = useState(INITIAL_ANSWERS);
   const searchParams = useSearchParams();
+  const postPropensityMutation = usePostPropensityMutation();
 
   const rawStep = Number(searchParams.get("step") ?? "1");
   const currentStep = VALID_STEPS.includes(rawStep) ? rawStep : 1;
@@ -112,6 +115,8 @@ function PropensityContent() {
   const isAllAnswered = Object.values(answers).every((group) =>
     Object.values(group).every((value) => value !== 0),
   );
+  const propensityType = postPropensityMutation.data?.propensityResult.type ?? "";
+  const typePrefix = propensityType.replace(/여행자\s*$/, "");
 
   const goStep = (step: number) => {
     if (step === 1 || step === 2 || step === 3) {
@@ -146,14 +151,14 @@ function PropensityContent() {
 
   useEffect(() => {
     if (!VALID_STEPS.includes(rawStep)) {
-      router.replace("/propensity?stpe=1");
+      router.replace("/propensity?step=1");
     }
   }, [rawStep, router]);
 
   return (
     <div className="flex w-full flex-col items-center">
       <PropensityStep currentStep={currentStep} />
-      <div className="shadow-[0_1px_2px_0_rgba(40,36,28,0.04), 0_12px_32px_-12px_rgba(40,36,28,0.14)] mt-6 flex w-170 flex-col items-start gap-5.5 rounded-[18px] border border-[#EBE7DF] bg-white px-7.5 pt-7 pb-6">
+      <div className="shadow-[0_1px_2px_0_rgba(40,36,28,0.04),0_12px_32px_-12px_rgba(40,36,28,0.14)] mt-6 flex w-170 flex-col items-start gap-5.5 rounded-[18px] border border-[#EBE7DF] bg-white px-7.5 pt-7 pb-6">
         <PropensityQuestionList
           questions={questions}
           answers={currentAnswers}
@@ -166,34 +171,59 @@ function PropensityContent() {
             </Button>
           )}
           {currentStep === 2 && (
-            <div className="flex w-full gap-3">
-              <Button
-                className="h-12.5 flex-1 border border-[#C3BDB3] bg-white text-[#222019] hover:bg-gray-200"
-                onClick={() => goStep(1)}
-              >
-                전으로 돌아가기
-              </Button>
-              <Button
-                className={cn("h-12.5 min-w-75 text-[15.5px]", !isAllAnswered && "bg-gray-300")}
-                disabled={!isAllAnswered}
-                onClick={() => goStep(3)}
-              >
-                결과보기
-              </Button>
+            <div className="flex w-full flex-col gap-2">
+              <div className="flex w-full gap-3">
+                <Button
+                  className="h-12.5 flex-1 border border-[#C3BDB3] bg-white text-[#222019] hover:bg-gray-200"
+                  onClick={() => goStep(1)}
+                >
+                  전으로 돌아가기
+                </Button>
+                <Button
+                  className={cn("h-12.5 min-w-75 text-[15.5px]", !isAllAnswered && "bg-gray-300")}
+                  disabled={!isAllAnswered || postPropensityMutation.isPending}
+                  onClick={() => {
+                    postPropensityMutation.mutate(answers, {
+                      onSuccess: () => goStep(3),
+                    });
+                  }}
+                >
+                  결과보기
+                </Button>
+              </div>
+              {postPropensityMutation.isError && (
+                <p className="text-center text-[12px] text-red-500 self-end">
+                  {isApiError(postPropensityMutation.error)
+                    ? postPropensityMutation.error.message
+                    : "진단 결과 제출 중 오류가 발생했습니다."}
+                </p>
+              )}
             </div>
           )}
           {currentStep === 3 && (
-            <div className="flex w-full gap-3">
-              <Button
-                className="h-12.5 flex-1 border border-[#C3BDB3] bg-white text-[#222019] hover:bg-gray-200"
-                onClick={() => {
-                  setAnswers(INITIAL_ANSWERS);
-                  goStep(1);
-                }}
-              >
-                처음부터 다시
-              </Button>
-              <Button className="h-12.5 min-w-75">코스 추천받기</Button>
+            <div className="flex w-full flex-col gap-6">
+              <div className="flex flex-col items-center gap-2 text-center">
+                <p className="text-[29px] font-semibold text-[#222019] leading-[35.96px] tracking-[-0.87px]">
+                  <span className="text-[#245A40]">{typePrefix}</span>
+                  여행자
+                </p>
+                <p className="w-115 text-[14.5px] text-[#5F5B53] leading-[23.925px]">
+                  {postPropensityMutation.data?.propensityResult.description}
+                </p>
+              </div>
+              <div className="flex w-full gap-3">
+                <Button
+                  className="h-12.5 flex-1 border border-[#C3BDB3] bg-white text-[#222019] hover:bg-gray-200"
+                  onClick={() => {
+                    setAnswers(INITIAL_ANSWERS);
+                    postPropensityMutation.reset();
+                    goStep(1);
+                  }}
+                >
+                  처음부터 다시
+                </Button>
+                <Button className="h-12.5 min-w-75">코스 추천받기</Button>
+              </div>
             </div>
           )}
         </div>
