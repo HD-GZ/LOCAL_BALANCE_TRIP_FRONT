@@ -28,7 +28,9 @@ export default function PropensityQuestionList({
             key={question.id}
             className="flex w-full flex-col gap-3.25 border-b border-b-[#EBE7DF]"
           >
-            <p className="text-[14.5px] font-semibold text-[#222019]">{question.title}</p>
+            <p className="text-[14.5px] font-semibold tracking-[-0.145px] text-[#222019]">
+              {question.title}
+            </p>
 
             <div className="flex justify-between">
               {question.options.map((option, optionIndex) => {
@@ -45,7 +47,14 @@ export default function PropensityQuestionList({
                       isRightOption && "items-end text-right",
                     )}
                   >
-                    <p className="text-[14px] font-semibold text-[#5F5B53]">{option.label}</p>
+                    <p
+                      className={cn(
+                        "text-[14px] font-semibold tracking-[-0.14px] text-[#5F5B53]",
+                        (isLeftActive || isRightActive) && "text-[#1C4632]",
+                      )}
+                    >
+                      {option.label}
+                    </p>
                     <p
                       className={cn(
                         "text-[11.5px] text-[#B9B3AA]",
