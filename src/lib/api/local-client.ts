@@ -1,18 +1,19 @@
 import { ApiError } from "@/lib/api/error";
-import type { ApiResponse } from "@/lib/api/types";
+import { isApiResponse } from "@/lib/api/guards";
 
 export async function localApiGet<TData>(path: string) {
   const response = await fetch(path, {
     method: "GET",
   });
 
-  const payload = (await response.json().catch(() => null)) as ApiResponse<TData> | null;
+  const payload: unknown = await response.json().catch(() => null);
 
-  if (!payload) {
+  if (!isApiResponse(payload)) {
     throw new ApiError({
       code: "INVALID_API_RESPONSE",
       data: null,
       message: "API 응답 형식이 올바르지 않습니다.",
+      response: payload,
       status: response.status,
     });
   }
@@ -27,7 +28,7 @@ export async function localApiGet<TData>(path: string) {
     });
   }
 
-  return payload.data;
+  return payload.data as TData;
 }
 
 export async function localApiPost<TData, TBody = unknown>(path: string, body?: TBody) {
@@ -39,13 +40,14 @@ export async function localApiPost<TData, TBody = unknown>(path: string, body?: 
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
-  const payload = (await response.json().catch(() => null)) as ApiResponse<TData> | null;
+  const payload: unknown = await response.json().catch(() => null);
 
-  if (!payload) {
+  if (!isApiResponse(payload)) {
     throw new ApiError({
       code: "INVALID_API_RESPONSE",
       data: null,
       message: "API 응답 형식이 올바르지 않습니다.",
+      response: payload,
       status: response.status,
     });
   }
@@ -60,6 +62,6 @@ export async function localApiPost<TData, TBody = unknown>(path: string, body?: 
     });
   }
 
-  return payload.data;
+  return payload.data as TData;
 }
 
