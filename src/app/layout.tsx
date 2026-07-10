@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
+import Footer from "@/components/layout/footer";
 import { Providers } from "@/components/providers";
 
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
 const pretendard = localFont({
   src: "../fonts/PretendardVariable.woff2",
@@ -23,9 +25,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={`${pretendard.variable} bg-background h-full antialiased`}>
+    <html
+      lang="ko"
+      className={cn("bg-background", "h-full", "antialiased", pretendard.variable, "font-sans")}
+    >
       <body className="flex min-h-full flex-col">
         <Providers>{children}</Providers>
+        <Footer />
       </body>
     </html>
   );
