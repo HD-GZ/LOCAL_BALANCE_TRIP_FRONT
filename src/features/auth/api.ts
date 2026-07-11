@@ -9,6 +9,7 @@ import type {
   TokenRefreshRequest,
 } from "@/features/auth/types";
 import { apiClient } from "@/lib/api";
+import { localApiPost } from "@/lib/api/local-client";
 
 export function login(body: LoginRequest) {
   return apiClient.post<AuthToken, LoginRequest>("/auth/login", {
@@ -28,12 +29,8 @@ export function refreshToken(body: TokenRefreshRequest) {
   });
 }
 
-export function logout(accessToken: string) {
-  return apiClient.post<null>("/auth/logout", {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+export function logout() {
+  return localApiPost<null>("/api/auth/logout");
 }
 
 export function confirmEmailVerification(body: EmailVerificationConfirmRequest) {
