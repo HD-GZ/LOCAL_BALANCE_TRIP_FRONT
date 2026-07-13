@@ -177,6 +177,12 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
     }
   }, [rawStep, router]);
 
+  useEffect(() => {
+    if (currentStep === 2 && !isPreferenceAnswered) {
+      router.replace("/propensity?step=1");
+    }
+  }, [currentStep, isPreferenceAnswered, router]);
+
   return (
     <div className="flex w-full flex-col items-center">
       <PropensityStep currentStep={currentStep} />
@@ -190,7 +196,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
           {currentStep === 1 && (
             <Button
               className={cn(
-                "h-13.5 min-w-75 px-5.5 text-[15.5px] font-semibold cursor-pointer",
+                "h-13.5 min-w-75 cursor-pointer px-5.5 text-[15.5px] font-semibold",
                 !isPreferenceAnswered && "bg-gray-300",
               )}
               disabled={!isPreferenceAnswered}
