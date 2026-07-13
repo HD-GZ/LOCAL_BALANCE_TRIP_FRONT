@@ -126,9 +126,9 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
   const currentStep = VALID_STEPS.includes(rawStep) ? rawStep : 1;
   const questions = currentStep === 1 || currentStep === 2 ? PROPENSITY_QUESTIONS[currentStep] : [];
   const currentAnswers = currentStep === 1 ? answers.preference : answers.valueConsumption;
-  const isAllAnswered = Object.values(answers).every((group) =>
-    Object.values(group).every((value) => value !== 0),
-  );
+  const isPreferenceAnswered = Object.values(answers.preference).every((value) => value !== 0);
+  const isAllAnswered =
+    isPreferenceAnswered && Object.values(answers.valueConsumption).every((value) => value !== 0);
   const propensityResult =
     postPropensityMutation.data?.propensityResult ?? propensityResultQuery.data?.propensityResult;
   const propensityType = propensityResult?.type ?? "";
@@ -189,7 +189,11 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
         <div className="flex w-full flex-col items-center self-stretch pt-5">
           {currentStep === 1 && (
             <Button
-              className="h-13.5 min-w-75 px-5.5 text-[15.5px] font-semibold"
+              className={cn(
+                "h-13.5 min-w-75 px-5.5 text-[15.5px] font-semibold cursor-pointer",
+                !isPreferenceAnswered && "bg-gray-300",
+              )}
+              disabled={!isPreferenceAnswered}
               onClick={() => goStep(2)}
             >
               가치소비 설정하기
