@@ -116,10 +116,15 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
   const [answers, setAnswers] = useState(
     () => (userId ? getPropensityAnswers(userId) : null) ?? INITIAL_ANSWERS,
   );
+  const [cachedResult, setCachedResult] = useState(() =>
+    userId ? getPropensityAnswers(userId) : null,
+  );
   const searchParams = useSearchParams();
   const postPropensityMutation = usePostPropensityMutation();
   const propensityResultQuery = useGetPropensityResultQuery(
-    searchParams.get("step") === "3" && !postPropensityMutation.data,
+    !cachedResult &&
+      (searchParams.get("step") === "1" || searchParams.get("step") === "3") &&
+      !postPropensityMutation.data,
   );
 
   const rawStep = Number(searchParams.get("step") ?? "1");
@@ -165,6 +170,17 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
     });
   };
 
+  useEffect(()=>{
+    const result = postPropensityMutation.data ?? propensityResultQuery.data;
+    if(result && userId) {
+      
+    }
+  })
+  useEffect(() => {
+    if (cachedResult && currentStep !== 3) {
+      router.replace("/propensity?step=3");
+    }
+  }, [cachedResult, currentStep, router]);
   useEffect(() => {
     if (userId) {
       savePropensityAnswers(userId, answers);
@@ -248,6 +264,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
                   onClick={() => {
                     setAnswers(INITIAL_ANSWERS);
                     clearPropensityAnswers();
+                    setCachedResult(null);
                     postPropensityMutation.reset();
                     goStep(1);
                   }}

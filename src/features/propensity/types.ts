@@ -15,9 +15,11 @@ export type PropensityRequest = {
   };
 };
 
+export type PropensityResult = {
+  type: string;
+  description: string;
+};
+
 export type PropensityResponse = PropensityRequest & {
-  propensityResult: {
-    type: string;
-    description: string;
-  };
+  propensityResult: PropensityResult;
 };
