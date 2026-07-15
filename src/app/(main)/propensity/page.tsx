@@ -17,6 +17,7 @@ import {
   savePropensityAnswers,
   savePropensityResult,
 } from "@/features/propensity/storage";
+import type { PropensityResult } from "@/features/propensity/types";
 import { useMeQuery } from "@/features/user/queries";
 import { isApiError } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -127,17 +128,15 @@ function getCurrentStep(rawStep: number) {
 function PropensityContent({ userId }: { userId: number | undefined }) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [answers, setAnswers] = useState(
-    () => (userId ? getPropensityAnswers(userId) : null) ?? INITIAL_ANSWERS,
-  );
-  const [localResult, setLocalResult] = useState(() =>
-    userId ? getPropensityResult(userId) : null,
-  );
+  const [answers, setAnswers] = useState(INITIAL_ANSWERS);
+  const [localResult, setLocalResult] = useState<PropensityResult | null>(null);
   const [isRetaking, setIsRetaking] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   const searchParams = useSearchParams();
   const postPropensityMutation = usePostPropensityMutation();
   const propensityResultQuery = useGetPropensityResultQuery(
-    !localResult &&
+    isHydrated &&
+      !localResult &&
       !isRetaking &&
       [1, 3].includes(getCurrentStep(getRawStep(searchParams))) &&
       !postPropensityMutation.data,
@@ -189,6 +188,23 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
     });
   };
 
+  // sessionStorage/localStorage는 SSR 중엔 접근할 수 없어서, 렌더링 중에 바로 읽으면
+  // 하이드레이션 불일치가 발생한다. 이 effect는 클라이언트 마운트 이후 안전한 시점에
+  // 외부 스토리지 값을 state로 동기화한다.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (!userId) return;
+    const storedAnswers = getPropensityAnswers(userId);
+    if (storedAnswers) {
+      setAnswers(storedAnswers);
+    }
+    const storedResult = getPropensityResult(userId);
+    if (storedResult) {
+      setLocalResult(storedResult);
+    }
+    setIsHydrated(true);
+  }, [userId]);
+  /* eslint-enable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (propensityResult && userId) {
       savePropensityResult(userId, propensityResult);
@@ -200,10 +216,10 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
     }
   }, [propensityResult, currentStep, isRetaking, router]);
   useEffect(() => {
-    if (userId) {
+    if (userId && isHydrated) {
       savePropensityAnswers(userId, answers);
     }
-  }, [userId, answers]);
+  }, [userId, answers, isHydrated]);
 
   useEffect(() => {
     if (!VALID_STEPS.includes(rawStep)) {
@@ -259,6 +275,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
                       onSuccess: (data) => {
                         queryClient.setQueryData(propensityQueryKeys.result(), data);
                         clearPropensityAnswers();
+                        setIsRetaking(false);
                         goStep(3);
                       },
                     });
@@ -297,6 +314,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
                     clearPropensityResult();
                     setLocalResult(null);
                     postPropensityMutation.reset();
+                    queryClient.removeQueries({ queryKey: propensityQueryKeys.result() });
                     goStep(1);
                   }}
                 >
