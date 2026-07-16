@@ -4,18 +4,7 @@ import { NextResponse } from "next/server";
 import type { AuthToken, LoginRequest } from "@/features/auth/types";
 import { API_BASE_URL } from "@/lib/api/client";
 import type { ApiResponse } from "@/lib/api/types";
-
-const ACCESS_TOKEN_COOKIE_NAME = "accessToken";
-const REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
-const ACCESS_TOKEN_MAX_AGE = 60 * 60;
-const REFRESH_TOKEN_MAX_AGE = 60 * 60 * 24 * 14;
-
-const cookieOptions = {
-  httpOnly: true,
-  path: "/",
-  sameSite: "lax",
-  secure: process.env.NODE_ENV === "production",
-} as const;
+import { setAuthCookies } from "@/lib/auth/cookies";
 
 function makeLoginUrl() {
   return new URL("/auth/login", API_BASE_URL);
@@ -60,14 +49,7 @@ export async function POST(request: Request) {
 
   const cookieStore = await cookies();
 
-  cookieStore.set(ACCESS_TOKEN_COOKIE_NAME, payload.data.accessToken, {
-    ...cookieOptions,
-    maxAge: ACCESS_TOKEN_MAX_AGE,
-  });
-  cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, payload.data.refreshToken, {
-    ...cookieOptions,
-    maxAge: REFRESH_TOKEN_MAX_AGE,
-  });
+  setAuthCookies(cookieStore, payload.data);
 
   return NextResponse.json({
     result: "SUCCESS",
