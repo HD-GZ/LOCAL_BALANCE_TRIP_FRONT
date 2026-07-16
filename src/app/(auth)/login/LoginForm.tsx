@@ -11,8 +11,8 @@ import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { userQueryKeys } from "@/features/user/queries";
-import { ApiError, isApiError } from "@/lib/api";
-import type { ApiResponse } from "@/lib/api/types";
+import { isApiError } from "@/lib/api";
+import { localApiPost } from "@/lib/api/localClient";
 
 const schema = z.object({
   email: z.email("올바른 이메일 형식을 입력해 주세요."),
@@ -21,34 +21,8 @@ const schema = z.object({
 
 type LoginFormValues = z.infer<typeof schema>;
 
-async function loginWithCookie(body: LoginFormValues) {
-  const response = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-  const payload = (await response.json().catch(() => null)) as ApiResponse<null> | null;
-
-  if (!payload) {
-    throw new ApiError({
-      code: "INVALID_API_RESPONSE",
-      data: null,
-      message: "API 응답 형식이 올바르지 않습니다.",
-      status: response.status,
-    });
-  }
-
-  if (payload.result === "ERROR" || !response.ok) {
-    throw new ApiError({
-      code: payload.result === "ERROR" ? payload.error.code : "HTTP_ERROR",
-      data: payload.result === "ERROR" ? payload.error.data : null,
-      message: payload.result === "ERROR" ? payload.error.message : "로그인 요청에 실패했습니다.",
-      response: payload,
-      status: response.status,
-    });
-  }
+function loginWithCookie(body: LoginFormValues) {
+  return localApiPost<null, LoginFormValues>("/api/auth/login", body);
 }
 
 export default function LoginForm() {
