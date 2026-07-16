@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 import { API_BASE_URL } from "@/lib/api";
 import type { ApiResponse } from "@/lib/api";
-import { API_CLIENT_ERROR_CODE } from "@/lib/api/error-codes";
+import { API_CLIENT_ERROR_CODE } from "@/lib/api/errorCodes";
 
 const ACCESS_TOKEN_COOKIE_NAME = "accessToken";
 const REFRESH_TOKEN_COOKIE_NAME = "refreshToken";

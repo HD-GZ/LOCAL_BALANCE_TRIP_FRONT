@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import SignupStepper from "@/app/(auth)/_components/SignupStepper";
-import CheckIcon from "@/assets/check-icon.svg";
+import CheckIcon from "@/assets/checkIcon.svg";
 
 export default function SignupCompletePage() {
   return (
