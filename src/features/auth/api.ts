@@ -1,30 +1,15 @@
 import type {
-  AuthToken,
   AuthUserResponse,
   EmailVerificationConfirmRequest,
   EmailVerificationPendingResponse,
   EmailVerificationResendRequest,
-  LoginRequest,
   SignupRequest,
-  TokenRefreshRequest,
 } from "@/features/auth/types";
 import { apiClient } from "@/lib/api";
 import { localApiPost } from "@/lib/api/localClient";
 
-export function login(body: LoginRequest) {
-  return apiClient.post<AuthToken, LoginRequest>("/auth/login", {
-    body,
-  });
-}
-
 export function signup(body: SignupRequest) {
   return apiClient.post<EmailVerificationPendingResponse, SignupRequest>("/auth/signup", {
-    body,
-  });
-}
-
-export function refreshToken(body: TokenRefreshRequest) {
-  return apiClient.post<AuthToken, TokenRefreshRequest>("/auth/refresh", {
     body,
   });
 }
