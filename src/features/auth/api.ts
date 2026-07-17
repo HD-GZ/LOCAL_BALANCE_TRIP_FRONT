@@ -9,7 +9,7 @@ import type {
   TokenRefreshRequest,
 } from "@/features/auth/types";
 import { apiClient } from "@/lib/api";
-import { localApiPost } from "@/lib/api/local-client";
+import { localApiPost } from "@/lib/api/localClient";
 
 export function login(body: LoginRequest) {
   return apiClient.post<AuthToken, LoginRequest>("/auth/login", {

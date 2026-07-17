@@ -1,4 +1,4 @@
-import { localApiGet, localApiPost } from "@/lib/api/local-client";
+import { localApiGet, localApiPost } from "@/lib/api/localClient";
 import type { PropensityResponse, PropensityRequest } from "./types";
 
 export async function getPropensity() {

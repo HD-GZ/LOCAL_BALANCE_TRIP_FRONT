@@ -1,5 +1,5 @@
 import { ApiError } from "@/lib/api/error";
-import { API_CLIENT_ERROR_CODE } from "@/lib/api/error-codes";
+import { API_CLIENT_ERROR_CODE } from "@/lib/api/errorCodes";
 import { isApiResponse } from "@/lib/api/guards";
 
 const DEFAULT_API_BASE_URL = "https://api.stage.lb-trip.live";
