@@ -184,7 +184,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
   }, [currentStep, isPreferenceAnswered, router]);
 
   return (
-    <div className="flex w-full flex-col items-center">
+    <div className="flex w-full flex-col items-center pb-20">
       <PropensityStep currentStep={currentStep} />
       <div className="mt-6 flex w-170 flex-col items-start gap-5.5 rounded-[18px] border border-[#EBE7DF] bg-white px-7.5 pt-8 pb-7 shadow-[0_1px_2px_0_rgba(40,36,28,0.04),0_12px_32px_-12px_rgba(40,36,28,0.14)]">
         <PropensityQuestionList
