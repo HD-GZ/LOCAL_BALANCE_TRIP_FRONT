@@ -12,8 +12,9 @@ import {
   getPropensityAnswers,
   savePropensityAnswers,
 } from "@/features/propensity/storage";
+import { usePostRecommendationsMutation } from "@/features/recommendation/queries";
 import { useMeQuery } from "@/features/user/queries";
-import { isApiError } from "@/lib/api";
+import { isApiError } from "@/lib/api/error";
 import { cn } from "@/lib/utils";
 import PropensityQuestionList from "./PropensityQuestionList";
 import PropensityStep from "./PropensityStep";
@@ -118,6 +119,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
   );
   const searchParams = useSearchParams();
   const postPropensityMutation = usePostPropensityMutation();
+  const postRecommendationsMutation = usePostRecommendationsMutation();
   const propensityResultQuery = useGetPropensityResultQuery(
     searchParams.get("step") === "3" && !postPropensityMutation.data,
   );
@@ -264,8 +266,27 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
                 >
                   처음부터 다시
                 </Button>
-                <Button className="h-12.5 min-w-75 px-5.5 font-semibold">코스 추천받기</Button>
+                <Button
+                  className="h-12.5 min-w-75 px-5.5 font-semibold"
+                  disabled={postRecommendationsMutation.isPending}
+                  onClick={() => {
+                    postRecommendationsMutation.mutate(undefined, {
+                      onSuccess: () => {
+                        router.push("/course-recommend");
+                      },
+                    });
+                  }}
+                >
+                  {postRecommendationsMutation.isPending ? "추천 생성 중..." : "코스 추천받기"}
+                </Button>
               </div>
+              {postRecommendationsMutation.isError && (
+                <p className="self-end text-center text-[12px] text-red-500">
+                  {isApiError(postRecommendationsMutation.error)
+                    ? postRecommendationsMutation.error.message
+                    : "코스 추천 생성 중 오류가 발생했습니다."}
+                </p>
+              )}
             </div>
           )}
         </div>
