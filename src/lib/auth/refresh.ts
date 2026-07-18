@@ -1,6 +1,7 @@
 import type { AuthToken, TokenRefreshRequest } from "@/features/auth/types";
-import { API_BASE_URL } from "@/lib/api";
-import type { ApiResponse } from "@/lib/api";
+import { isApiResponse } from "@/lib/api/guards";
+import { authTokenSchema } from "@/lib/auth/schema";
+import { API_BASE_URL } from "@/lib/config/server";
 
 export async function requestTokenRefresh(
   refreshTokenValue: string,
@@ -28,11 +29,12 @@ export async function requestTokenRefresh(
     clearTimeout(timeoutId);
   }
 
-  const payload = (await response.json().catch(() => null)) as ApiResponse<AuthToken> | null;
+  const payload: unknown = await response.json().catch(() => null);
 
-  if (!payload || payload.result === "ERROR" || !response.ok) {
+  if (!isApiResponse(payload) || payload.result === "ERROR" || !response.ok) {
     return null;
   }
 
-  return payload.data;
+  const token = authTokenSchema.safeParse(payload.data);
+  return token.success ? (token.data as AuthToken) : null;
 }

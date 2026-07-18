@@ -11,7 +11,7 @@ import { signup } from "@/features/auth/api";
 import { savePendingEmailVerification } from "@/features/auth/storage";
 import { GENDER, type Gender } from "@/features/auth/types";
 import { checkEmailAvailability } from "@/features/user/api";
-import { getFieldErrors, isApiError } from "@/lib/api";
+import { getFieldErrors, isApiError } from "@/lib/api/error";
 
 export const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 export const GENDER_OPTIONS = ["남성", "여성", "선택안함"] as const;

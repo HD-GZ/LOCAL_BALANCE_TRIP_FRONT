@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { API_BASE_URL } from "@/lib/api";
-import type { ApiResponse } from "@/lib/api";
 import { API_CLIENT_ERROR_CODE } from "@/lib/api/errorCodes";
+import { isApiResponse } from "@/lib/api/guards";
+import type { ApiResponse } from "@/lib/api/types";
 import {
   ACCESS_TOKEN_COOKIE_NAME,
   REFRESH_TOKEN_COOKIE_NAME,
@@ -11,8 +11,9 @@ import {
   type CookieWriter,
 } from "@/lib/auth/cookies";
 import { requestTokenRefresh } from "@/lib/auth/refresh";
+import { API_BASE_URL } from "@/lib/config/server";
 
-const BACKEND_FETCH_TIMEOUT = 10_000;
+const DEFAULT_BACKEND_FETCH_TIMEOUT = 10_000;
 
 export type CookieStore = CookieWriter & {
   get(name: string): { value: string } | undefined;
@@ -22,6 +23,7 @@ export type BackendRequestInit = {
   method: string;
   path: string;
   body?: unknown;
+  timeout?: number;
 };
 
 export function errorResponse(status: number, code: string, message: string) {
@@ -42,29 +44,39 @@ export function errorResponse(status: number, code: string, message: string) {
 type BackendCallResult =
   | { kind: "timeout" }
   | { kind: "network-error" }
-  | { kind: "response"; status: number; payload: ApiResponse<unknown> | null };
+  | { kind: "invalid-response" }
+  | { kind: "response"; status: number; payload: ApiResponse<unknown> };
 
 async function fetchBackendOnce(
-  accessToken: string,
+  accessToken: string | undefined,
   init: BackendRequestInit,
 ): Promise<BackendCallResult> {
   const abortController = new AbortController();
-  const timeoutId = setTimeout(() => abortController.abort(), BACKEND_FETCH_TIMEOUT);
-
-  let backendResponse: Response;
+  const timeoutId = setTimeout(
+    () => abortController.abort(),
+    init.timeout ?? DEFAULT_BACKEND_FETCH_TIMEOUT,
+  );
 
   try {
-    backendResponse = await fetch(new URL(init.path, API_BASE_URL), {
+    const backendResponse = await fetch(new URL(init.path, API_BASE_URL), {
       method: init.method,
       headers: {
         Accept: "application/json",
         ...(init.body !== undefined ? { "Content-Type": "application/json" } : {}),
-        Authorization: `Bearer ${accessToken}`,
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       },
       body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
       cache: "no-store",
       signal: abortController.signal,
     });
+
+    const payload: unknown = await backendResponse.json().catch(() => null);
+
+    if (!isApiResponse(payload)) {
+      return { kind: "invalid-response" };
+    }
+
+    return { kind: "response", status: backendResponse.status, payload };
   } catch (error) {
     return error instanceof Error && error.name === "AbortError"
       ? { kind: "timeout" }
@@ -72,10 +84,20 @@ async function fetchBackendOnce(
   } finally {
     clearTimeout(timeoutId);
   }
+}
 
-  const payload = (await backendResponse.json().catch(() => null)) as ApiResponse<unknown> | null;
+export async function callBackend(init: BackendRequestInit) {
+  return finalizeBackendResult(await fetchBackendOnce(undefined, init));
+}
 
-  return { kind: "response", status: backendResponse.status, payload };
+export async function callBackendWithJsonBody(request: Request, path: string) {
+  const body: unknown = await request.json().catch(() => null);
+
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return errorResponse(400, "INVALID_REQUEST_BODY", "요청 본문이 올바르지 않습니다.");
+  }
+
+  return callBackend({ method: "POST", path, body });
 }
 
 function finalizeBackendResult(result: BackendCallResult) {
@@ -91,7 +113,7 @@ function finalizeBackendResult(result: BackendCallResult) {
     );
   }
 
-  if (!result.payload) {
+  if (result.kind === "invalid-response") {
     return errorResponse(
       502,
       API_CLIENT_ERROR_CODE.INVALID_API_RESPONSE,
@@ -102,10 +124,7 @@ function finalizeBackendResult(result: BackendCallResult) {
   return NextResponse.json(result.payload, { status: result.status });
 }
 
-export async function callBackendWithAuthRetry(
-  cookieStore: CookieStore,
-  init: BackendRequestInit,
-) {
+export async function callBackendWithAuthRetry(cookieStore: CookieStore, init: BackendRequestInit) {
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
 
   if (accessToken) {
