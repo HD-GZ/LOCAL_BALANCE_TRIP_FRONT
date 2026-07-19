@@ -4,8 +4,8 @@ import { useState } from "react";
 import AccordionChevron from "@/assets/accordionChevron.svg";
 import ChevronRight from "@/assets/chevronRight.svg";
 import Headphone from "@/assets/headphone.svg";
-import MapPinMarker from "@/assets/mapPinMarker.svg";
 import Walk from "@/assets/walk.svg";
+import NaverMap from "@/components/common/NaverMap";
 import type { CoursePlace } from "@/features/recommendation/types";
 import { cn } from "@/lib/utils";
 import AudioPlayer from "./AudioPlayer";
@@ -55,9 +55,11 @@ export default function CourseTimeline({ places }: { places: CoursePlace[] }) {
                 </button>
                 {isExpanded && (
                   <div className="flex w-full gap-4 pb-5">
-                    <div className="relative h-auto w-37.5 shrink-0 self-stretch rounded-xl border border-[#C4DDCD] bg-[#E4F0E8]">
-                      <MapPinMarker className="absolute top-1/2 left-1/2 size-6.5 -translate-x-1/2 -translate-y-1/2" />
-                    </div>
+                    <NaverMap
+                      latitude={place.latitude}
+                      longitude={place.longitude}
+                      className="h-auto w-37.5 shrink-0 self-stretch border border-[#C4DDCD]"
+                    />
                     <div className="flex flex-1 flex-col items-start">
                       <p className="text-[13.5px] leading-relaxed text-[#5F5B53]">
                         {place.description}
