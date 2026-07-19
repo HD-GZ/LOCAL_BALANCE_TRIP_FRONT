@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 const NAV_LIST = [
   { name: "홈", path: "/", href: "/" },
   { name: "취향 진단", path: "/propensity", href: "/propensity?step=1" },
+  { name: "코스 추천", path: "/course-recommend", href: "/course-recommend?step=1" },
 ];
 
 export default function Header() {

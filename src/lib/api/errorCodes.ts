@@ -6,5 +6,4 @@ export const API_CLIENT_ERROR_CODE = {
   TIMEOUT: "TIMEOUT",
 } as const;
 
-export type ApiClientErrorCode =
-  (typeof API_CLIENT_ERROR_CODE)[keyof typeof API_CLIENT_ERROR_CODE];
+export type ApiClientErrorCode = (typeof API_CLIENT_ERROR_CODE)[keyof typeof API_CLIENT_ERROR_CODE];

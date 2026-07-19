@@ -11,8 +11,8 @@ import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { userQueryKeys } from "@/features/user/queries";
-import { isApiError } from "@/lib/api";
-import { localApiPost } from "@/lib/api/localClient";
+import { apiClient } from "@/lib/api/client";
+import { isApiError } from "@/lib/api/error";
 
 const schema = z.object({
   email: z.email("올바른 이메일 형식을 입력해 주세요."),
@@ -22,7 +22,7 @@ const schema = z.object({
 type LoginFormValues = z.infer<typeof schema>;
 
 function loginWithCookie(body: LoginFormValues) {
-  return localApiPost<null, LoginFormValues>("/api/auth/login", body);
+  return apiClient.post<null, LoginFormValues>("/api/auth/login", { body });
 }
 
 export default function LoginForm() {

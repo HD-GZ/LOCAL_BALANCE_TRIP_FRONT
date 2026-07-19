@@ -5,22 +5,21 @@ import type {
   EmailVerificationResendRequest,
   SignupRequest,
 } from "@/features/auth/types";
-import { apiClient } from "@/lib/api";
-import { localApiPost } from "@/lib/api/localClient";
+import { apiClient } from "@/lib/api/client";
 
 export function signup(body: SignupRequest) {
-  return apiClient.post<EmailVerificationPendingResponse, SignupRequest>("/auth/signup", {
+  return apiClient.post<EmailVerificationPendingResponse, SignupRequest>("/api/auth/signup", {
     body,
   });
 }
 
 export function logout() {
-  return localApiPost<null>("/api/auth/logout");
+  return apiClient.post<null>("/api/auth/logout");
 }
 
 export function confirmEmailVerification(body: EmailVerificationConfirmRequest) {
   return apiClient.post<AuthUserResponse, EmailVerificationConfirmRequest>(
-    "/auth/email-verifications/confirm",
+    "/api/auth/email-verifications/confirm",
     {
       body,
     },
@@ -29,7 +28,7 @@ export function confirmEmailVerification(body: EmailVerificationConfirmRequest) 
 
 export function resendEmailVerification(body: EmailVerificationResendRequest) {
   return apiClient.post<EmailVerificationPendingResponse, EmailVerificationResendRequest>(
-    "/auth/email-verifications/resend",
+    "/api/auth/email-verifications/resend",
     {
       body,
     },

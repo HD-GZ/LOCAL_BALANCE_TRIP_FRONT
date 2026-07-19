@@ -13,7 +13,7 @@ import {
   savePendingEmailVerification,
   usePendingEmailVerification,
 } from "@/features/auth/storage";
-import { isApiError } from "@/lib/api";
+import { isApiError } from "@/lib/api/error";
 import { cn } from "@/lib/utils";
 
 const CODE_LENGTH = 6;
