@@ -21,7 +21,7 @@ export default function CourseTimeline({ places }: { places: CoursePlace[] }) {
 
         return (
           <div key={place.order} className="relative z-10 flex w-full flex-col items-start">
-            {index > 0 && (
+            {index > 0 && place.walkMinutes != null && (
               <div className="flex items-center gap-1.5 py-1.5 pl-9.5 font-mono text-[11px] text-[#928D84]">
                 <Walk className="size-3" />
                 <span>도보 {place.walkMinutes}분</span>

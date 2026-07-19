@@ -2,18 +2,29 @@
 
 import { Suspense } from "react";
 import { useParams, useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import CourseRecommendStep from "@/app/(main)/course-recommend/CourseRecommendStep";
-import { useGetRegionCoursesQuery } from "@/features/recommendation/queries";
+import { recommendationQueries } from "@/features/recommendation/queries";
 import { isApiError } from "@/lib/api/error";
+import { parsePositiveIntParam } from "@/lib/utils";
 import RegionCourseList from "./RegionCourseList";
 
 function RegionCoursesContent() {
   const currentStep = 2;
-  const { regionId } = useParams<{ regionId: string }>();
+  const { regionId: regionIdParam } = useParams<{ regionId: string }>();
   const searchParams = useSearchParams();
   const regionName = searchParams.get("regionName") ?? "추천 코스";
-  const coursesQuery = useGetRegionCoursesQuery(Number(regionId));
+  const regionId = parsePositiveIntParam(regionIdParam);
+  const coursesQuery = useQuery(recommendationQueries.regionCourses(regionId ?? 0, regionId !== null));
   const courses = coursesQuery.data ?? [];
+
+  if (regionId === null) {
+    return (
+      <div className="flex w-full flex-col items-center pb-20">
+        <p className="mt-9.5 text-[13px] text-red-500">잘못된 경로입니다.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex w-full flex-col items-center pb-20">

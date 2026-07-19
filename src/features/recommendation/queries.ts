@@ -1,11 +1,5 @@
-import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
-import {
-  getCourseDetail,
-  getRecommendedRegions,
-  getRegionCourses,
-  postRecommendations,
-  saveCourse,
-} from "@/features/recommendation/api";
+import { queryOptions } from "@tanstack/react-query";
+import { getCourseDetail, getRecommendedRegions, getRegionCourses } from "@/features/recommendation/api";
 
 export const recommendationQueryKeys = {
   all: ["recommendation"] as const,
@@ -22,38 +16,16 @@ export const recommendationQueries = {
       queryKey: recommendationQueryKeys.regions(),
       queryFn: getRecommendedRegions,
     }),
-  regionCourses: (regionId: number) =>
+  regionCourses: (regionId: number, enabled = true) =>
     queryOptions({
+      enabled,
       queryKey: recommendationQueryKeys.regionCourses(regionId),
       queryFn: () => getRegionCourses(regionId),
     }),
-  courseDetail: (courseId: number) =>
+  courseDetail: (courseId: number, enabled = true) =>
     queryOptions({
+      enabled,
       queryKey: recommendationQueryKeys.courseDetail(courseId),
       queryFn: () => getCourseDetail(courseId),
     }),
 };
-
-export function useGetRecommendedRegionsQuery() {
-  return useQuery(recommendationQueries.regions());
-}
-
-export function useGetRegionCoursesQuery(regionId: number) {
-  return useQuery(recommendationQueries.regionCourses(regionId));
-}
-
-export function useGetCourseDetailQuery(courseId: number) {
-  return useQuery(recommendationQueries.courseDetail(courseId));
-}
-
-export function usePostRecommendationsMutation() {
-  return useMutation({
-    mutationFn: postRecommendations,
-  });
-}
-
-export function useSaveCourseMutation() {
-  return useMutation({
-    mutationFn: saveCourse,
-  });
-}

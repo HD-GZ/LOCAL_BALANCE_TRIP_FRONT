@@ -21,14 +21,18 @@ export default function AudioPlayer({ src }: { src: string }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  const togglePlay = () => {
+  const togglePlay = async () => {
     const audio = audioRef.current;
     if (!audio) return;
 
     if (isPlaying) {
       audio.pause();
     } else {
-      audio.play();
+      try {
+        await audio.play();
+      } catch {
+        setIsPlaying(false);
+      }
     }
   };
 

@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   usePostPropensityMutation,
@@ -12,7 +13,7 @@ import {
   getPropensityAnswers,
   savePropensityAnswers,
 } from "@/features/propensity/storage";
-import { usePostRecommendationsMutation } from "@/features/recommendation/queries";
+import { postRecommendations } from "@/features/recommendation/api";
 import { useMeQuery } from "@/features/user/queries";
 import { isApiError } from "@/lib/api/error";
 import { cn } from "@/lib/utils";
@@ -119,7 +120,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
   );
   const searchParams = useSearchParams();
   const postPropensityMutation = usePostPropensityMutation();
-  const postRecommendationsMutation = usePostRecommendationsMutation();
+  const postRecommendationsMutation = useMutation({ mutationFn: postRecommendations });
   const propensityResultQuery = useGetPropensityResultQuery(
     searchParams.get("step") === "3" && !postPropensityMutation.data,
   );

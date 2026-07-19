@@ -11,6 +11,7 @@ export async function requestTokenRefresh(
   const timeoutId = setTimeout(() => abortController.abort(), timeout);
 
   let response: Response;
+  let payload: unknown;
 
   try {
     response = await fetch(new URL("/auth/refresh", API_BASE_URL), {
@@ -23,13 +24,12 @@ export async function requestTokenRefresh(
       cache: "no-store",
       signal: abortController.signal,
     });
+    payload = await response.json().catch(() => null);
   } catch {
     return null;
   } finally {
     clearTimeout(timeoutId);
   }
-
-  const payload: unknown = await response.json().catch(() => null);
 
   if (!isApiResponse(payload) || payload.result === "ERROR" || !response.ok) {
     return null;

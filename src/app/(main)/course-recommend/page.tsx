@@ -1,13 +1,14 @@
 "use client";
 
-import { useGetRecommendedRegionsQuery } from "@/features/recommendation/queries";
+import { useQuery } from "@tanstack/react-query";
+import { recommendationQueries } from "@/features/recommendation/queries";
 import { isApiError } from "@/lib/api/error";
 import CourseDestinationList from "./CourseDestinationList";
 import CourseRecommendStep from "./CourseRecommendStep";
 
 export default function CourseRecommend() {
   const currentStep = 1;
-  const regionsQuery = useGetRecommendedRegionsQuery();
+  const regionsQuery = useQuery(recommendationQueries.regions());
   const regions = regionsQuery.data ?? [];
 
   return (

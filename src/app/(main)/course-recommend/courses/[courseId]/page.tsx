@@ -1,19 +1,31 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import CourseRecommendStep from "@/app/(main)/course-recommend/CourseRecommendStep";
 import { Button } from "@/components/ui/button";
-import { useGetCourseDetailQuery, useSaveCourseMutation } from "@/features/recommendation/queries";
+import { saveCourse } from "@/features/recommendation/api";
+import { recommendationQueries } from "@/features/recommendation/queries";
 import { isApiError } from "@/lib/api/error";
+import { parsePositiveIntParam } from "@/lib/utils";
 import CourseBenefitList from "./CourseBenefitList";
 import CourseTimeline from "./CourseTimeline";
 
 export default function CourseDetail() {
   const currentStep = 3;
-  const { courseId } = useParams<{ courseId: string }>();
-  const courseDetailQuery = useGetCourseDetailQuery(Number(courseId));
-  const saveCourseMutation = useSaveCourseMutation();
+  const { courseId: courseIdParam } = useParams<{ courseId: string }>();
+  const courseId = parsePositiveIntParam(courseIdParam);
+  const courseDetailQuery = useQuery(recommendationQueries.courseDetail(courseId ?? 0, courseId !== null));
+  const saveCourseMutation = useMutation({ mutationFn: saveCourse });
   const course = courseDetailQuery.data;
+
+  if (courseId === null) {
+    return (
+      <div className="flex w-full flex-col items-center pb-20">
+        <p className="mt-9.5 text-[13px] text-red-500">잘못된 경로입니다.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex w-full flex-col items-center pb-20">
