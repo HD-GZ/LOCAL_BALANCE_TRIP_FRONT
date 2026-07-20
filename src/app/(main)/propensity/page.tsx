@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -125,13 +125,44 @@ function getCurrentStep(rawStep: number) {
   return VALID_STEPS.includes(rawStep) ? rawStep : 1;
 }
 
+function subscribeToStorage(callback: () => void) {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
+function getHydratedSnapshot() {
+  return true;
+}
+
+function getHydratedServerSnapshot() {
+  return false;
+}
+
 function PropensityContent({ userId }: { userId: number | undefined }) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [answers, setAnswers] = useState(INITIAL_ANSWERS);
-  const [localResult, setLocalResult] = useState<PropensityResult | null>(null);
+  const [draftAnswers, setDraftAnswers] = useState<typeof INITIAL_ANSWERS | null>(null);
+  const [resultOverride, setResultOverride] = useState<PropensityResult | null | undefined>(
+    undefined,
+  );
   const [isRetaking, setIsRetaking] = useState(false);
-  const [isHydrated, setIsHydrated] = useState(false);
+  const isHydrated = useSyncExternalStore(
+    subscribeToStorage,
+    getHydratedSnapshot,
+    getHydratedServerSnapshot,
+  );
+  const storedAnswers = useSyncExternalStore(
+    subscribeToStorage,
+    () => (userId ? getPropensityAnswers(userId) : null),
+    () => null,
+  );
+  const storedResult = useSyncExternalStore(
+    subscribeToStorage,
+    () => (userId ? getPropensityResult(userId) : null),
+    () => null,
+  );
+  const answers = draftAnswers ?? storedAnswers ?? INITIAL_ANSWERS;
+  const localResult = resultOverride !== undefined ? resultOverride : storedResult;
   const searchParams = useSearchParams();
   const postPropensityMutation = usePostPropensityMutation();
   const propensityResultQuery = useGetPropensityResultQuery(
@@ -165,46 +196,21 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
     }
   };
   const handleChangeAnswer = (questionId: string, answerValue: number) => {
-    setAnswers((prev) => {
-      if (currentStep === 1) {
-        return {
-          ...prev,
-          preference: {
-            ...prev.preference,
-            [questionId]: answerValue,
-          },
-        };
-      }
-      if (currentStep === 2) {
-        return {
-          ...prev,
-          valueConsumption: {
-            ...prev.valueConsumption,
-            [questionId]: answerValue,
-          },
-        };
-      }
-      return prev;
-    });
+    if (currentStep === 1) {
+      setDraftAnswers({
+        ...answers,
+        preference: { ...answers.preference, [questionId]: answerValue },
+      });
+      return;
+    }
+    if (currentStep === 2) {
+      setDraftAnswers({
+        ...answers,
+        valueConsumption: { ...answers.valueConsumption, [questionId]: answerValue },
+      });
+    }
   };
 
-  // sessionStorage/localStorage는 SSR 중엔 접근할 수 없어서, 렌더링 중에 바로 읽으면
-  // 하이드레이션 불일치가 발생한다. 이 effect는 클라이언트 마운트 이후 안전한 시점에
-  // 외부 스토리지 값을 state로 동기화한다.
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    if (!userId) return;
-    const storedAnswers = getPropensityAnswers(userId);
-    if (storedAnswers) {
-      setAnswers(storedAnswers);
-    }
-    const storedResult = getPropensityResult(userId);
-    if (storedResult) {
-      setLocalResult(storedResult);
-    }
-    setIsHydrated(true);
-  }, [userId]);
-  /* eslint-enable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (propensityResult && userId) {
       savePropensityResult(userId, propensityResult);
@@ -309,10 +315,10 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
                   className="h-12.5 flex-1 border border-[#C3BDB3] bg-white px-5.5 text-[15px] font-semibold text-[#222019] hover:bg-gray-200"
                   onClick={() => {
                     setIsRetaking(true);
-                    setAnswers(INITIAL_ANSWERS);
+                    setDraftAnswers(INITIAL_ANSWERS);
                     clearPropensityAnswers();
                     clearPropensityResult();
-                    setLocalResult(null);
+                    setResultOverride(null);
                     postPropensityMutation.reset();
                     queryClient.removeQueries({ queryKey: propensityQueryKeys.result() });
                     goStep(1);

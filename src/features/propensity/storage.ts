@@ -21,17 +21,29 @@ export function savePropensityAnswers(userId: number, answers: PropensityRequest
   );
 }
 
+let cachedAnswersCacheKey: string | null = null;
+let cachedAnswersValue: PropensityRequest | null = null;
+
+// useSyncExternalStore는 매 렌더마다 이 함수를 호출해 이전 결과와 참조를 비교한다.
 export function getPropensityAnswers(userId: number): PropensityRequest | null {
   if (typeof window === "undefined") return null;
   const item = window.sessionStorage.getItem(PROPENSITY_ANSWERS_STORAGE_KEY);
-  if (!item) return null;
+  const cacheKey = `${userId}:${item}`;
+  if (cacheKey === cachedAnswersCacheKey) return cachedAnswersValue;
+  cachedAnswersCacheKey = cacheKey;
+
+  if (!item) {
+    cachedAnswersValue = null;
+    return null;
+  }
 
   try {
     const parsed = JSON.parse(item) as StoredPropensityAnswers;
-    return parsed.userId === userId ? parsed.answers : null;
+    cachedAnswersValue = parsed.userId === userId ? parsed.answers : null;
   } catch {
-    return null;
+    cachedAnswersValue = null;
   }
+  return cachedAnswersValue;
 }
 
 export function clearPropensityAnswers() {
@@ -47,17 +59,29 @@ export function savePropensityResult(userId: number, result: PropensityResult) {
   );
 }
 
+let cachedResultCacheKey: string | null = null;
+let cachedResultValue: PropensityResult | null = null;
+
+// useSyncExternalStore는 매 렌더마다 이 함수를 호출해 이전 결과와 참조를 비교한다.
 export function getPropensityResult(userId: number): PropensityResult | null {
   if (typeof window === "undefined") return null;
   const item = window.localStorage.getItem(PROPENSITY_RESULT_STORAGE_KEY);
-  if (!item) return null;
+  const cacheKey = `${userId}:${item}`;
+  if (cacheKey === cachedResultCacheKey) return cachedResultValue;
+  cachedResultCacheKey = cacheKey;
+
+  if (!item) {
+    cachedResultValue = null;
+    return null;
+  }
 
   try {
     const parsed = JSON.parse(item) as StoredPropensityResult;
-    return parsed.userId === userId ? parsed.result : null;
+    cachedResultValue = parsed.userId === userId ? parsed.result : null;
   } catch {
-    return null;
+    cachedResultValue = null;
   }
+  return cachedResultValue;
 }
 
 export function clearPropensityResult() {
