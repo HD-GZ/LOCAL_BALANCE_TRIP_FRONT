@@ -1,11 +1,8 @@
 import { ApiError } from "@/lib/api/error";
-import { API_CLIENT_ERROR_CODE } from "@/lib/api/error-codes";
+import { API_CLIENT_ERROR_CODE } from "@/lib/api/errorCodes";
 import { isApiResponse } from "@/lib/api/guards";
 
-const DEFAULT_API_BASE_URL = "https://api.stage.lb-trip.live";
 const DEFAULT_TIMEOUT = 10_000;
-
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? DEFAULT_API_BASE_URL;
 
 type QueryParamValue = string | number | boolean | null | undefined;
 type QueryParams = Record<string, QueryParamValue | QueryParamValue[]>;
@@ -17,7 +14,7 @@ export type ApiClientOptions<TBody = unknown> = Omit<RequestInit, "body"> & {
 };
 
 function buildUrl(path: string, params?: QueryParams) {
-  const url = new URL(path, API_BASE_URL);
+  const url = new URL(path, "http://local");
 
   Object.entries(params ?? {}).forEach(([key, value]) => {
     const values = Array.isArray(value) ? value : [value];
@@ -29,7 +26,7 @@ function buildUrl(path: string, params?: QueryParams) {
     });
   });
 
-  return url;
+  return `${url.pathname}${url.search}`;
 }
 
 function isFetchNetworkError(error: unknown): error is TypeError {

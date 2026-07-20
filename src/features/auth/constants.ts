@@ -1,5 +1,5 @@
 import { USER_STATUS, GENDER, type Gender, type UserStatus } from "@/features/auth/types";
-import { assertNever } from "@/lib/assert-never";
+import { assertNever } from "@/lib/assertNever";
 
 export const USER_STATUS_LABEL: Record<UserStatus, string> = {
   [USER_STATUS.ACTIVE]: "활성",

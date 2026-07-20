@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   propensityQueryKeys,
@@ -18,8 +18,9 @@ import {
   savePropensityResult,
 } from "@/features/propensity/storage";
 import type { PropensityResult } from "@/features/propensity/types";
+import { postRecommendations } from "@/features/recommendation/api";
 import { useMeQuery } from "@/features/user/queries";
-import { isApiError } from "@/lib/api";
+import { isApiError } from "@/lib/api/error";
 import { cn } from "@/lib/utils";
 import PropensityQuestionList from "./PropensityQuestionList";
 import PropensityStep from "./PropensityStep";
@@ -165,6 +166,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
   const localResult = resultOverride !== undefined ? resultOverride : storedResult;
   const searchParams = useSearchParams();
   const postPropensityMutation = usePostPropensityMutation();
+  const postRecommendationsMutation = useMutation({ mutationFn: postRecommendations });
   const propensityResultQuery = useGetPropensityResultQuery(
     isHydrated &&
       !localResult &&
@@ -240,7 +242,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
   }, [currentStep, isPreferenceAnswered, router]);
 
   return (
-    <div className="flex w-full flex-col items-center">
+    <div className="flex w-full flex-col items-center pb-20">
       <PropensityStep currentStep={currentStep} />
       <div className="mt-6 flex w-170 flex-col items-start gap-5.5 rounded-[18px] border border-[#EBE7DF] bg-white px-7.5 pt-8 pb-7 shadow-[0_1px_2px_0_rgba(40,36,28,0.04),0_12px_32px_-12px_rgba(40,36,28,0.14)]">
         <PropensityQuestionList
@@ -326,8 +328,27 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
                 >
                   처음부터 다시
                 </Button>
-                <Button className="h-12.5 min-w-75 px-5.5 font-semibold">코스 추천받기</Button>
+                <Button
+                  className="h-12.5 min-w-75 px-5.5 font-semibold"
+                  disabled={postRecommendationsMutation.isPending}
+                  onClick={() => {
+                    postRecommendationsMutation.mutate(undefined, {
+                      onSuccess: () => {
+                        router.push("/course-recommend");
+                      },
+                    });
+                  }}
+                >
+                  {postRecommendationsMutation.isPending ? "추천 생성 중..." : "코스 추천받기"}
+                </Button>
               </div>
+              {postRecommendationsMutation.isError && (
+                <p className="self-end text-center text-[12px] text-red-500">
+                  {isApiError(postRecommendationsMutation.error)
+                    ? postRecommendationsMutation.error.message
+                    : "코스 추천 생성 중 오류가 발생했습니다."}
+                </p>
+              )}
             </div>
           )}
         </div>

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
-import Footer from "@/components/layout/footer";
-import { Providers } from "@/components/providers";
+import Footer from "@/components/layout/Footer";
+import { Providers } from "@/components/Providers";
 
 import "./globals.css";
 import { cn } from "@/lib/utils";

@@ -1,21 +1,19 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
-import type { AuthToken, LoginRequest } from "@/features/auth/types";
-import { API_BASE_URL } from "@/lib/api/client";
-import type { ApiResponse } from "@/lib/api/types";
+import { API_CLIENT_ERROR_CODE } from "@/lib/api/errorCodes";
+import { isApiResponse } from "@/lib/api/guards";
+import { errorResponse } from "@/lib/auth/bffHandler";
+import { setAuthCookies } from "@/lib/auth/cookies";
+import { authTokenSchema } from "@/lib/auth/schema";
+import { API_BASE_URL } from "@/lib/config/server";
 
-const ACCESS_TOKEN_COOKIE_NAME = "accessToken";
-const REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
-const ACCESS_TOKEN_MAX_AGE = 60 * 60;
-const REFRESH_TOKEN_MAX_AGE = 60 * 60 * 24 * 14;
-
-const cookieOptions = {
-  httpOnly: true,
-  path: "/",
-  sameSite: "lax",
-  secure: process.env.NODE_ENV === "production",
-} as const;
+const LOGIN_TIMEOUT = 10_000;
+const loginRequestSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
 
 function makeLoginUrl() {
   return new URL("/auth/login", API_BASE_URL);
@@ -37,41 +35,59 @@ function makeInvalidResponse() {
 }
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as LoginRequest;
-  const backendResponse = await fetch(makeLoginUrl(), {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-    cache: "no-store",
-  });
+  const body = loginRequestSchema.safeParse(await request.json().catch(() => null));
 
-  const payload = (await backendResponse.json().catch(() => null)) as ApiResponse<AuthToken> | null;
-
-  if (!payload) {
-    return makeInvalidResponse();
+  if (!body.success) {
+    return errorResponse(400, "INVALID_REQUEST", "로그인 요청 형식이 올바르지 않습니다.");
   }
 
-  if (payload.result === "ERROR" || !backendResponse.ok) {
-    return NextResponse.json(payload, { status: backendResponse.status });
+  const abortController = new AbortController();
+  const timeoutId = setTimeout(() => abortController.abort(), LOGIN_TIMEOUT);
+
+  try {
+    const backendResponse = await fetch(makeLoginUrl(), {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body.data),
+      cache: "no-store",
+      signal: abortController.signal,
+    });
+    const payload: unknown = await backendResponse.json().catch(() => null);
+
+    if (!isApiResponse(payload)) {
+      return makeInvalidResponse();
+    }
+
+    if (payload.result === "ERROR" || !backendResponse.ok) {
+      return NextResponse.json(payload, { status: backendResponse.status });
+    }
+
+    const tokens = authTokenSchema.safeParse(payload.data);
+
+    if (!tokens.success) {
+      return makeInvalidResponse();
+    }
+
+    const cookieStore = await cookies();
+    setAuthCookies(cookieStore, tokens.data);
+
+    return NextResponse.json({
+      result: "SUCCESS",
+      data: null,
+      error: null,
+    });
+  } catch (error) {
+    return error instanceof Error && error.name === "AbortError"
+      ? errorResponse(504, API_CLIENT_ERROR_CODE.TIMEOUT, "요청 시간이 초과되었습니다.")
+      : errorResponse(
+          502,
+          API_CLIENT_ERROR_CODE.NETWORK_ERROR,
+          "네트워크 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+        );
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  const cookieStore = await cookies();
-
-  cookieStore.set(ACCESS_TOKEN_COOKIE_NAME, payload.data.accessToken, {
-    ...cookieOptions,
-    maxAge: ACCESS_TOKEN_MAX_AGE,
-  });
-  cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, payload.data.refreshToken, {
-    ...cookieOptions,
-    maxAge: REFRESH_TOKEN_MAX_AGE,
-  });
-
-  return NextResponse.json({
-    result: "SUCCESS",
-    data: null,
-    error: null,
-  });
 }
