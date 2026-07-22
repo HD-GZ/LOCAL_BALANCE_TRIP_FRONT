@@ -1,18 +1,23 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
+  propensityQueryKeys,
   usePostPropensityMutation,
   useGetPropensityResultQuery,
 } from "@/features/propensity/queries";
 import {
   clearPropensityAnswers,
+  clearPropensityResult,
   getPropensityAnswers,
+  getPropensityResult,
   savePropensityAnswers,
+  savePropensityResult,
 } from "@/features/propensity/storage";
+import type { PropensityResult } from "@/features/propensity/types";
 import { postRecommendations } from "@/features/recommendation/api";
 import { useMeQuery } from "@/features/user/queries";
 import { isApiError } from "@/lib/api/error";
@@ -113,27 +118,75 @@ const PROPENSITY_QUESTIONS = {
 };
 const VALID_STEPS = [1, 2, 3];
 
+function getRawStep(searchParams: ReturnType<typeof useSearchParams>) {
+  return Number(searchParams.get("step") ?? "1");
+}
+
+function getCurrentStep(rawStep: number) {
+  return VALID_STEPS.includes(rawStep) ? rawStep : 1;
+}
+
+function subscribeToStorage(callback: () => void) {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
+function getHydratedSnapshot() {
+  return true;
+}
+
+function getHydratedServerSnapshot() {
+  return false;
+}
+
 function PropensityContent({ userId }: { userId: number | undefined }) {
   const router = useRouter();
-  const [answers, setAnswers] = useState(
-    () => (userId ? getPropensityAnswers(userId) : null) ?? INITIAL_ANSWERS,
+  const queryClient = useQueryClient();
+  const [draftAnswers, setDraftAnswers] = useState<typeof INITIAL_ANSWERS | null>(null);
+  const [resultOverride, setResultOverride] = useState<PropensityResult | null | undefined>(
+    undefined,
   );
+  const [isRetaking, setIsRetaking] = useState(false);
+  const isHydrated = useSyncExternalStore(
+    subscribeToStorage,
+    getHydratedSnapshot,
+    getHydratedServerSnapshot,
+  );
+  const storedAnswers = useSyncExternalStore(
+    subscribeToStorage,
+    () => (userId ? getPropensityAnswers(userId) : null),
+    () => null,
+  );
+  const storedResult = useSyncExternalStore(
+    subscribeToStorage,
+    () => (userId ? getPropensityResult(userId) : null),
+    () => null,
+  );
+  const answers = draftAnswers ?? storedAnswers ?? INITIAL_ANSWERS;
+  const localResult = resultOverride !== undefined ? resultOverride : storedResult;
   const searchParams = useSearchParams();
   const postPropensityMutation = usePostPropensityMutation();
   const postRecommendationsMutation = useMutation({ mutationFn: postRecommendations });
   const propensityResultQuery = useGetPropensityResultQuery(
-    searchParams.get("step") === "3" && !postPropensityMutation.data,
+    isHydrated &&
+      !localResult &&
+      !isRetaking &&
+      [1, 3].includes(getCurrentStep(getRawStep(searchParams))) &&
+      !postPropensityMutation.data,
   );
 
-  const rawStep = Number(searchParams.get("step") ?? "1");
-  const currentStep = VALID_STEPS.includes(rawStep) ? rawStep : 1;
+  const rawStep = getRawStep(searchParams);
+  const currentStep = getCurrentStep(rawStep);
   const questions = currentStep === 1 || currentStep === 2 ? PROPENSITY_QUESTIONS[currentStep] : [];
   const currentAnswers = currentStep === 1 ? answers.preference : answers.valueConsumption;
   const isPreferenceAnswered = Object.values(answers.preference).every((value) => value !== 0);
   const isAllAnswered =
     isPreferenceAnswered && Object.values(answers.valueConsumption).every((value) => value !== 0);
   const propensityResult =
-    postPropensityMutation.data?.propensityResult ?? propensityResultQuery.data?.propensityResult;
+    postPropensityMutation.data?.propensityResult ??
+    propensityResultQuery.data?.propensityResult ??
+    localResult ??
+    undefined;
   const propensityType = propensityResult?.type ?? "";
   const typePrefix = propensityType.replace(/여행자\s*$/, "");
 
@@ -145,34 +198,36 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
     }
   };
   const handleChangeAnswer = (questionId: string, answerValue: number) => {
-    setAnswers((prev) => {
-      if (currentStep === 1) {
-        return {
-          ...prev,
-          preference: {
-            ...prev.preference,
-            [questionId]: answerValue,
-          },
-        };
-      }
-      if (currentStep === 2) {
-        return {
-          ...prev,
-          valueConsumption: {
-            ...prev.valueConsumption,
-            [questionId]: answerValue,
-          },
-        };
-      }
-      return prev;
-    });
+    if (currentStep === 1) {
+      setDraftAnswers({
+        ...answers,
+        preference: { ...answers.preference, [questionId]: answerValue },
+      });
+      return;
+    }
+    if (currentStep === 2) {
+      setDraftAnswers({
+        ...answers,
+        valueConsumption: { ...answers.valueConsumption, [questionId]: answerValue },
+      });
+    }
   };
 
   useEffect(() => {
-    if (userId) {
+    if (propensityResult && userId) {
+      savePropensityResult(userId, propensityResult);
+    }
+  }, [propensityResult, userId]);
+  useEffect(() => {
+    if (propensityResult && currentStep !== 3 && !isRetaking) {
+      router.replace("/propensity?step=3");
+    }
+  }, [propensityResult, currentStep, isRetaking, router]);
+  useEffect(() => {
+    if (userId && isHydrated) {
       savePropensityAnswers(userId, answers);
     }
-  }, [userId, answers]);
+  }, [userId, answers, isHydrated]);
 
   useEffect(() => {
     if (!VALID_STEPS.includes(rawStep)) {
@@ -225,8 +280,10 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
                   disabled={!isAllAnswered || postPropensityMutation.isPending}
                   onClick={() => {
                     postPropensityMutation.mutate(answers, {
-                      onSuccess: () => {
+                      onSuccess: (data) => {
+                        queryClient.setQueryData(propensityQueryKeys.result(), data);
                         clearPropensityAnswers();
+                        setIsRetaking(false);
                         goStep(3);
                       },
                     });
@@ -259,9 +316,13 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
                 <Button
                   className="h-12.5 flex-1 border border-[#C3BDB3] bg-white px-5.5 text-[15px] font-semibold text-[#222019] hover:bg-gray-200"
                   onClick={() => {
-                    setAnswers(INITIAL_ANSWERS);
+                    setIsRetaking(true);
+                    setDraftAnswers(INITIAL_ANSWERS);
                     clearPropensityAnswers();
+                    clearPropensityResult();
+                    setResultOverride(null);
                     postPropensityMutation.reset();
+                    queryClient.removeQueries({ queryKey: propensityQueryKeys.result() });
                     goStep(1);
                   }}
                 >
