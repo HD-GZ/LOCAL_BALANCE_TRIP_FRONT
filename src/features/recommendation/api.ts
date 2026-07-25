@@ -1,6 +1,11 @@
 import { RECOMMENDATION_GENERATION_TIMEOUT } from "@/features/recommendation/constants";
 import { apiClient } from "@/lib/api/client";
-import type { CourseDetailResponse, RecommendedCourse, RecommendedRegion } from "./types";
+import type {
+  CourseDetailResponse,
+  RecommendedCourse,
+  RecommendedRegion,
+  SavedCourseResponse,
+} from "./types";
 
 export async function postRecommendations() {
   return apiClient.post<null>("/api/recommendations", {
@@ -22,4 +27,10 @@ export async function getCourseDetail(courseId: number) {
 
 export async function saveCourse(courseId: number) {
   return apiClient.post<null>(`/api/recommendations/courses/${courseId}/save`);
+}
+
+export async function getSavedCourses(page?: number, limit?: number) {
+  return apiClient.get<SavedCourseResponse>("/api/saved-courses", {
+    params: { page, limit },
+  });
 }

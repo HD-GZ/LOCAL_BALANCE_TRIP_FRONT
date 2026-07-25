@@ -1,5 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getCourseDetail, getRecommendedRegions, getRegionCourses } from "@/features/recommendation/api";
+import {
+  getCourseDetail,
+  getRecommendedRegions,
+  getRegionCourses,
+  getSavedCourses,
+} from "@/features/recommendation/api";
 
 export const recommendationQueryKeys = {
   all: ["recommendation"] as const,
@@ -8,6 +13,8 @@ export const recommendationQueryKeys = {
     [...recommendationQueryKeys.all, "regions", regionId, "courses"] as const,
   courseDetail: (courseId: number) =>
     [...recommendationQueryKeys.all, "courses", courseId] as const,
+  savedCourses: (page?: number, limit?: number) =>
+    [...recommendationQueryKeys.all, "saved-courses", page, limit] as const,
 };
 
 export const recommendationQueries = {
@@ -27,5 +34,10 @@ export const recommendationQueries = {
       enabled,
       queryKey: recommendationQueryKeys.courseDetail(courseId),
       queryFn: () => getCourseDetail(courseId),
+    }),
+  savedCourses: (page?: number, limit?: number) =>
+    queryOptions({
+      queryKey: recommendationQueryKeys.savedCourses(page, limit),
+      queryFn: () => getSavedCourses(page, limit),
     }),
 };
