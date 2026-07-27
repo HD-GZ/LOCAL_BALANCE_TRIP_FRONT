@@ -19,7 +19,7 @@ export default function MyPage() {
       <div className="flex w-250 flex-col gap-5">
         <div className="flex flex-col gap-4">
           <h1 className="text-[27px] font-semibold tracking-[-0.675px]">저장한 코스</h1>
-          <p className="self-stretch text-[15px] text-[#5F5B53] leading-6">
+          <p className="self-stretch text-[15px] leading-6 text-[#5F5B53]">
             코스 추천에서 저장한 코스를 모아봤어요 · GPS 슬로우 투어 시작은 앱에서 할 수 있어요.
           </p>
         </div>

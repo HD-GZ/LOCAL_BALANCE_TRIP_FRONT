@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { SavedCourse } from "@/features/recommendation/types";
 import { cn } from "@/lib/utils";
 import SavedCourseCard from "./SavedCourseCard";
-import SavedCoursePager from "./SavedCoursePagenation";
+import SavedCoursePager from "./SavedCoursePager";
 
 const TOUR_STATUS: StatusProps[] = [
   {
@@ -15,7 +15,7 @@ const TOUR_STATUS: StatusProps[] = [
   {
     id: 2,
     value: "progress",
-    title: "진행 중",
+    title: "여행 중",
   },
   {
     id: 3,
@@ -24,17 +24,23 @@ const TOUR_STATUS: StatusProps[] = [
   },
   {
     id: 4,
-    value: "pending",
-    title: "미진행",
+    value: "before",
+    title: "여행전",
   },
 ];
-type TourStatusValue = "all" | "progress" | "completed" | "pending";
+type TourStatusValue = "all" | "progress" | "completed" | "before";
 
 interface StatusProps {
   id: number;
   value: TourStatusValue;
-  title: "전체" | "진행 중" | "완주" | "미진행";
+  title: "전체" | "여행 중" | "완주" | "여행전";
 }
+
+const STATUS_FILTER_MAP: Record<Exclude<TourStatusValue, "all">, SavedCourse["status"]> = {
+  before: "BEFORE_TRIP",
+  progress: "TRAVELING",
+  completed: "COMPLETED",
+};
 
 type SavedCourseListProps = {
   courses: SavedCourse[];
@@ -50,6 +56,10 @@ export default function SavedCourseList({
   onPageChange,
 }: SavedCourseListProps) {
   const [selectedStatus, setSelectedStatus] = useState<TourStatusValue>("all");
+  const filteredCourses =
+    selectedStatus === "all"
+      ? courses
+      : courses.filter((course) => course.status === STATUS_FILTER_MAP[selectedStatus]);
 
   return (
     <div className="flex w-full flex-col items-start gap-7">
@@ -58,7 +68,7 @@ export default function SavedCourseList({
           <button
             key={state.id}
             className={cn(
-              "flex h-9 items-center justify-center rounded-[100px] border px-3.75 text-[13.5px] font-medium tracking-[-0.135px]",
+              "flex h-9 items-center justify-center rounded-[100px] border px-3.75 text-[13.5px] font-medium tracking-[-0.135px] cursor-pointer",
               selectedStatus === state.value
                 ? "border-[#2F6F4F] bg-[#2F6F4F] text-white"
                 : "border-[#EBE7DF] bg-white text-[#5F5853]",
@@ -71,12 +81,18 @@ export default function SavedCourseList({
           </button>
         ))}
       </div>
-      <div className="grid w-full grid-cols-4 gap-4.5">
-        {courses.map((course) => (
-          <SavedCourseCard key={course.savedCourseId} course={course} />
-        ))}
-      </div>
-      <SavedCoursePager page={page} totalPages={totalPages} onPageChange={onPageChange} />
+      {filteredCourses.length === 0 ? (
+        <p className="text-[13px] text-[#928D84] w-full justify-center flex">이 상태의 저장한 코스가 없어요.</p>
+      ) : (
+        <>
+        <div className="grid w-full grid-cols-4 gap-4.5">
+          {filteredCourses.map((course) => (
+            <SavedCourseCard key={course.savedCourseId} course={course} />
+          ))}
+        </div>
+        <SavedCoursePager page={page} totalPages={totalPages} onPageChange={onPageChange} />
+        </>
+      )}
     </div>
   );
 }
