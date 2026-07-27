@@ -4,6 +4,15 @@ import { useState } from "react";
 import Image from "next/image";
 import { Bookmark, Check } from "lucide-react";
 import RouteMarker from "@/assets/routeMarker.svg";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import type { SavedCourse } from "@/features/recommendation/types";
 import { cn } from "@/lib/utils";
 
@@ -50,9 +59,34 @@ export default function SavedCourseCard({ course }: SavedCourseCardProps) {
             {statusBadge.label}
           </span>
         )}
-        <span className="absolute top-2.5 right-2.5 flex size-8 items-center justify-center rounded-full border border-[#EBE7DF] bg-white/90 cursor-pointer">
-          <Bookmark className="size-4 fill-[#5B7488] text-[#5B7488]" />
-        </span>
+        <Dialog>
+          <DialogTrigger asChild>
+            <button
+              type="button"
+              className="absolute top-2.5 right-2.5 flex size-8 cursor-pointer items-center justify-center rounded-full border border-[#EBE7DF] bg-white/90"
+            >
+              <Bookmark className="size-4 fill-[#5B7488] text-[#5B7488]" />
+            </button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle>저장을 취소할까요?</DialogTitle>
+            <DialogDescription>
+              이 코스가 저장한 코스 목록에서 사라져요. 코스 추천에서 언제든 다시 저장할 수 있어요.
+            </DialogDescription>
+            <div className="mt-5.5 flex w-full gap-2.5">
+              <DialogClose asChild>
+                <Button className="h-12.5 flex-1 border border-[#C3BDB3] bg-white text-[15px] font-semibold tracking-[-0.15px] text-[#222019] hover:bg-gray-100">
+                  돌아가기
+                </Button>
+              </DialogClose>
+              <DialogClose asChild>
+                <Button className="h-12.5 flex-1 bg-[#B97056] text-[15px] font-semibold tracking-[-0.15px] text-white hover:bg-[#B97056]/90">
+                  저장 취소
+                </Button>
+              </DialogClose>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
       <p className="w-full px-4 pt-3.75 pb-4.25 text-[15.5px] font-semibold tracking-[-0.31px] text-[#222019]">
         {course.courseName}
