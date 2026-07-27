@@ -3,11 +3,10 @@ import type {
   EmailAvailabilityResponse,
   MeResponse,
 } from "@/features/user/types";
-import { apiClient } from "@/lib/api";
-import { localApiGet } from "@/lib/api/local-client";
+import { apiClient } from "@/lib/api/client";
 
 export function checkEmailAvailability({ email }: EmailAvailabilityRequest) {
-  return apiClient.get<EmailAvailabilityResponse>("/users/email-availability", {
+  return apiClient.get<EmailAvailabilityResponse>("/api/users/email-availability", {
     params: {
       email,
     },
@@ -15,5 +14,5 @@ export function checkEmailAvailability({ email }: EmailAvailabilityRequest) {
 }
 
 export async function getMe() {
-  return localApiGet<MeResponse>("/api/auth/me");
+  return apiClient.get<MeResponse>("/api/auth/me");
 }

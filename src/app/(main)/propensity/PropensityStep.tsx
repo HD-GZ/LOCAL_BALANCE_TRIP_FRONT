@@ -1,8 +1,6 @@
-import { CheckIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Stepper from "@/components/common/Stepper";
 
-const stepClassName =
-  "border-[1.5px] flex size-6.25 items-center justify-center rounded-full border font-mono text-[11.5px] font-semibold";
+const STEPS = ["1", "2", "3"];
 
 const STEP_MENT: Record<number, { title: string; subTitle: string }> = {
   1: {
@@ -23,25 +21,7 @@ const STEP_MENT: Record<number, { title: string; subTitle: string }> = {
 export default function PropensityStep({ currentStep }: { currentStep: number }) {
   return (
     <div className="mt-9.5 flex w-full flex-col items-center">
-      <div className="flex items-center gap-3.5">
-        {[1, 2, 3].map((step, i) => (
-          <div key={step} className="flex items-center gap-3.5">
-            {i > 0 && <span className="h-[1.5px] w-11.5 bg-[#D9D5CD]" />}
-            <span
-              className={cn(
-                stepClassName,
-                step === currentStep
-                  ? "border-[#2F6F4F] bg-[#2F6F4F] text-white shadow-[0_0_0_4px_#E7F0EA]"
-                  : step < currentStep
-                    ? "border-[#C4DDCD] bg-[#E7F0EA]"
-                    : "border-[#C3BDB3] text-[#928D84]",
-              )}
-            >
-              {step < currentStep ? <CheckIcon className="size-3.5 stroke-[#2F6F4F]" /> : step}
-            </span>
-          </div>
-        ))}
-      </div>
+      <Stepper steps={STEPS} currentStep={currentStep} />
       <div className="mt-7.5 flex flex-col gap-2.25">
         <p className="text-center text-[20px] font-semibold text-[#222019]">
           {STEP_MENT[currentStep]?.title}

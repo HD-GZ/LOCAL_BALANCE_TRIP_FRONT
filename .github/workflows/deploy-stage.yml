@@ -29,6 +29,9 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          API_BASE_URL: ${{ secrets.STAGE_API_BASE_URL }}
+          NEXT_PUBLIC_NAVER_MAP_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID }}
 
       - name: Transfer files to server
         uses: appleboy/scp-action@v0.1.7
@@ -47,6 +50,10 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            cat > ~/LOCAL_BALANCE_TRIP_FRONT_STAGE/.env <<'ENVEOF'
+            API_BASE_URL=${{ secrets.STAGE_API_BASE_URL }}
+            NEXT_PUBLIC_NAVER_MAP_CLIENT_ID=${{ secrets.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID }}
+            ENVEOF
             export NVM_DIR="$HOME/.nvm"
             source "$NVM_DIR/nvm.sh"
             cd ~/LOCAL_BALANCE_TRIP_FRONT_STAGE
