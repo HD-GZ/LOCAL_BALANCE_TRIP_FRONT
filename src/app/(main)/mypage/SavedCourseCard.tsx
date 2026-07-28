@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Bookmark, Check } from "lucide-react";
 import RouteMarker from "@/assets/routeMarker.svg";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { deleteSavedCourse } from "@/features/recommendation/api";
+import { recommendationQueryKeys } from "@/features/recommendation/queries";
 import type { SavedCourse } from "@/features/recommendation/types";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +30,15 @@ const STATUS_BADGE: Partial<Record<SavedCourse["status"], { label: string; class
 
 export default function SavedCourseCard({ course }: SavedCourseCardProps) {
   const [hasError, setHasError] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteSavedCourse(course.savedCourseId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: recommendationQueryKeys.savedCoursesAll() });
+      setIsDialogOpen(false);
+    },
+  });
   const statusBadge = STATUS_BADGE[course.status];
 
   return (
@@ -59,7 +71,7 @@ export default function SavedCourseCard({ course }: SavedCourseCardProps) {
             {statusBadge.label}
           </span>
         )}
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <button
               type="button"
@@ -73,17 +85,24 @@ export default function SavedCourseCard({ course }: SavedCourseCardProps) {
             <DialogDescription>
               이 코스가 저장한 코스 목록에서 사라져요. 코스 추천에서 언제든 다시 저장할 수 있어요.
             </DialogDescription>
+            {deleteMutation.isError && (
+              <p className="mt-2 text-[12px] text-red-500">
+                삭제 중 오류가 발생했어요. 다시 시도해 주세요.
+              </p>
+            )}
             <div className="mt-5.5 flex w-full gap-2.5">
               <DialogClose asChild>
                 <Button className="h-12.5 flex-1 border border-[#C3BDB3] bg-white text-[15px] font-semibold tracking-[-0.15px] text-[#222019] hover:bg-gray-100">
                   돌아가기
                 </Button>
               </DialogClose>
-              <DialogClose asChild>
-                <Button className="h-12.5 flex-1 bg-[#B97056] text-[15px] font-semibold tracking-[-0.15px] text-white hover:bg-[#B97056]/90">
-                  저장 취소
-                </Button>
-              </DialogClose>
+              <Button
+                className="h-12.5 flex-1 bg-[#B97056] text-[15px] font-semibold tracking-[-0.15px] text-white hover:bg-[#B97056]/90"
+                disabled={deleteMutation.isPending}
+                onClick={() => deleteMutation.mutate()}
+              >
+                {deleteMutation.isPending ? "취소하는 중..." : "저장 취소"}
+              </Button>
             </div>
           </DialogContent>
         </Dialog>

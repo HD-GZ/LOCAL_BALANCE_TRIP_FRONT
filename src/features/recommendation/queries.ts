@@ -13,8 +13,9 @@ export const recommendationQueryKeys = {
     [...recommendationQueryKeys.all, "regions", regionId, "courses"] as const,
   courseDetail: (courseId: number) =>
     [...recommendationQueryKeys.all, "courses", courseId] as const,
+  savedCoursesAll: () => [...recommendationQueryKeys.all, "saved-courses"] as const,
   savedCourses: (page?: number, limit?: number) =>
-    [...recommendationQueryKeys.all, "saved-courses", page, limit] as const,
+    [...recommendationQueryKeys.savedCoursesAll(), page, limit] as const,
 };
 
 export const recommendationQueries = {

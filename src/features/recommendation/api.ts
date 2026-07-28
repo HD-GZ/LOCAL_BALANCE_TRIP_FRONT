@@ -34,3 +34,7 @@ export async function getSavedCourses(page?: number, limit?: number) {
     params: { page, limit },
   });
 }
+
+export async function deleteSavedCourse(savedCourseId: number) {
+  return apiClient.delete<null>(`/api/saved-courses/${savedCourseId}`);
+}
