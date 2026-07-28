@@ -5,7 +5,7 @@ export type TourStatusValue = "all" | "progress" | "completed" | "before";
 type StatusOption = {
   id: number;
   value: TourStatusValue;
-  title: "전체" | "여행 중" | "완주" | "여행전";
+  title: "전체" | "여행 중" | "완주" | "여행 전";
 };
 
 export const TOUR_STATUS: StatusOption[] = [
