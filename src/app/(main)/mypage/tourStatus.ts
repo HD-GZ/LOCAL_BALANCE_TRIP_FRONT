@@ -12,7 +12,7 @@ export const TOUR_STATUS: StatusOption[] = [
   { id: 1, value: "all", title: "전체" },
   { id: 2, value: "progress", title: "여행 중" },
   { id: 3, value: "completed", title: "완주" },
-  { id: 4, value: "before", title: "여행전" },
+  { id: 4, value: "before", title: "여행 전" },
 ];
 
 export const STATUS_FILTER_MAP: Record<Exclude<TourStatusValue, "all">, SavedCourse["status"]> = {
