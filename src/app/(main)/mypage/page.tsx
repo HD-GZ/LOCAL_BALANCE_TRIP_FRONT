@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { recommendationQueries } from "@/features/recommendation/queries";
 import { isApiError } from "@/lib/api/error";
@@ -10,9 +11,21 @@ import { STATUS_FILTER_MAP, TOUR_STATUS, type TourStatusValue } from "./tourStat
 
 const PAGE_SIZE = 12;
 
+function getPageParam(searchParams: ReturnType<typeof useSearchParams>) {
+  const raw = Number(searchParams.get("page") ?? "1");
+  return Number.isInteger(raw) && raw > 0 ? raw : 1;
+}
+
+function getStatusParam(searchParams: ReturnType<typeof useSearchParams>): TourStatusValue {
+  const raw = searchParams.get("status");
+  return TOUR_STATUS.some((state) => state.value === raw) ? (raw as TourStatusValue) : "all";
+}
+
 export default function MyPage() {
-  const [page, setPage] = useState(1);
-  const [selectedStatus, setSelectedStatus] = useState<TourStatusValue>("all");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const page = getPageParam(searchParams);
+  const selectedStatus = getStatusParam(searchParams);
   const statusParam = selectedStatus === "all" ? undefined : STATUS_FILTER_MAP[selectedStatus];
   const savedCoursesQuery = useQuery(
     recommendationQueries.savedCourses(page, PAGE_SIZE, statusParam),
@@ -21,21 +34,30 @@ export default function MyPage() {
   const totalPages = savedCoursesQuery.data?.totalPages ?? 1;
   const totalCount = savedCoursesQuery.data?.totalCount ?? 0;
 
-  const handleStatusChange = (status: TourStatusValue) => {
-    setSelectedStatus(status);
-    setPage(1);
+  const updateQuery = (next: { page?: number; status?: TourStatusValue }) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (next.page !== undefined) params.set("page", String(next.page));
+    if (next.status !== undefined) {
+      if (next.status === "all") {
+        params.delete("status");
+      } else {
+        params.set("status", next.status);
+      }
+    }
+    router.replace(`/mypage?${params.toString()}`);
   };
 
-  // 마지막 페이지의 마지막 코스를 삭제하면 서버가 돌려주는 totalPages가 줄어들어
-  // 지금 보고 있는 page가 범위를 벗어날 가능성 존재. 응답을 받기 전까진 알 수 없어서
-  // effect에서 보정한다.
-  /* eslint-disable react-hooks/set-state-in-effect */
+  const handleStatusChange = (status: TourStatusValue) => {
+    updateQuery({ status, page: 1 });
+  };
+
   useEffect(() => {
     if (savedCoursesQuery.data && page > savedCoursesQuery.data.totalPages) {
-      setPage(Math.max(1, savedCoursesQuery.data.totalPages));
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", String(Math.max(1, savedCoursesQuery.data.totalPages)));
+      router.replace(`/mypage?${params.toString()}`);
     }
-  }, [savedCoursesQuery.data, page]);
-  /* eslint-enable react-hooks/set-state-in-effect */
+  }, [savedCoursesQuery.data, page, searchParams, router]);
 
   return (
     <div className="flex w-full items-center justify-center pt-11">
@@ -85,7 +107,7 @@ export default function MyPage() {
               courses={courses}
               page={page}
               totalPages={totalPages}
-              onPageChange={setPage}
+              onPageChange={(nextPage) => updateQuery({ page: nextPage })}
             />
           )}
         </main>

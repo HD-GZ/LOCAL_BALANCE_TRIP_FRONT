@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -360,9 +360,5 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
 export default function Propensity() {
   const { data: user } = useMeQuery();
 
-  return (
-    <Suspense>
-      <PropensityContent key={user?.userId} userId={user?.userId} />
-    </Suspense>
-  );
+  return <PropensityContent key={user?.userId} userId={user?.userId} />;
 }
