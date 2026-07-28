@@ -95,7 +95,11 @@ export default function Header() {
                 <span className="text-[12px] text-[#928D84]">{user?.email}</span>
               </div>
               <span className="h-px w-full bg-[#EBE7DF]" />
-              <Link href={"/mypage"} className="flex cursor-pointer items-center self-stretch rounded-[8px] px-2.75 py-2.25 hover:bg-gray-100">
+              <Link
+                href={"/mypage"}
+                className="flex cursor-pointer items-center self-stretch rounded-[8px] px-2.75 py-2.25 hover:bg-gray-100"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 <span className="text-[14px] text-[#222019]">마이페이지</span>
               </Link>
               <span className="h-px w-full bg-[#EBE7DF]" />
