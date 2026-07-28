@@ -75,6 +75,7 @@ export default function SavedCourseCard({ course }: SavedCourseCardProps) {
           <DialogTrigger asChild>
             <button
               type="button"
+              aria-label="저장 취소"
               className="absolute top-2.5 right-2.5 flex size-8 cursor-pointer items-center justify-center rounded-full border border-[#EBE7DF] bg-white/90"
             >
               <Bookmark className="size-4 fill-[#5B7488] text-[#5B7488]" />

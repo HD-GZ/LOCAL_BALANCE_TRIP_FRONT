@@ -4,6 +4,7 @@ import type {
   CourseDetailResponse,
   RecommendedCourse,
   RecommendedRegion,
+  SavedCourse,
   SavedCourseResponse,
 } from "./types";
 
@@ -29,9 +30,13 @@ export async function saveCourse(courseId: number) {
   return apiClient.post<null>(`/api/recommendations/courses/${courseId}/save`);
 }
 
-export async function getSavedCourses(page?: number, limit?: number) {
+export async function getSavedCourses(
+  page?: number,
+  limit?: number,
+  status?: SavedCourse["status"],
+) {
   return apiClient.get<SavedCourseResponse>("/api/saved-courses", {
-    params: { page, limit },
+    params: { page, limit, status },
   });
 }
 

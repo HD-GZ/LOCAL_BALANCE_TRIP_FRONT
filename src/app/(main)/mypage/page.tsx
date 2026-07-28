@@ -3,17 +3,28 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { recommendationQueries } from "@/features/recommendation/queries";
 import { isApiError } from "@/lib/api/error";
+import { cn } from "@/lib/utils";
 import SavedCourseEmpty from "./SavedCourseEmpty";
 import SavedCourseList from "./SavedCourseList";
+import { STATUS_FILTER_MAP, TOUR_STATUS, type TourStatusValue } from "./tourStatus";
 
 const PAGE_SIZE = 12;
 
 export default function MyPage() {
   const [page, setPage] = useState(1);
-  const savedCoursesQuery = useQuery(recommendationQueries.savedCourses(page, PAGE_SIZE));
+  const [selectedStatus, setSelectedStatus] = useState<TourStatusValue>("all");
+  const statusParam = selectedStatus === "all" ? undefined : STATUS_FILTER_MAP[selectedStatus];
+  const savedCoursesQuery = useQuery(
+    recommendationQueries.savedCourses(page, PAGE_SIZE, statusParam),
+  );
   const courses = savedCoursesQuery.data?.courses ?? [];
   const totalPages = savedCoursesQuery.data?.totalPages ?? 1;
   const totalCount = savedCoursesQuery.data?.totalCount ?? 0;
+
+  const handleStatusChange = (status: TourStatusValue) => {
+    setSelectedStatus(status);
+    setPage(1);
+  };
 
   // 마지막 페이지의 마지막 코스를 삭제하면 서버가 돌려주는 totalPages가 줄어들어
   // 지금 보고 있는 page가 범위를 벗어날 가능성 존재. 응답을 받기 전까진 알 수 없어서
@@ -35,7 +46,7 @@ export default function MyPage() {
             코스 추천에서 저장한 코스를 모아봤어요 · GPS 슬로우 투어 시작은 앱에서 할 수 있어요.
           </p>
         </div>
-        <main className="flex w-full flex-col items-start">
+        <main className="flex w-full flex-col items-start gap-7">
           {savedCoursesQuery.isError && (
             <p className="text-[13px] text-red-500">
               {isApiError(savedCoursesQuery.error)
@@ -43,7 +54,32 @@ export default function MyPage() {
                 : "저장한 코스를 불러오는 중 오류가 발생했습니다."}
             </p>
           )}
-          {savedCoursesQuery.isSuccess && totalCount === 0 && <SavedCourseEmpty />}
+          {!(savedCoursesQuery.isSuccess && totalCount === 0 && selectedStatus === "all") && (
+            <div className="flex items-center gap-2">
+              {TOUR_STATUS.map((state) => (
+                <button
+                  key={state.id}
+                  className={cn(
+                    "flex h-9 cursor-pointer items-center justify-center rounded-[100px] border px-3.75 text-[13.5px] font-medium tracking-[-0.135px]",
+                    selectedStatus === state.value
+                      ? "border-[#2F6F4F] bg-[#2F6F4F] text-white"
+                      : "border-[#EBE7DF] bg-white text-[#5F5853]",
+                  )}
+                  onClick={() => handleStatusChange(state.value)}
+                >
+                  {state.title}
+                </button>
+              ))}
+            </div>
+          )}
+          {savedCoursesQuery.isSuccess && totalCount === 0 && selectedStatus === "all" && (
+            <SavedCourseEmpty />
+          )}
+          {savedCoursesQuery.isSuccess && totalCount === 0 && selectedStatus !== "all" && (
+            <p className="flex w-full justify-center text-[13px] text-[#928D84]">
+              이 상태의 저장한 코스가 없어요.
+            </p>
+          )}
           {courses.length > 0 && (
             <SavedCourseList
               courses={courses}
