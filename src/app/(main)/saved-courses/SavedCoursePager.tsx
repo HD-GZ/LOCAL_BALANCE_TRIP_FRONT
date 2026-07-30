@@ -19,6 +19,7 @@ export default function SavedCoursePager({
     <div className="flex w-full items-center justify-center gap-2">
       <button
         type="button"
+        aria-label="이전 페이지"
         className={cn(
           pagerButtonClassName,
           "border-[#EBE7DF] bg-white",
@@ -33,6 +34,7 @@ export default function SavedCoursePager({
         <button
           key={pageNumber}
           type="button"
+          aria-current={pageNumber === page ? "page" : undefined}
           className={cn(
             pagerButtonClassName,
             "font-mono font-medium",
@@ -47,6 +49,7 @@ export default function SavedCoursePager({
       ))}
       <button
         type="button"
+        aria-label="다음 페이지"
         className={cn(
           pagerButtonClassName,
           "border-[#EBE7DF] bg-white",
