@@ -21,7 +21,7 @@ function getStatusParam(searchParams: ReturnType<typeof useSearchParams>): TourS
   return TOUR_STATUS.some((state) => state.value === raw) ? (raw as TourStatusValue) : "all";
 }
 
-export default function MyPage() {
+export default function SavedCourses() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const page = getPageParam(searchParams);
@@ -44,7 +44,7 @@ export default function MyPage() {
         params.set("status", next.status);
       }
     }
-    router.replace(`/mypage?${params.toString()}`);
+    router.replace(`/saved-courses?${params.toString()}`);
   };
 
   const handleStatusChange = (status: TourStatusValue) => {
@@ -52,10 +52,14 @@ export default function MyPage() {
   };
 
   useEffect(() => {
-    if (savedCoursesQuery.data && page > savedCoursesQuery.data.totalPages) {
+    if (
+      savedCoursesQuery.data &&
+      savedCoursesQuery.data.totalPages > 0 &&
+      page > savedCoursesQuery.data.totalPages
+    ) {
       const params = new URLSearchParams(searchParams.toString());
-      params.set("page", String(Math.max(1, savedCoursesQuery.data.totalPages)));
-      router.replace(`/mypage?${params.toString()}`);
+      params.set("page", String(savedCoursesQuery.data.totalPages));
+      router.replace(`/saved-courses?${params.toString()}`);
     }
   }, [savedCoursesQuery.data, page, searchParams, router]);
 
