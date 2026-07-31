@@ -1,6 +1,5 @@
 "use client";
 
-import { Suspense } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import CourseRecommendStep from "@/app/(main)/course-recommend/CourseRecommendStep";
@@ -9,13 +8,15 @@ import { isApiError } from "@/lib/api/error";
 import { parsePositiveIntParam } from "@/lib/utils";
 import RegionCourseList from "./RegionCourseList";
 
-function RegionCoursesContent() {
+export default function RegionCourses() {
   const currentStep = 2;
   const { regionId: regionIdParam } = useParams<{ regionId: string }>();
   const searchParams = useSearchParams();
   const regionName = searchParams.get("regionName") ?? "추천 코스";
   const regionId = parsePositiveIntParam(regionIdParam);
-  const coursesQuery = useQuery(recommendationQueries.regionCourses(regionId ?? 0, regionId !== null));
+  const coursesQuery = useQuery(
+    recommendationQueries.regionCourses(regionId ?? 0, regionId !== null),
+  );
   const courses = coursesQuery.data ?? [];
 
   if (regionId === null) {
@@ -51,13 +52,5 @@ function RegionCoursesContent() {
         {courses.length > 0 && <RegionCourseList courses={courses} />}
       </div>
     </div>
-  );
-}
-
-export default function RegionCourses() {
-  return (
-    <Suspense>
-      <RegionCoursesContent />
-    </Suspense>
   );
 }

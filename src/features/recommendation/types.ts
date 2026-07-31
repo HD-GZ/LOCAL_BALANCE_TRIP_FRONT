@@ -37,3 +37,18 @@ export type CourseDetailResponse = {
   places: CoursePlace[];
   benefits: CourseBenefit[];
 };
+
+export type SavedCourse = {
+  savedCourseId: number;
+  courseName: string;
+  imageUrl: string;
+  status: "BEFORE_TRIP" | "TRAVELING" | "COMPLETED";
+}
+
+export type SavedCourseResponse = {
+  totalCount: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  courses: SavedCourse[];
+}
