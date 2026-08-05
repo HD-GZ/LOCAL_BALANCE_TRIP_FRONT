@@ -1,13 +1,14 @@
 "use client";
 
-import { type ClipboardEvent, type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 
+import CodeInput, { createEmptyCode } from "@/app/(auth)/_components/CodeInput";
 import SignupStepper from "@/app/(auth)/_components/SignupStepper";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { confirmEmailVerification, resendEmailVerification } from "@/features/auth/api";
+import { formatRemainingTime, getRemainingSeconds } from "@/features/auth/expiry";
 import {
   clearPendingEmailVerification,
   savePendingEmailVerification,
@@ -16,7 +17,6 @@ import {
 import { isApiError } from "@/lib/api/error";
 import { cn } from "@/lib/utils";
 
-const CODE_LENGTH = 6;
 const EMAIL_FALLBACK = "가입한 이메일";
 
 type VerificationFeedback = {
@@ -24,35 +24,12 @@ type VerificationFeedback = {
   message: string;
 };
 
-function getRemainingSeconds(expiresAt: number | undefined, now: number) {
-  if (!expiresAt) {
-    return 0;
-  }
-
-  return Math.max(0, Math.ceil((expiresAt - now) / 1000));
-}
-
-function formatRemainingTime(seconds: number) {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const remainingSeconds = seconds % 60;
-
-  if (hours > 0) {
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds,
-    ).padStart(2, "0")}`;
-  }
-
-  return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
-}
-
 export default function VerifyEmailPage() {
   const router = useRouter();
 
   const [now, setNow] = useState(() => Date.now());
-  const [code, setCode] = useState<string[]>(Array(CODE_LENGTH).fill(""));
+  const [code, setCode] = useState<string[]>(createEmptyCode);
   const [feedback, setFeedback] = useState<VerificationFeedback | null>(null);
-  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   const isCodeComplete = code.every(Boolean);
   const verificationCode = code.join("");
@@ -87,9 +64,8 @@ export default function VerifyEmailPage() {
     mutationFn: resendEmailVerification,
     onSuccess: ({ email: resentEmail, verificationCodeExpiresIn }) => {
       savePendingEmailVerification({ email: resentEmail, verificationCodeExpiresIn });
-      setCode(Array(CODE_LENGTH).fill(""));
+      setCode(createEmptyCode());
       setFeedback({ type: "success", message: "인증 코드를 다시 보냈어요." });
-      inputRefs.current[0]?.focus();
     },
     onError: (error) => {
       setFeedback({
@@ -99,46 +75,9 @@ export default function VerifyEmailPage() {
     },
   });
 
-  const handleCodeChange = (index: number, value: string) => {
-    const nextValue = value.replace(/\D/g, "").slice(-1);
-    const nextCode = [...code];
-    nextCode[index] = nextValue;
+  const handleCodeChange = (nextCode: string[]) => {
     setCode(nextCode);
     setFeedback(null);
-
-    if (nextValue && index < CODE_LENGTH - 1) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleCodeKeyDown = (index: number, event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Backspace" && !code[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
-  const handleCodePaste = (index: number, event: ClipboardEvent<HTMLInputElement>) => {
-    const pastedDigits = event.clipboardData
-      .getData("text")
-      .replace(/\D/g, "")
-      .slice(0, CODE_LENGTH - index);
-
-    if (!pastedDigits) {
-      return;
-    }
-
-    event.preventDefault();
-
-    const nextCode = [...code];
-    pastedDigits.split("").forEach((digit, offset) => {
-      nextCode[index + offset] = digit;
-    });
-
-    setCode(nextCode);
-    setFeedback(null);
-
-    const nextFocusIndex = Math.min(index + pastedDigits.length, CODE_LENGTH - 1);
-    inputRefs.current[nextFocusIndex]?.focus();
   };
 
   const handleResendCode = () => {
@@ -174,26 +113,7 @@ export default function VerifyEmailPage() {
             {email} 으로 <br /> 6자리 인증 코드를 보냈어요.
           </p>
         </div>
-        <div className="flex h-15 gap-2.5">
-          {code.map((digit, index) => (
-            <Input
-              key={index}
-              aria-label={`인증 코드 ${index + 1}번째 자리`}
-              ref={(element) => {
-                inputRefs.current[index] = element;
-              }}
-              type="text"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={1}
-              value={digit}
-              onChange={(event) => handleCodeChange(index, event.target.value)}
-              onKeyDown={(event) => handleCodeKeyDown(index, event)}
-              onPaste={(event) => handleCodePaste(index, event)}
-              className="h-full w-12.5 rounded-[13px] text-center text-xl font-semibold"
-            />
-          ))}
-        </div>
+        <CodeInput value={code} onChange={handleCodeChange} />
         <p className="mt-3 text-center text-[13px] text-[#928D84]" aria-live="polite">
           {isExpired
             ? "인증 코드가 만료되었습니다."
