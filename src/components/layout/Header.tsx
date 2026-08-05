@@ -96,7 +96,7 @@ export default function Header() {
               </div>
               <span className="h-px w-full bg-[#EBE7DF]" />
               <Link
-                href={"/"}
+                href={"/my/account"}
                 className="flex cursor-pointer items-center self-stretch rounded-[8px] px-2.75 py-2.25 hover:bg-gray-100"
                 onClick={() => setIsMenuOpen(false)}
               >
