@@ -142,17 +142,16 @@ export default function VerifyEmailPage() {
             {confirmMutation.isPending ? "확인 중..." : "인증 완료"}
           </Button>
         </div>
-        {feedback && (
-          <p
-            aria-live="polite"
-            className={cn(
-              "mt-3 text-center text-[12px]",
-              feedback.type === "error" ? "text-red-500" : "text-primary",
-            )}
-          >
-            {feedback.message}
-          </p>
-        )}
+        <p
+          aria-live="polite"
+          className={cn(
+            "mt-3 text-center text-[12px]",
+            !feedback && "sr-only",
+            feedback?.type === "error" ? "text-red-500" : "text-primary",
+          )}
+        >
+          {feedback?.message ?? ""}
+        </p>
       </main>
     </div>
   );

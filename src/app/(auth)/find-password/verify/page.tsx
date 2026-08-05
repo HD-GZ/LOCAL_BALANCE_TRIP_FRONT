@@ -30,16 +30,17 @@ export default function FindPasswordVerifyPage() {
   const [now, setNow] = useState(() => Date.now());
   const [code, setCode] = useState<string[]>(createEmptyCode);
   const [feedback, setFeedback] = useState<VerificationFeedback | null>(null);
-  const [resendAvailableAt, setResendAvailableAt] = useState(
-    () => Date.now() + RESEND_CODE_COOLDOWN_SECONDS * 1000,
-  );
 
   const session = usePasswordResetSession();
   const email = session?.email;
   const isCodeComplete = code.every(Boolean);
   const remainingSeconds = getRemainingSeconds(session?.codeExpiresAt, now);
   const isExpired = remainingSeconds === 0;
-  const resendCooldownSeconds = getRemainingSeconds(resendAvailableAt, now);
+  // 쿨다운은 발송 시각에서 계산한다. 컴포넌트 상태로 두면 새로고침할 때마다 60초가 새로 시작된다.
+  const resendCooldownSeconds = getRemainingSeconds(
+    session ? session.codeSentAt + RESEND_CODE_COOLDOWN_SECONDS * 1000 : undefined,
+    now,
+  );
 
   useEffect(() => {
     const timerId = window.setInterval(() => {
@@ -75,7 +76,6 @@ export default function FindPasswordVerifyPage() {
     onSuccess: ({ verificationCodeExpiresIn }, { email: resentEmail }) => {
       savePasswordResetCodeRequest({ email: resentEmail, verificationCodeExpiresIn });
       setCode(createEmptyCode());
-      setResendAvailableAt(Date.now() + RESEND_CODE_COOLDOWN_SECONDS * 1000);
       setFeedback({ type: "success", message: "인증번호를 다시 보냈어요." });
     },
     onError: (error) => {
@@ -155,17 +155,16 @@ export default function FindPasswordVerifyPage() {
             {confirmMutation.isPending ? "확인 중..." : "인증 확인"}
           </Button>
         </div>
-        {feedback && (
-          <p
-            aria-live="polite"
-            className={cn(
-              "mt-3 text-center text-[12px]",
-              feedback.type === "error" ? "text-red-500" : "text-primary",
-            )}
-          >
-            {feedback.message}
-          </p>
-        )}
+        <p
+          aria-live="polite"
+          className={cn(
+            "mt-3 text-center text-[12px]",
+            !feedback && "sr-only",
+            feedback?.type === "error" ? "text-red-500" : "text-primary",
+          )}
+        >
+          {feedback?.message ?? ""}
+        </p>
         <button
           type="button"
           onClick={() => router.push("/find-password")}

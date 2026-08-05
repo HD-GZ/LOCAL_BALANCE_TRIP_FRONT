@@ -9,6 +9,8 @@ const PASSWORD_RESET_STORAGE_KEY = "local-balance-trip:password-reset";
 
 const passwordResetSessionSchema = z.object({
   email: z.string(),
+  /** 인증 코드를 마지막으로 발송한 시각. 재전송 쿨다운이 새로고침에도 유지되도록 보관한다. */
+  codeSentAt: z.number(),
   codeExpiresAt: z.number(),
   resetToken: z.string().optional(),
   resetTokenExpiresAt: z.number().optional(),
@@ -29,9 +31,12 @@ export function savePasswordResetCodeRequest({
   email: string;
   verificationCodeExpiresIn: number;
 }) {
+  const now = Date.now();
+
   passwordResetStore.set({
     email,
-    codeExpiresAt: Date.now() + verificationCodeExpiresIn * 1000,
+    codeSentAt: now,
+    codeExpiresAt: now + verificationCodeExpiresIn * 1000,
   });
 }
 
@@ -58,6 +63,15 @@ export function savePasswordResetToken({
 
 export function getPasswordResetSession() {
   return passwordResetStore.get();
+}
+
+/** 새 비밀번호 설정에 실제로 사용할 수 있는(발급됐고 아직 만료되지 않은) 리셋 토큰이 있는지 확인한다. */
+export function hasUsableResetToken(
+  session: PasswordResetSession | null,
+): session is PasswordResetSession & { resetToken: string } {
+  return Boolean(
+    session?.resetToken && session.resetTokenExpiresAt && session.resetTokenExpiresAt > Date.now(),
+  );
 }
 
 export function clearPasswordResetSession() {

@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 
 import PasswordResetStepper from "@/app/(auth)/_components/PasswordResetStepper";
 import {
+  clearPasswordResetSession,
   getPasswordResetSession,
+  hasUsableResetToken,
   usePasswordResetSession,
 } from "@/features/auth/passwordResetStorage";
 import ResetPasswordForm from "./ResetPasswordForm";
@@ -16,12 +18,13 @@ export default function ResetPasswordPage() {
 
   // 하이드레이션 시점의 스냅샷은 항상 null이므로, 리셋 토큰 유무는 마운트 후 직접 확인한다.
   useEffect(() => {
-    if (!getPasswordResetSession()?.resetToken) {
+    if (!hasUsableResetToken(getPasswordResetSession())) {
+      clearPasswordResetSession();
       router.replace("/find-password");
     }
   }, [router]);
 
-  if (!session?.resetToken) {
+  if (!hasUsableResetToken(session)) {
     return null;
   }
 
