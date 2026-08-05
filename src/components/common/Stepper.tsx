@@ -35,7 +35,9 @@ export default function Stepper({ steps, currentStep, showStepLabel = false }: S
                 <span
                   className={cn(
                     "text-[13.5px] tracking-[-0.135px]",
-                    step === currentStep ? "font-semibold text-[#222019]" : "font-medium text-[#928D84]",
+                    step === currentStep
+                      ? "font-semibold text-[#222019]"
+                      : "font-medium text-[#928D84]",
                   )}
                 >
                   {label}
