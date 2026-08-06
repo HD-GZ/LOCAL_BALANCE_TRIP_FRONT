@@ -16,7 +16,7 @@ interface FormFieldProps {
 function FormField({ label, required, error, hint, className, children }: FormFieldProps) {
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <Label className="text-[13px] text-label">
+      <Label className="text-label text-[13px]">
         {label}
         {required && <span className="text-primary"> *</span>}
       </Label>
@@ -24,7 +24,7 @@ function FormField({ label, required, error, hint, className, children }: FormFi
       {error ? (
         <p className="text-[12px] text-red-500">{error}</p>
       ) : hint ? (
-        <p className="text-[12px] text-muted-foreground">{hint}</p>
+        <p className="text-muted-foreground text-[12px]">{hint}</p>
       ) : null}
     </div>
   );

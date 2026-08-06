@@ -24,7 +24,7 @@ export default function SignupStepper({ currentStep }: SignupStepperProps) {
               aria-current={isCurrent ? "step" : undefined}
               className={cn(
                 "rounded-full",
-                isCurrent && "size-2.5 bg-primary",
+                isCurrent && "bg-primary size-2.5",
                 isCompleted && "size-2.25 bg-[#C4DDCD]",
                 !isCurrent && !isCompleted && "size-2.25 bg-[#C3BDB3]",
               )}
