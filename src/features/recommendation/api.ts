@@ -6,6 +6,7 @@ import type {
   RecommendedRegion,
   SavedCourse,
   SavedCourseResponse,
+  SavedCourseDetailResponse,
 } from "./types";
 
 export async function postRecommendations() {
@@ -42,4 +43,8 @@ export async function getSavedCourses(
 
 export async function deleteSavedCourse(savedCourseId: number) {
   return apiClient.delete<null>(`/api/saved-courses/${savedCourseId}`);
+}
+
+export async function getSavedCoursesDetail(savedCourseId: number) {
+  return apiClient.get<SavedCourseDetailResponse>(`/api/saved-courses/${savedCourseId}`);
 }
