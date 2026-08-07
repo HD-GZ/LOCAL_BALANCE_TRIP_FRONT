@@ -43,7 +43,7 @@ export type SavedCourse = {
   courseName: string;
   imageUrl: string;
   status: "BEFORE_TRIP" | "TRAVELING" | "COMPLETED";
-}
+};
 
 export type SavedCourseResponse = {
   totalCount: number;
