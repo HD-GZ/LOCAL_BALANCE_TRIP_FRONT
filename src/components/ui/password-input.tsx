@@ -16,7 +16,7 @@ const PasswordInput = forwardRef<HTMLInputElement, React.ComponentProps<"input">
         <Input ref={ref} type={show ? "text" : "password"} {...props} />
         <button
           type="button"
-          className="absolute top-1/2 right-3 -translate-y-1/2 text-placeholder"
+          className="text-placeholder absolute top-1/2 right-3 -translate-y-1/2"
           onClick={toggle}
           aria-label={show ? "비밀번호 숨기기" : "비밀번호 보기"}
         >

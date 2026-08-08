@@ -56,3 +56,26 @@ export type EmailVerificationConfirmRequest = {
 export type EmailVerificationResendRequest = {
   email: string;
 };
+
+export type PasswordResetCodeRequest = {
+  email: string;
+};
+
+export type PasswordResetCodeResponse = {
+  verificationCodeExpiresIn: number;
+};
+
+export type PasswordResetConfirmRequest = {
+  email: string;
+  code: string;
+};
+
+export type PasswordResetConfirmResponse = {
+  resetToken: string;
+  resetTokenExpiresIn: number;
+};
+
+export type PasswordResetRequest = {
+  resetToken: string;
+  newPassword: string;
+};

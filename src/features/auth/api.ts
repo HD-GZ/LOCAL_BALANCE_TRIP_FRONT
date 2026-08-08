@@ -3,6 +3,11 @@ import type {
   EmailVerificationConfirmRequest,
   EmailVerificationPendingResponse,
   EmailVerificationResendRequest,
+  PasswordResetCodeRequest,
+  PasswordResetCodeResponse,
+  PasswordResetConfirmRequest,
+  PasswordResetConfirmResponse,
+  PasswordResetRequest,
   SignupRequest,
 } from "@/features/auth/types";
 import { apiClient } from "@/lib/api/client";
@@ -33,4 +38,28 @@ export function resendEmailVerification(body: EmailVerificationResendRequest) {
       body,
     },
   );
+}
+
+export function requestPasswordResetCode(body: PasswordResetCodeRequest) {
+  return apiClient.post<PasswordResetCodeResponse, PasswordResetCodeRequest>(
+    "/api/auth/password-reset/request",
+    {
+      body,
+    },
+  );
+}
+
+export function confirmPasswordResetCode(body: PasswordResetConfirmRequest) {
+  return apiClient.post<PasswordResetConfirmResponse, PasswordResetConfirmRequest>(
+    "/api/auth/password-reset/confirm",
+    {
+      body,
+    },
+  );
+}
+
+export function resetPassword(body: PasswordResetRequest) {
+  return apiClient.post<null, PasswordResetRequest>("/api/auth/password-reset", {
+    body,
+  });
 }

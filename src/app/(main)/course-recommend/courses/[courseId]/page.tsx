@@ -15,7 +15,9 @@ export default function CourseDetail() {
   const currentStep = 3;
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
   const courseId = parsePositiveIntParam(courseIdParam);
-  const courseDetailQuery = useQuery(recommendationQueries.courseDetail(courseId ?? 0, courseId !== null));
+  const courseDetailQuery = useQuery(
+    recommendationQueries.courseDetail(courseId ?? 0, courseId !== null),
+  );
   const saveCourseMutation = useMutation({ mutationFn: saveCourse });
   const course = courseDetailQuery.data;
 

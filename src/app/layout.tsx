@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 
 import Footer from "@/components/layout/Footer";
 import { Providers } from "@/components/Providers";
+import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col">
         <Providers>{children}</Providers>
         <Footer />
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );
