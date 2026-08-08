@@ -66,6 +66,7 @@ export default function ReceiptDateCalendar({
       <div className="flex w-full items-center justify-between">
         <button
           type="button"
+          aria-label="이전 달"
           onClick={() => changeMonth(-1)}
           className="cursor-pointer text-[18px] text-[#B8B3AA]"
         >
@@ -76,6 +77,7 @@ export default function ReceiptDateCalendar({
         </p>
         <button
           type="button"
+          aria-label="다음 달"
           onClick={() => changeMonth(1)}
           className="cursor-pointer text-[18px] text-[#B8B3AA]"
         >

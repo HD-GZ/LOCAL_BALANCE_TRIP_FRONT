@@ -46,7 +46,11 @@ export default function ReceiptFields({
             {merchantName}
           </p>
         )}
-        <button type="button" onClick={() => setIsEditingMerchantName(true)}>
+        <button
+          type="button"
+          aria-label="가맹점명 수정"
+          onClick={() => setIsEditingMerchantName(true)}
+        >
           <PencilLine className="size-3.5 shrink-0 cursor-pointer text-[#928D84]" />
         </button>
       </div>
@@ -68,7 +72,7 @@ export default function ReceiptFields({
             {amount.toLocaleString()}
           </p>
         )}
-        <button type="button" onClick={() => setIsEditingAmount(true)}>
+        <button type="button" aria-label="금액 수정" onClick={() => setIsEditingAmount(true)}>
           <PencilLine className="size-3.5 shrink-0 cursor-pointer text-[#928D84]" />
         </button>
       </div>
@@ -79,7 +83,7 @@ export default function ReceiptFields({
         </p>
         <Popover open={isDatePopoverOpen} onOpenChange={setIsDatePopoverOpen}>
           <PopoverTrigger asChild>
-            <button type="button">
+            <button type="button" aria-label="날짜 수정">
               <Calendar className="size-3.5 shrink-0 cursor-pointer text-[#928D84]" />
             </button>
           </PopoverTrigger>
