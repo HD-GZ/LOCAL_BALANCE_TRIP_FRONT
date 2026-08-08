@@ -110,7 +110,7 @@ export default function Header() {
                 href={"/my/account"}
                 className="flex cursor-pointer items-center self-stretch rounded-[8px] px-2.75 py-2.25 hover:bg-gray-100"
                 onClick={() => setIsMenuOpen(false)}
-                onNavigate={handleNavigate("/")}
+                onNavigate={handleNavigate("/my/account")}
               >
                 <span className="text-[14px] text-[#222019]">마이페이지</span>
               </Link>
