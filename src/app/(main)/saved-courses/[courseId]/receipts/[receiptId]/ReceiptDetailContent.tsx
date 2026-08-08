@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { useNavigationGuard } from "@/contexts/NavigationGuardContext";
 import { useUpdateReceiptMutation } from "@/features/receipts/queries";
 import type { ReceiptDetailResponse } from "@/features/receipts/types";
 import type { SavedCourseDetailResponse } from "@/features/recommendation/types";
@@ -37,6 +38,7 @@ export default function ReceiptDetailContent({
     paidDate !== receipt.paidDate;
   const updateMutation = useUpdateReceiptMutation(courseId, receiptId);
   const receiptsListHref = `/saved-courses/${courseId}/receipts`;
+  const { setGuard, requestNavigate } = useNavigationGuard();
 
   useEffect(() => {
     if (!isDirty) return;
@@ -49,11 +51,13 @@ export default function ReceiptDetailContent({
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isDirty]);
 
-  const guardedNavigate = (event: React.MouseEvent, href: string) => {
-    if (isDirty) {
-      event.preventDefault();
-      setPendingHref(href);
-    }
+  useEffect(() => {
+    setGuard(isDirty ? setPendingHref : null);
+    return () => setGuard(null);
+  }, [isDirty, setGuard]);
+
+  const guardedNavigate = (event: { preventDefault: () => void }, href: string) => {
+    if (requestNavigate(href)) event.preventDefault();
   };
 
   const handleSaveAndLeave = () => {
@@ -76,13 +80,17 @@ export default function ReceiptDetailContent({
   return (
     <>
       <div className="flex items-center gap-1.75 text-[13px] text-[#5F5B53]">
-        <Link href="/saved-courses" onClick={(event) => guardedNavigate(event, "/saved-courses")} className="hover:text-[#2F6F4F]">
+        <Link
+          href="/saved-courses"
+          onNavigate={(event) => guardedNavigate(event, "/saved-courses")}
+          className="hover:text-[#2F6F4F]"
+        >
           저장한 코스
         </Link>
         <span className="text-[#B8B3AA]">›</span>
         <Link
           href={receiptsListHref}
-          onClick={(event) => guardedNavigate(event, receiptsListHref)}
+          onNavigate={(event) => guardedNavigate(event, receiptsListHref)}
           className="hover:text-[#2F6F4F]"
         >
           {course.title}
