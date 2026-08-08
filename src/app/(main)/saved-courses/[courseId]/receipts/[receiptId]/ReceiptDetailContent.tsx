@@ -36,6 +36,7 @@ export default function ReceiptDetailContent({
     merchantName !== receipt.merchantName ||
     amount !== receipt.amount ||
     paidDate !== receipt.paidDate;
+  const isMerchantNameEmpty = merchantName.trim().length === 0;
   const updateMutation = useUpdateReceiptMutation(courseId, receiptId);
   const receiptsListHref = `/saved-courses/${courseId}/receipts`;
   const { setGuard, requestNavigate } = useNavigationGuard();
@@ -121,6 +122,9 @@ export default function ReceiptDetailContent({
               OCR로 자동 추출된 값이에요 · 잘못 인식된 항목은 직접 수정할 수 있어요
             </p>
           </div>
+          {isMerchantNameEmpty && (
+            <p className="pt-2 text-[12px] text-red-500">가맹점명을 입력해주세요.</p>
+          )}
           {updateMutation.isError && (
             <p className="pt-2 text-[12px] text-red-500">
               저장 중 오류가 발생했어요. 다시 시도해 주세요.
@@ -129,11 +133,11 @@ export default function ReceiptDetailContent({
           <div className="flex w-full gap-2.5 pt-6">
             <button
               type="button"
-              disabled={!isDirty || updateMutation.isPending}
+              disabled={!isDirty || isMerchantNameEmpty || updateMutation.isPending}
               onClick={() => updateMutation.mutate({ merchantName, amount, paidDate })}
               className={cn(
                 "h-12.5 flex-1 rounded-[12px] text-[15px] font-semibold text-white disabled:cursor-not-allowed",
-                isDirty ? "cursor-pointer bg-[#2F6F4F]" : "bg-[#A7C7B5]",
+                isDirty && !isMerchantNameEmpty ? "cursor-pointer bg-[#2F6F4F]" : "bg-[#A7C7B5]",
               )}
             >
               {updateMutation.isPending ? "저장하는 중..." : "저장하기"}
@@ -158,12 +162,17 @@ export default function ReceiptDetailContent({
             </Button>
             <Button
               className="h-12.5 flex-1 bg-[#2F6F4F] text-[15px] font-semibold tracking-[-0.15px] text-white hover:bg-[#2F6F4F]/90"
-              disabled={updateMutation.isPending}
+              disabled={updateMutation.isPending || isMerchantNameEmpty}
               onClick={handleSaveAndLeave}
             >
               {updateMutation.isPending ? "저장하는 중..." : "저장하고 이동"}
             </Button>
           </div>
+          {isMerchantNameEmpty && (
+            <p className="mt-2 text-[12px] text-red-500">
+              가맹점명을 입력해야 저장할 수 있어요.
+            </p>
+          )}
           {updateMutation.isError && (
             <p className="mt-2 text-[12px] text-red-500">
               저장 중 오류가 발생했어요. 다시 시도해 주세요.
