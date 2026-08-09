@@ -51,9 +51,7 @@ export default function HeroCollage({ items, recommendedRegionName }: HeroCollag
           <p className="truncate text-[14px] font-semibold tracking-[-0.21px] text-[#222019]">
             이번 달 추천 · {recommendedRegionName}
           </p>
-          <p className="mt-0.5 truncate text-[12.5px] text-[#928D84]">
-            취향에 맞춰 골라봤어요
-          </p>
+          <p className="mt-0.5 truncate text-[12.5px] text-[#928D84]">취향에 맞춰 골라봤어요</p>
         </div>
       )}
     </div>

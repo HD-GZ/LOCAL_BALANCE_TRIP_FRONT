@@ -43,9 +43,7 @@ export default function ProfileTypeStrip({ types, isPending, isError }: ProfileT
         <h2 className="text-[16px] font-semibold tracking-[-0.32px] text-[#1C4631]">
           나는 어떤 여행자일까?
         </h2>
-        <p className="text-[13px] text-[#5F5B53]">
-          카드를 누르면 바로 취향 진단으로 이어집니다
-        </p>
+        <p className="text-[13px] text-[#5F5B53]">카드를 누르면 바로 취향 진단으로 이어집니다</p>
       </div>
       {isPending && <HomeSectionState message="여행자 유형을 불러오는 중..." />}
       {isError && <HomeSectionState message="여행자 유형을 불러오지 못했어요." tone="error" />}
@@ -73,7 +71,7 @@ export default function ProfileTypeStrip({ types, isPending, isError }: ProfileT
               </Link>
             ))}
           </div>
-          <span className="pointer-events-none absolute inset-y-0 right-0 w-13 bg-linear-to-r from-[#F7F1E4]/0 to-72% to-[#F7F1E4]/94" />
+          <span className="pointer-events-none absolute inset-y-0 right-0 w-13 bg-linear-to-r from-[#F7F1E4]/0 to-[#F7F1E4]/94 to-72%" />
         </div>
       )}
     </div>
