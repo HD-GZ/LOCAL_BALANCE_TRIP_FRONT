@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { homeQueryKeys } from "@/features/home/queries";
 import { userQueryKeys } from "@/features/user/queries";
 import { apiClient } from "@/lib/api/client";
 import { isApiError } from "@/lib/api/error";
@@ -45,6 +46,7 @@ export default function LoginForm() {
   const loginMutation = useMutation({
     mutationFn: loginWithCookie,
     onSuccess: async () => {
+      queryClient.removeQueries({ queryKey: homeQueryKeys.all });
       await queryClient.invalidateQueries({ queryKey: userQueryKeys.me() });
       router.push("/");
     },
