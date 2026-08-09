@@ -9,7 +9,6 @@ type HomeHeroProps = {
   ctaCaption: string;
   heroItems: HeroItem[];
   recommendedRegionName?: string;
-  /** 히어로 하단 스트립. 진단 전에는 유형 카드, 진단 후에는 진단 요약이 들어간다. */
   children: React.ReactNode;
 };
 

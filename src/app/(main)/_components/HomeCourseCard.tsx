@@ -10,7 +10,6 @@ type HomeCourseCardProps = {
   href: string;
   title: string;
   imageUrl: string | null;
-  /** 이미지 좌측 상단 배지. 취향 기반 추천 배지는 아웃라인, 여행 상태 배지는 솔리드로 표시한다. */
   badge?: { label: string; tone: "outline" | "solid" } | null;
   reason?: string | null;
   meta?: string | null;

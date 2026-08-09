@@ -8,7 +8,6 @@ function clampScore(score: number) {
   return Math.min(Math.max(score, MIN_SCORE), MAX_SCORE);
 }
 
-/** 1~5 점수를 트랙 위 위치(%)로 변환한다. */
 function toTrackPercent(score: number) {
   return ((clampScore(score) - MIN_SCORE) / (MAX_SCORE - MIN_SCORE)) * 100;
 }

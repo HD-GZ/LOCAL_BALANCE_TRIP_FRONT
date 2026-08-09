@@ -30,14 +30,12 @@ function CollagePhoto({ item, sizes }: CollagePhotoProps) {
 
 type HeroCollageProps = {
   items: HeroItem[];
-  /** 우측 하단 미니 카드에 표시할 추천 지역명 */
   recommendedRegionName?: string;
 };
 
 export default function HeroCollage({ items, recommendedRegionName }: HeroCollageProps) {
   return (
     <div className="flex h-[392px] w-full justify-end" aria-hidden={!recommendedRegionName}>
-      {/* 도형 배치가 컬럼 너비에 따라 찌그러지지 않도록 시안과 같은 고정 크기를 유지한다. */}
       <div className="relative h-full w-[475px] shrink-0">
         <span className="absolute top-[2%] left-[44.34%] block aspect-square w-[49.66%] rounded-full bg-[#3C875F]/26" />
         <span className="absolute top-[32%] left-[14%] block aspect-square w-[31.57%] rounded-full bg-[#E0B23D]/50" />

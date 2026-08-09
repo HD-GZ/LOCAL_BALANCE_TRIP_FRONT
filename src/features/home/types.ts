@@ -24,16 +24,13 @@ export type ProfileSlider = {
   key: string;
   minLabel: string;
   maxLabel: string;
-  /** 1~5 */
   score: number;
 };
 
 export type ProfileSummaryResponse = {
-  /** "{별칭} ({코드})" 형식 */
   type: string;
   description: string;
   imageUrl: string | null;
-  /** yyyy-MM-dd */
   diagnosedAt: string;
   sliders: ProfileSlider[];
 };
@@ -54,11 +51,9 @@ export type HomeFeedItemType = "SAVED_COURSE" | "RECOMMENDED_REGION";
 
 export type HomeFeedItem = {
   itemType: HomeFeedItemType;
-  /** 저장 코스 ID 또는 추천 지역 ID */
   id: number;
   title: string;
   imageUrl: string | null;
-  /** SAVED_COURSE는 여행 상태값, RECOMMENDED_REGION은 추천 이유 */
   subtitle: string | null;
 };
 
@@ -70,9 +65,7 @@ export type Incentive = {
   title: string;
   description: string | null;
   url: string;
-  /** 상시(마감 없음)면 null */
   endDate: string | null;
-  /** 마감까지 남은 일수. 상시면 null */
   dday: number | null;
 };
 

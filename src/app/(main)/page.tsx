@@ -20,7 +20,6 @@ export default function Home() {
   const meQuery = useQuery(userQueries.me());
   const isLoggedIn = meQuery.isSuccess;
   const profileSummaryQuery = useQuery(homeQueries.profileSummary(isLoggedIn));
-  /** 로그아웃 직후 남아 있는 진단 요약 캐시로 로그인 화면이 보이지 않도록 로그인 상태로 한 번 더 가린다. */
   const summary = isLoggedIn ? profileSummaryQuery.data : undefined;
   const heroQuery = useQuery(homeQueries.hero());
   const profileTypesQuery = useQuery(homeQueries.profileTypes(!summary));

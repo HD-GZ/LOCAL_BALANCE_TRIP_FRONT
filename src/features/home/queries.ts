@@ -30,7 +30,6 @@ export const homeQueries = {
       queryKey: homeQueryKeys.profileTypes(),
       queryFn: getHomeProfileTypes,
     }),
-  /** 미진단 사용자는 404를 반환하므로 재시도하지 않는다. */
   profileSummary: (enabled = true) =>
     queryOptions({
       enabled,

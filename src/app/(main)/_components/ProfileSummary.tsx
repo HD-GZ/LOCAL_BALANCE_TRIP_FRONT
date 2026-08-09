@@ -3,7 +3,6 @@ import { ChevronRight } from "lucide-react";
 import type { ProfileSummaryResponse } from "@/features/home/types";
 import PreferenceSlider from "./PreferenceSlider";
 
-/** API는 "{별칭} ({코드})" 형식으로 내려주므로 화면에는 별칭만 노출한다. */
 export function toProfileNickname(type: string) {
   return type.replace(/\s*\([^)]*\)\s*$/, "").trim() || type;
 }

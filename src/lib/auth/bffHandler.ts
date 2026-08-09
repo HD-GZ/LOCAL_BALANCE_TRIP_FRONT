@@ -124,10 +124,6 @@ function finalizeBackendResult(result: BackendCallResult) {
   return NextResponse.json(result.payload, { status: result.status });
 }
 
-/**
- * 인증이 필수는 아니지만 토큰이 있으면 개인화 응답을 받는 엔드포인트용.
- * 토큰이 없거나 갱신에 실패하면 401을 반환하지 않고 비인증 응답으로 대체한다.
- */
 export async function callBackendOptionalAuth(cookieStore: CookieStore, init: BackendRequestInit) {
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
 

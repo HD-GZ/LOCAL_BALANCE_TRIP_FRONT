@@ -17,7 +17,6 @@ function isSavedCourseStatus(value: string): value is SavedCourseStatus {
   return value in STATUS_LABEL;
 }
 
-/** SAVED_COURSE의 subtitle은 여행 상태값이므로 라벨로 변환한다. 알 수 없는 값은 그대로 노출한다. */
 function toStatusLabel(subtitle: string | null) {
   if (!subtitle) {
     return null;
