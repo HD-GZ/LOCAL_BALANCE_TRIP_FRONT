@@ -124,6 +124,38 @@ function finalizeBackendResult(result: BackendCallResult) {
   return NextResponse.json(result.payload, { status: result.status });
 }
 
+/**
+ * 인증이 필수는 아니지만 토큰이 있으면 개인화 응답을 받는 엔드포인트용.
+ * 토큰이 없거나 갱신에 실패하면 401을 반환하지 않고 비인증 응답으로 대체한다.
+ */
+export async function callBackendOptionalAuth(cookieStore: CookieStore, init: BackendRequestInit) {
+  const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
+
+  if (accessToken) {
+    const result = await fetchBackendOnce(accessToken, init);
+
+    if (!(result.kind === "response" && result.status === 401)) {
+      return finalizeBackendResult(result);
+    }
+  }
+
+  const refreshTokenValue = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
+
+  if (refreshTokenValue) {
+    const tokens = await requestTokenRefresh(refreshTokenValue);
+
+    if (tokens) {
+      setAuthCookies(cookieStore, tokens);
+
+      return finalizeBackendResult(await fetchBackendOnce(tokens.accessToken, init));
+    }
+
+    clearAuthCookies(cookieStore);
+  }
+
+  return finalizeBackendResult(await fetchBackendOnce(undefined, init));
+}
+
 export async function callBackendWithAuthRetry(cookieStore: CookieStore, init: BackendRequestInit) {
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
 
