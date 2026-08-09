@@ -143,7 +143,11 @@ export async function callBackendOptionalAuth(cookieStore: CookieStore, init: Ba
     if (tokens) {
       setAuthCookies(cookieStore, tokens);
 
-      return finalizeBackendResult(await fetchBackendOnce(tokens.accessToken, init));
+      const retryResult = await fetchBackendOnce(tokens.accessToken, init);
+
+      if (!(retryResult.kind === "response" && retryResult.status === 401)) {
+        return finalizeBackendResult(retryResult);
+      }
     }
 
     clearAuthCookies(cookieStore);
