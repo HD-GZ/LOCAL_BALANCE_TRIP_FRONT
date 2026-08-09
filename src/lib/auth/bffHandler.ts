@@ -124,6 +124,38 @@ function finalizeBackendResult(result: BackendCallResult) {
   return NextResponse.json(result.payload, { status: result.status });
 }
 
+export async function callBackendOptionalAuth(cookieStore: CookieStore, init: BackendRequestInit) {
+  const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
+
+  if (accessToken) {
+    const result = await fetchBackendOnce(accessToken, init);
+
+    if (!(result.kind === "response" && result.status === 401)) {
+      return finalizeBackendResult(result);
+    }
+  }
+
+  const refreshTokenValue = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
+
+  if (refreshTokenValue) {
+    const tokens = await requestTokenRefresh(refreshTokenValue);
+
+    if (tokens) {
+      setAuthCookies(cookieStore, tokens);
+
+      const retryResult = await fetchBackendOnce(tokens.accessToken, init);
+
+      if (!(retryResult.kind === "response" && retryResult.status === 401)) {
+        return finalizeBackendResult(retryResult);
+      }
+    }
+
+    clearAuthCookies(cookieStore);
+  }
+
+  return finalizeBackendResult(await fetchBackendOnce(undefined, init));
+}
+
 export async function callBackendWithAuthRetry(cookieStore: CookieStore, init: BackendRequestInit) {
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
 
