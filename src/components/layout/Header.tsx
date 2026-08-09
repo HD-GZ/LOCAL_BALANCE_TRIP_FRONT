@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import ChevronDown from "@/assets/chevronDown.svg";
 import Logo from "@/assets/logo.svg";
+import { useNavigationGuard } from "@/contexts/NavigationGuardContext";
 import { logout } from "@/features/auth/api";
 import { userQueries, userQueryKeys } from "@/features/user/queries";
 import { cn } from "@/lib/utils";
@@ -24,6 +25,11 @@ export default function Header() {
   const isHome = pathname === "/";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { requestNavigate } = useNavigationGuard();
+
+  const handleNavigate = (href: string) => (event: { preventDefault: () => void }) => {
+    if (requestNavigate(href)) event.preventDefault();
+  };
 
   const logoutMutation = useMutation({
     mutationFn: logout,
@@ -52,7 +58,11 @@ export default function Header() {
   return (
     <header className="flex h-16.5 w-full items-center justify-between bg-white px-9.5">
       <section className="flex gap-8">
-        <Link className="flex h-full cursor-pointer items-center gap-2.5" href={"/"}>
+        <Link
+          className="flex h-full cursor-pointer items-center gap-2.5"
+          href={"/"}
+          onNavigate={handleNavigate("/")}
+        >
           <Logo className="h-6 w-6" />
           <div className="text-[16.5px] font-semibold">
             <span>로컬</span>
@@ -66,6 +76,7 @@ export default function Header() {
               <Link
                 href={item.href}
                 key={item.path}
+                onNavigate={handleNavigate(item.href)}
                 className={cn(
                   navLinkClassName,
                   pathname === item.path ? "font-semibold text-black" : "font-normal",
@@ -99,6 +110,7 @@ export default function Header() {
                 href={"/my/account"}
                 className="flex cursor-pointer items-center self-stretch rounded-[8px] px-2.75 py-2.25 hover:bg-gray-100"
                 onClick={() => setIsMenuOpen(false)}
+                onNavigate={handleNavigate("/my/account")}
               >
                 <span className="text-[14px] text-[#222019]">마이페이지</span>
               </Link>

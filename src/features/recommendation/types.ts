@@ -51,4 +51,13 @@ export type SavedCourseResponse = {
   limit: number;
   totalPages: number;
   courses: SavedCourse[];
-};
+}
+
+export type SavedCourseDetailResponse = {
+  savedCourseId: number;
+  regionName: string;
+  title: string;
+  status: "BEFORE_TRIP" | "TRAVELING" | "COMPLETED";
+  places: CoursePlace[];
+  benefits: CourseBenefit[];
+}

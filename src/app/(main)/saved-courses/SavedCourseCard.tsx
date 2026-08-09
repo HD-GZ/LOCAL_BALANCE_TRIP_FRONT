@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Bookmark, Check } from "lucide-react";
 import RouteMarker from "@/assets/routeMarker.svg";
@@ -42,7 +43,12 @@ export default function SavedCourseCard({ course }: SavedCourseCardProps) {
   const statusBadge = STATUS_BADGE[course.status];
 
   return (
-    <div className="flex flex-col items-start overflow-hidden rounded-[18px] border border-[#EBE7DF] bg-white">
+    <div className="relative flex flex-col items-start overflow-hidden rounded-[18px] border border-[#EBE7DF] bg-white">
+      <Link
+        href={`/saved-courses/${course.savedCourseId}`}
+        aria-label={course.courseName}
+        className="absolute inset-0 z-10"
+      />
       <div className="relative h-44.25 w-full bg-linear-to-br from-[#E7F0EA] via-[#DFEEE4] to-[#D3E6DA]">
         {course.imageUrl && !hasError ? (
           <Image
@@ -76,7 +82,7 @@ export default function SavedCourseCard({ course }: SavedCourseCardProps) {
             <button
               type="button"
               aria-label="저장 취소"
-              className="absolute top-2.5 right-2.5 flex size-8 cursor-pointer items-center justify-center rounded-full border border-[#EBE7DF] bg-white/90"
+              className="absolute top-2.5 right-2.5 z-20 flex size-8 cursor-pointer items-center justify-center rounded-full border border-[#EBE7DF] bg-white/90"
             >
               <Bookmark className="size-4 fill-[#5B7488] text-[#5B7488]" />
             </button>

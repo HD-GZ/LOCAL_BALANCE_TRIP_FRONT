@@ -4,6 +4,7 @@ import {
   getRecommendedRegions,
   getRegionCourses,
   getSavedCourses,
+  getSavedCoursesDetail,
 } from "@/features/recommendation/api";
 import type { SavedCourse } from "@/features/recommendation/types";
 
@@ -17,6 +18,8 @@ export const recommendationQueryKeys = {
   savedCoursesAll: () => [...recommendationQueryKeys.all, "saved-courses"] as const,
   savedCourses: (page?: number, limit?: number, status?: SavedCourse["status"]) =>
     [...recommendationQueryKeys.savedCoursesAll(), page, limit, status] as const,
+  savedCoursesDetail: (savedCourseId: number) =>
+    [...recommendationQueryKeys.savedCoursesAll(), savedCourseId] as const,
 };
 
 export const recommendationQueries = {
@@ -41,5 +44,11 @@ export const recommendationQueries = {
     queryOptions({
       queryKey: recommendationQueryKeys.savedCourses(page, limit, status),
       queryFn: () => getSavedCourses(page, limit, status),
+    }),
+  savedCoursesDetail: (savedCourseId: number, enabled = true) =>
+    queryOptions({
+      enabled,
+      queryKey: recommendationQueryKeys.savedCoursesDetail(savedCourseId),
+      queryFn: () => getSavedCoursesDetail(savedCourseId),
     }),
 };
