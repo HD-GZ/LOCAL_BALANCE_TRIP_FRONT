@@ -8,6 +8,7 @@ import ChevronDown from "@/assets/chevronDown.svg";
 import Logo from "@/assets/logo.svg";
 import { useNavigationGuard } from "@/contexts/NavigationGuardContext";
 import { logout } from "@/features/auth/api";
+import { homeQueryKeys } from "@/features/home/queries";
 import { userQueries, userQueryKeys } from "@/features/user/queries";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +37,7 @@ export default function Header() {
     onSuccess: () => {
       setIsMenuOpen(false);
       queryClient.removeQueries({ queryKey: userQueryKeys.me() });
+      queryClient.removeQueries({ queryKey: homeQueryKeys.all });
       router.push("/");
     },
   });

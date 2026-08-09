@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import Footer from "@/components/layout/Footer";
 import { homeQueries } from "@/features/home/queries";
 import { userQueries } from "@/features/user/queries";
 import HomeHero from "./_components/HomeHero";
@@ -21,7 +20,8 @@ export default function Home() {
   const meQuery = useQuery(userQueries.me());
   const isLoggedIn = meQuery.isSuccess;
   const profileSummaryQuery = useQuery(homeQueries.profileSummary(isLoggedIn));
-  const summary = profileSummaryQuery.data;
+  /** 로그아웃 직후 남아 있는 진단 요약 캐시로 로그인 화면이 보이지 않도록 로그인 상태로 한 번 더 가린다. */
+  const summary = isLoggedIn ? profileSummaryQuery.data : undefined;
   const heroQuery = useQuery(homeQueries.hero());
   const profileTypesQuery = useQuery(homeQueries.profileTypes(!summary));
 
@@ -35,9 +35,8 @@ export default function Home() {
     : UNDIAGNOSED_CTA;
 
   return (
-    <>
-      <main className="flex w-full flex-1 justify-center pt-6.5 pb-10">
-        <div className="flex w-280 max-w-full flex-col gap-16.5 px-4">
+    <main className="flex w-full flex-1 justify-center pt-6.5 pb-10">
+      <div className="flex w-320 max-w-full flex-col gap-16.5 px-4">
           <HomeHero
             ctaLabel={cta.label}
             ctaHref={cta.href}
@@ -55,11 +54,9 @@ export default function Home() {
               />
             )}
           </HomeHero>
-          {summary ? <SavedCourseFeedSection /> : <PopularCourseSection />}
-          <IncentiveSection />
-        </div>
-      </main>
-      <Footer />
-    </>
+        {summary ? <SavedCourseFeedSection /> : <PopularCourseSection />}
+        <IncentiveSection />
+      </div>
+    </main>
   );
 }
