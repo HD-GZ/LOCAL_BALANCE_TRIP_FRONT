@@ -14,7 +14,7 @@ const STATUS_LABEL: Record<SavedCourseStatus, string> = {
 };
 
 function isSavedCourseStatus(value: string): value is SavedCourseStatus {
-  return value in STATUS_LABEL;
+  return Object.hasOwn(STATUS_LABEL, value);
 }
 
 function toStatusLabel(subtitle: string | null) {
