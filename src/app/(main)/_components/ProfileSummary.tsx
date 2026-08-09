@@ -35,7 +35,7 @@ export default function ProfileSummary({ userName, summary }: ProfileSummaryProp
           <ChevronRight className="size-3.5" />
         </Link>
       </div>
-      <div className="grid w-full grid-cols-[0.8fr_1.2fr] items-center gap-8">
+      <div className="grid w-full grid-cols-[0.6fr_1.4fr] items-center gap-8">
         <div className="flex flex-col items-start gap-2">
           <span className="flex h-6.75 items-center rounded-full border border-[#C4DDCD] bg-white/85 px-3.25 text-[12px] font-semibold text-[#1C4631]">
             진단 완료 · {toDiagnosedDate(summary.diagnosedAt)}
@@ -45,7 +45,7 @@ export default function ProfileSummary({ userName, summary }: ProfileSummaryProp
           </p>
           <p className="text-[13.5px] leading-[21.6px] text-[#5F5B53]">{summary.description}</p>
         </div>
-        <div className="flex items-start justify-center gap-5">
+        <div className="flex items-start justify-center gap-4">
           {summary.sliders.map((slider) => (
             <PreferenceSlider key={slider.key} slider={slider} />
           ))}

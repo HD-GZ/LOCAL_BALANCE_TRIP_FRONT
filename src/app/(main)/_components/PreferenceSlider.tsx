@@ -28,7 +28,7 @@ function toCaption({ minLabel, maxLabel, score }: ProfileSlider) {
   }
 }
 
-const labelClassName = "text-[12.5px]";
+const labelClassName = "text-[12.5px] whitespace-nowrap";
 const activeLabelClassName = "font-semibold text-[#2F6F4F]";
 const inactiveLabelClassName = "font-medium text-[#928D84]";
 

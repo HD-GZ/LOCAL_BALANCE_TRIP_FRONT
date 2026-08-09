@@ -30,9 +30,9 @@ export default function HomeCourseCard({
     <Link
       href={href}
       aria-label={title}
-      className="flex flex-col items-start overflow-hidden rounded-[18px] border border-[#C4DDCD] bg-linear-to-b from-[#F4FAF6] to-white to-46% px-1.75 py-0.5"
+      className="flex flex-col items-start overflow-hidden rounded-[18px] border border-[#C4DDCD] bg-linear-to-b from-[#F4FAF6] to-white to-46%"
     >
-      <div className="relative h-[190.5px] w-full overflow-hidden rounded-[13px] bg-linear-[150deg,#E7F0EA_0%,#DFEEE4_55%,#D3E6DA_100%]">
+      <div className="relative h-[190.5px] w-full bg-linear-[150deg,#E7F0EA_0%,#DFEEE4_55%,#D3E6DA_100%]">
         {imageUrl && !hasError ? (
           <Image
             src={imageUrl}

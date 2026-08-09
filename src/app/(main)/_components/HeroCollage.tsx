@@ -47,11 +47,11 @@ export default function HeroCollage({ items, recommendedRegionName }: HeroCollag
         <CollagePhoto item={items[1]} sizes="164px" />
       </div>
       {recommendedRegionName && (
-        <div className="absolute top-[78.51%] right-0 bottom-[3%] w-45 rounded-[14px] border border-[#EBE7DF] bg-white px-4 py-3.25 shadow-[0_1px_2px_0_rgba(40,36,28,0.04),0_12px_32px_-12px_rgba(40,36,28,0.14)]">
-          <p className="truncate text-[14px] font-semibold tracking-[-0.21px] text-[#222019]">
+        <div className="absolute right-0 bottom-[3%] w-56 rounded-[14px] border border-[#EBE7DF] bg-white px-4 py-3.25 shadow-[0_1px_2px_0_rgba(40,36,28,0.04),0_12px_32px_-12px_rgba(40,36,28,0.14)]">
+          <p className="text-[14px] leading-[21px] font-semibold tracking-[-0.21px] text-[#222019]">
             이번 달 추천 · {recommendedRegionName}
           </p>
-          <p className="mt-0.5 truncate text-[12.5px] text-[#928D84]">취향에 맞춰 골라봤어요</p>
+          <p className="mt-0.5 text-[12.5px] text-[#928D84]">취향에 맞춰 골라봤어요</p>
         </div>
       )}
     </div>
