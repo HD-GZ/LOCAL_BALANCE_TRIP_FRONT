@@ -23,7 +23,7 @@ export default function HomeHero({
 }: HomeHeroProps) {
   return (
     <section className="flex w-full flex-col gap-9 overflow-hidden rounded-[26px] border border-[#C4DDCD] bg-linear-[120deg,#E9F2EA_0%,#EEF4E8_46%,#F7F1E4_100%] px-11.75 pt-13.25">
-      <div className="grid w-full grid-cols-[1.04fr_0.96fr] items-center gap-9">
+      <div className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-9">
         <div className="flex flex-col items-start gap-4.25">
           <span className="flex h-8 items-center gap-2 rounded-full border border-[#C4DDCD] bg-white/82 px-3.5 text-[12.5px] font-semibold text-[#1C4631]">
             <Leaf className="size-3.5 text-[#3C875F]" />
