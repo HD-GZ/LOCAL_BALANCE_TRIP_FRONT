@@ -1,18 +1,65 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import Footer from "@/components/layout/Footer";
+import { homeQueries } from "@/features/home/queries";
+import { userQueries } from "@/features/user/queries";
+import HomeHero from "./_components/HomeHero";
+import IncentiveSection from "./_components/IncentiveSection";
+import PopularCourseSection from "./_components/PopularCourseSection";
+import ProfileSummary, { toProfileNickname } from "./_components/ProfileSummary";
+import ProfileTypeStrip from "./_components/ProfileTypeStrip";
+import SavedCourseFeedSection from "./_components/SavedCourseFeedSection";
+
+const UNDIAGNOSED_CTA = {
+  label: "취향 진단 시작하기",
+  href: "/propensity?step=1",
+  caption: "3단계 · 1분이면 충분해요",
+};
+
 export default function Home() {
-  const router = useRouter();
+  const meQuery = useQuery(userQueries.me());
+  const isLoggedIn = meQuery.isSuccess;
+  const profileSummaryQuery = useQuery(homeQueries.profileSummary(isLoggedIn));
+  const summary = profileSummaryQuery.data;
+  const heroQuery = useQuery(homeQueries.hero());
+  const profileTypesQuery = useQuery(homeQueries.profileTypes(!summary));
+
+  const heroItems = heroQuery.data?.items ?? [];
+  const cta = summary
+    ? {
+        label: "추천 코스 보기",
+        href: "/course-recommend?step=1",
+        caption: `${toProfileNickname(summary.type)}과 잘 맞는 코스를 추렸어요`,
+      }
+    : UNDIAGNOSED_CTA;
+
   return (
-    <main className="flex flex-1 items-center justify-center">
-      <Button
-        className="inline-flex h-13.5 gap-2.25 px-8 text-[16px] font-semibold shadow-[0_1px_0_0_rgba(0,0,0,0.04),0_8px_18px_-10px_rgba(47,111,79,0.60)]"
-        onClick={() => router.push("/propensity")}
-      >
-        취향진단 시작하기 <ArrowRight className="size-4.5" />
-      </Button>
-    </main>
+    <>
+      <main className="flex w-full flex-1 justify-center pt-6.5 pb-10">
+        <div className="flex w-280 max-w-full flex-col gap-16.5 px-4">
+          <HomeHero
+            ctaLabel={cta.label}
+            ctaHref={cta.href}
+            ctaCaption={cta.caption}
+            heroItems={heroItems}
+            recommendedRegionName={heroItems[0]?.title}
+          >
+            {summary && meQuery.data ? (
+              <ProfileSummary userName={meQuery.data.name} summary={summary} />
+            ) : (
+              <ProfileTypeStrip
+                types={profileTypesQuery.data?.types ?? []}
+                isPending={profileTypesQuery.isPending}
+                isError={profileTypesQuery.isError}
+              />
+            )}
+          </HomeHero>
+          {summary ? <SavedCourseFeedSection /> : <PopularCourseSection />}
+          <IncentiveSection />
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 }

@@ -21,8 +21,8 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data: user } = useQuery(userQueries.me());
-  const isHome = pathname === "/";
+  const meQuery = useQuery(userQueries.me());
+  const user = meQuery.data;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { requestNavigate } = useNavigationGuard();
@@ -70,27 +70,36 @@ export default function Header() {
             <span> 트립</span>
           </div>
         </Link>
-        {!isHome && (
-          <div className="flex gap-6">
-            {NAV_LIST.map((item) => (
-              <Link
-                href={item.href}
-                key={item.path}
-                onNavigate={handleNavigate(item.href)}
-                className={cn(
-                  navLinkClassName,
-                  pathname === item.path ? "font-semibold text-black" : "font-normal",
-                )}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        )}
+        <div className="flex gap-6">
+          {NAV_LIST.map((item) => (
+            <Link
+              href={item.href}
+              key={item.path}
+              onNavigate={handleNavigate(item.href)}
+              className={cn(
+                navLinkClassName,
+                pathname === item.path ? "font-semibold text-black" : "font-normal",
+              )}
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
       </section>
       <section className="flex items-center">
-        <div className="relative" ref={menuRef}>
-          <div
+        {!meQuery.isPending && !user && (
+          <Link
+            href="/login"
+            className="flex items-center rounded-[100px] border border-[#EBE7DF] px-2.75 py-1.25 text-[13.5px] font-medium"
+            onNavigate={handleNavigate("/login")}
+          >
+            로그인
+          </Link>
+        )}
+        <div className={cn("relative", !user && "hidden")} ref={menuRef}>
+          <button
+            type="button"
+            aria-expanded={isMenuOpen}
             className="flex cursor-pointer items-center gap-2.25 rounded-[100px] border border-[#EBE7DF] px-2.75 py-1.25"
             onClick={() => {
               setIsMenuOpen((prev) => !prev);
@@ -98,7 +107,7 @@ export default function Header() {
           >
             <span className="text-[13.5px] font-medium">{user?.name}</span>
             <ChevronDown className="size-3.5" />
-          </div>
+          </button>
           {isMenuOpen && (
             <div className="absolute top-full right-0 flex w-53 flex-col items-start gap-0.5 rounded-[13px] border border-[#EBE7DF] bg-white p-1.75 shadow-[0_8px_28px_-8px_rgba(40,36,28,0.22)]">
               <div className="flex flex-col items-start gap-0.75 self-stretch rounded-[8px] px-2.75 pt-2.25 pb-2.75">
