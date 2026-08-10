@@ -301,24 +301,36 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
               )}
             </div>
           )}
-          {currentStep === 3 && propensityResult  && (
+          {currentStep === 3 && (
             <div className="flex w-full flex-col gap-5.5">
               <div className="flex flex-col items-center gap-2 text-center">
-                <Image
-                  src={propensityResult.imageUrl}
-                  alt="Propensity Result"
-                  width={150}
-                  height={150}
-                  className="rounded-full"
-                />
-                <span className="text-[29px] leading-[35.96px] font-semibold tracking-[-0.87px] text-[#245A40]">{propensityResult.code}</span>
-                <p className="text-[29px] leading-[35.96px] font-semibold tracking-[-0.87px] text-[#222019]">
-                  <span className="text-[#245A40]">{propensityType} </span>
-                  여행자
-                </p>
-                <p className="w-115 text-[14.5px] leading-[23.925px] text-[#5F5B53]">
-                  {propensityResult.description}
-                </p>
+                {propensityResult ? (
+                  <>
+                    <Image
+                      src={propensityResult.imageUrl}
+                      alt="Propensity Result"
+                      width={150}
+                      height={150}
+                      className="rounded-full"
+                    />
+                    <span className="text-[29px] leading-[35.96px] font-semibold tracking-[-0.87px] text-[#245A40]">
+                      {propensityResult.code}
+                    </span>
+                    <p className="text-[29px] leading-[35.96px] font-semibold tracking-[-0.87px] text-[#222019]">
+                      <span className="text-[#245A40]">{propensityType} </span>
+                      여행자
+                    </p>
+                    <p className="w-115 text-[14.5px] leading-[23.925px] text-[#5F5B53]">
+                      {propensityResult.description}
+                    </p>
+                  </>
+                ) : propensityResultQuery.isError ? (
+                  <p className="py-8 text-[14px] text-red-500">
+                    결과를 불러오지 못했어요. 다시 시도해 주세요.
+                  </p>
+                ) : (
+                  <p className="py-8 text-[14px] text-[#5F5B53]">결과를 불러오는 중이에요...</p>
+                )}
               </div>
               <div className="flex w-full gap-2.75">
                 <Button
@@ -338,7 +350,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
                 </Button>
                 <Button
                   className="h-12.5 min-w-75 px-5.5 font-semibold"
-                  disabled={postRecommendationsMutation.isPending}
+                  disabled={postRecommendationsMutation.isPending || !propensityResult}
                   onClick={() => {
                     postRecommendationsMutation.mutate(undefined, {
                       onSuccess: () => {
