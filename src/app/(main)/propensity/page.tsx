@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -188,7 +189,6 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
     localResult ??
     undefined;
   const propensityType = propensityResult?.type ?? "";
-  const typePrefix = propensityType.replace(/여행자\s*$/, "");
 
   const goStep = (step: number) => {
     if (step === 1 || step === 2 || step === 3) {
@@ -301,15 +301,23 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
               )}
             </div>
           )}
-          {currentStep === 3 && (
+          {currentStep === 3 && propensityResult  && (
             <div className="flex w-full flex-col gap-5.5">
               <div className="flex flex-col items-center gap-2 text-center">
+                <Image
+                  src={propensityResult.imageUrl}
+                  alt="Propensity Result"
+                  width={150}
+                  height={150}
+                  className="rounded-full"
+                />
+                <span className="text-[29px] leading-[35.96px] font-semibold tracking-[-0.87px] text-[#245A40]">{propensityResult.code}</span>
                 <p className="text-[29px] leading-[35.96px] font-semibold tracking-[-0.87px] text-[#222019]">
-                  <span className="text-[#245A40]">{typePrefix}</span>
+                  <span className="text-[#245A40]">{propensityType} </span>
                   여행자
                 </p>
                 <p className="w-115 text-[14.5px] leading-[23.925px] text-[#5F5B53]">
-                  {propensityResult?.description}
+                  {propensityResult.description}
                 </p>
               </div>
               <div className="flex w-full gap-2.75">

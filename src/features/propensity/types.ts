@@ -17,7 +17,9 @@ export type PropensityRequest = {
 
 export type PropensityResult = {
   type: string;
+  code: string;
   description: string;
+  imageUrl: string;
 };
 
 export type PropensityResponse = PropensityRequest & {
