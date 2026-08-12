@@ -3,7 +3,10 @@ import { cookies } from "next/headers";
 import { callBackendWithAuthRetry, errorResponse } from "@/lib/auth/bffHandler";
 import { positiveIntegerParamSchema } from "@/lib/validation/routeParams";
 
-export async function GET(_request: Request, { params }: { params: Promise<{ savedCourseId: string }> }) {
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ savedCourseId: string }> },
+) {
   const { savedCourseId } = await params;
   const parsedSavedCourseId = positiveIntegerParamSchema.safeParse(savedCourseId);
 
