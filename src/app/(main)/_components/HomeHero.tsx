@@ -16,6 +16,11 @@ import HeroFigure from "./HeroFigure";
  * 진입 모션은 이 표면에서 유일하게 연출된 순간이다 (§7).
  */
 
+/**
+ * 진입 모션은 opacity 0 이 아니라 **이미 보이는 값**에서 시작한다.
+ * 0 에서 시작하면 JS 가 실패하거나 백그라운드 탭에서 rAF 가 throttle 될 때
+ * 내용이 아예 보이지 않는다. 히어로 제목은 LCP 요소라 특히 위험하다.
+ */
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 type HomeHeroProps = {
@@ -39,18 +44,17 @@ export default function HomeHero({
     reduce
       ? {}
       : {
-          initial: { opacity: 0, y: 14 },
+          initial: { opacity: 0.35, y: 14 },
           animate: { opacity: 1, y: 0 },
           transition: { duration: 0.42, delay, ease: EASE },
         };
 
+  // 텍스트는 읽기 폭(32rem)으로 묶고 남는 폭은 사진이 쓴다.
+  // 텍스트 열을 1fr 로 두면 본문은 46ch 에서 멈추고 그 오른쪽이 통째로 빈다.
   return (
-    <section className="grid w-full items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,32rem)] lg:gap-16">
+    <section className="grid w-full items-center gap-10 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:gap-14">
       <div className="flex flex-col items-start gap-6">
-        <motion.h1
-          {...enter(0)}
-          className="text-display-2 text-ink sm:text-display-1 max-w-[18ch] text-balance"
-        >
+        <motion.h1 {...enter(0)} className="text-display-2 text-ink sm:text-display-1 text-balance">
           내 취향에 맞는 로컬 여행
         </motion.h1>
 

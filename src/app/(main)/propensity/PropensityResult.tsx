@@ -51,7 +51,7 @@ export default function PropensityResult({ result, isError, onRetry }: Propensit
     reduce
       ? {}
       : {
-          initial: { opacity: 0, y: 10 },
+          initial: { opacity: 0.35, y: 10 },
           animate: { opacity: 1, y: 0 },
           transition: { duration: 0.34, delay: order * 0.1, ease: EASE },
         };
@@ -62,7 +62,7 @@ export default function PropensityResult({ result, isError, onRetry }: Propensit
         {...(reduce
           ? {}
           : {
-              initial: { opacity: 0, scale: 0.94 },
+              initial: { opacity: 0.35, scale: 0.94 },
               animate: { opacity: 1, scale: 1 },
               transition: { duration: 0.42, ease: EASE },
             })}

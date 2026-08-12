@@ -7,6 +7,9 @@ import { motion, useReducedMotion } from "motion/react";
  *
  * 섹션 단위로만 쓴다. 모든 요소에 붙이면 리듬이 아니라 소음이 된다.
  * reduced-motion 에서는 즉시 최종 상태로 렌더한다.
+ *
+ * opacity 는 0 이 아니라 보이는 값에서 시작한다. IntersectionObserver 가 끝내 발화하지
+ * 않으면 내용이 영구히 사라지는데, 그 대가가 페이드 폭보다 크다.
  */
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -31,7 +34,7 @@ export default function Reveal({ children, index = 0, className, as = "div" }: R
   return (
     <Component
       className={className}
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0.35, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.26, delay: Math.min(index, 6) * 0.05, ease: EASE }}

@@ -24,7 +24,7 @@ export default function SavedCourseReceipts() {
 
   return (
     <main className="w-full flex-1 pb-20">
-      <div className="mx-auto flex w-full max-w-[52rem] flex-col gap-8 px-4 pt-10 md:pt-14">
+      <div className="mx-auto flex w-full max-w-[62rem] flex-col gap-8 px-4 pt-10 md:px-8 md:pt-14">
         {courseId === null && (
           <SurfaceState
             tone="error"

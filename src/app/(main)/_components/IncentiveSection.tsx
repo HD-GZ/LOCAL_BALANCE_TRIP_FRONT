@@ -47,7 +47,7 @@ function IncentiveRow({ incentive }: { incentive: Incentive }) {
         href={incentive.url}
         target="_blank"
         rel="noreferrer"
-        className="group hover:bg-surface-2 -mx-3 flex items-start gap-4 rounded-sm px-3 py-4 transition-colors duration-(--dur-1)"
+        className="group hover:bg-surface-2 border-line -mx-3 flex h-full items-start gap-4 rounded-sm border-b px-3 py-4 transition-colors duration-(--dur-1)"
       >
         <span className="flex min-w-0 flex-1 flex-col gap-1">
           <span className="text-title-3 text-ink group-hover:text-brand-ink flex items-center gap-1.5 transition-colors duration-(--dur-1)">
@@ -159,7 +159,9 @@ export default function IncentiveSection() {
                 description="다른 지역 탭을 눌러 확인해 보세요."
               />
             ) : (
-              <ul className="border-line divide-line flex flex-col divide-y border-t">
+              // 넓은 폭에서는 2열로 밀도를 올린다. 격자에서는 divide-y 가 성립하지 않아
+              // 행마다 위쪽 괘선을 두고 첫 행만 예외 처리한다.
+              <ul className="border-line grid border-t xl:grid-cols-2 xl:gap-x-10">
                 {selectedRegion.incentives.map((incentive) => (
                   <IncentiveRow key={`${incentive.title}-${incentive.url}`} incentive={incentive} />
                 ))}

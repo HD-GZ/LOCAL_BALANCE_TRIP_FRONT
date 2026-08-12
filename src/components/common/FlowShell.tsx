@@ -16,6 +16,11 @@ type FlowShellProps = {
   description?: string;
   /** 제목·설명을 가운데로 (진단) 또는 왼쪽으로 (추천 목록) */
   align?: "center" | "start";
+  /**
+   * 흐름 화면의 폭. 기본값도 데스크톱에서 절반만 쓰지 않도록 넓혔다.
+   * wide 는 목록과 지도처럼 병렬 구성이 들어가는 화면용이다.
+   */
+  width?: "default" | "wide";
   children: React.ReactNode;
 };
 
@@ -26,11 +31,17 @@ export default function FlowShell({
   title,
   description,
   align = "center",
+  width = "default",
   children,
 }: FlowShellProps) {
   return (
     <main className="w-full flex-1 pb-20">
-      <div className="mx-auto flex w-full max-w-[46rem] flex-col items-center px-4 pt-10 md:pt-14">
+      <div
+        className={cn(
+          "mx-auto flex w-full flex-col items-center px-4 pt-10 md:px-8 md:pt-14",
+          width === "wide" ? "max-w-[1280px]" : "max-w-[62rem]",
+        )}
+      >
         <Stepper steps={steps} currentStep={currentStep} showStepLabel={showStepLabel} />
 
         <div

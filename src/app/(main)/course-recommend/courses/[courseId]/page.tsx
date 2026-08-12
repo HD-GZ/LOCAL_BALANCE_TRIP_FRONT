@@ -15,7 +15,7 @@ import { isApiError } from "@/lib/api/error";
 import { parsePositiveIntParam } from "@/lib/utils";
 
 import CourseBenefitList from "./CourseBenefitList";
-import CourseTimeline from "./CourseTimeline";
+import CourseRoute from "./CourseRoute";
 
 function CourseDetailSkeleton() {
   return (
@@ -60,6 +60,7 @@ export default function CourseDetail() {
       currentStep={3}
       showStepLabel
       align="start"
+      width="wide"
       title={course?.title ?? "코스 상세"}
       description={course ? `${course.regionName}에서 이 순서로 돌아보세요.` : undefined}
     >
@@ -81,7 +82,7 @@ export default function CourseDetail() {
       {course && (
         <div className="border-line bg-surface flex w-full flex-col rounded-md border px-5 py-6 sm:px-8 sm:py-8">
           <h2 className="text-title-2 text-ink pb-4">코스 순서</h2>
-          <CourseTimeline places={course.places} />
+          <CourseRoute places={course.places} />
 
           <h2 className="text-title-2 text-ink border-line mt-8 border-t pt-8 pb-4">
             이 코스 적용 가능 혜택

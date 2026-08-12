@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
 import CourseBenefitList from "@/app/(main)/course-recommend/courses/[courseId]/CourseBenefitList";
-import CourseTimeline from "@/app/(main)/course-recommend/courses/[courseId]/CourseTimeline";
+import CourseRoute from "@/app/(main)/course-recommend/courses/[courseId]/CourseRoute";
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { recommendationQueries } from "@/features/recommendation/queries";
@@ -23,7 +23,7 @@ export default function SavedCourseDetail() {
 
   return (
     <main className="w-full flex-1 pb-20">
-      <div className="mx-auto flex w-full max-w-[52rem] flex-col gap-8 px-4 pt-10 md:pt-14">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-8 px-4 pt-10 md:pt-14">
         {courseId === null && (
           <SurfaceState
             tone="error"
@@ -70,7 +70,7 @@ export default function SavedCourseDetail() {
             />
             <div className="flex w-full flex-col">
               <h2 className="text-title-2 text-ink pb-4">코스 순서</h2>
-              <CourseTimeline places={course.places} />
+              <CourseRoute places={course.places} />
 
               <h2 className="text-title-2 text-ink border-line mt-8 border-t pt-8 pb-4">
                 이 코스 적용 가능 혜택

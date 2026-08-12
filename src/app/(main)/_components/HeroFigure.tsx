@@ -97,7 +97,7 @@ export default function HeroFigure({ items }: { items: HeroItem[] }) {
       >
         <HeroPhoto
           item={lead}
-          sizes="(max-width: 640px) 15rem, 17rem"
+          sizes="(max-width: 640px) 15rem, (max-width: 1024px) 45vw, 26rem"
           aspect="aspect-[4/5]"
           shape="arch"
           priority
@@ -109,7 +109,7 @@ export default function HeroFigure({ items }: { items: HeroItem[] }) {
               <HeroPhoto
                 key={item.title}
                 item={item}
-                sizes="15rem"
+                sizes="(max-width: 1024px) 40vw, 22rem"
                 aspect={supporting.length === 1 ? "aspect-[4/5]" : "aspect-[3/2]"}
                 shape="plain"
               />

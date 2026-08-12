@@ -12,7 +12,7 @@ export default function MyAccountPage() {
 
   return (
     <main className="w-full flex-1 pb-20">
-      <div className="mx-auto flex w-full max-w-[46rem] flex-col px-4 pt-10 md:pt-14">
+      <div className="mx-auto flex w-full max-w-[62rem] flex-col px-4 pt-10 md:px-8 md:pt-14">
         {meQuery.isPending && (
           <div className="flex flex-col gap-6">
             <Skeleton className="h-8 w-40" />
