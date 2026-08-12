@@ -32,6 +32,7 @@
 !.agents/skills/local-balance-pr/
 .claude/skills/*
 !.claude/skills/local-balance-pr/
+skills-lock.json
 
 # debug
 npm-debug.log*
