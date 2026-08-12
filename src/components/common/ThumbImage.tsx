@@ -2,29 +2,38 @@
 
 import { useState } from "react";
 import Image from "next/image";
+
 import RouteMarker from "@/assets/routeMarker.svg";
+import { cn } from "@/lib/utils";
 
 type ThumbImageProps = {
   src: string | null;
   alt: string;
+  className?: string;
 };
 
-export default function ThumbImage({ src, alt }: ThumbImageProps) {
+/** 목록용 썸네일. 사진 위에 아무것도 얹지 않는다 (DESIGN.md §6). */
+export default function ThumbImage({ src, alt, className }: ThumbImageProps) {
   const [hasError, setHasError] = useState(false);
 
   return (
-    <span className="relative flex size-19 shrink-0 items-center justify-center overflow-hidden rounded-[14px] bg-[#E2EFE7]">
+    <span
+      className={cn(
+        "border-line bg-paper-sunk relative flex size-18 shrink-0 items-center justify-center overflow-hidden rounded-md border",
+        className,
+      )}
+    >
       {src && !hasError ? (
         <Image
           src={src}
           alt={alt}
           fill
-          sizes="76px"
-          className="object-cover"
+          sizes="72px"
+          className="lift-zoom object-cover"
           onError={() => setHasError(true)}
         />
       ) : (
-        <RouteMarker className="size-8" />
+        <RouteMarker className="text-ink-3 size-7" aria-hidden />
       )}
     </span>
   );

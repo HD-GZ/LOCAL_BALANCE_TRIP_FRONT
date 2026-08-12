@@ -13,14 +13,15 @@ const PasswordInput = forwardRef<HTMLInputElement, React.ComponentProps<"input">
 
     return (
       <div className="relative">
-        <Input ref={ref} type={show ? "text" : "password"} {...props} />
+        <Input ref={ref} type={show ? "text" : "password"} className="pr-11" {...props} />
         <button
           type="button"
-          className="text-placeholder absolute top-1/2 right-3 -translate-y-1/2"
+          className="text-ink-3 hover:text-ink absolute top-1/2 right-1 flex size-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-xs transition-colors duration-(--dur-1)"
           onClick={toggle}
           aria-label={show ? "비밀번호 숨기기" : "비밀번호 보기"}
+          aria-pressed={show}
         >
-          {show ? <EyeOff size={16} /> : <Eye size={16} />}
+          {show ? <EyeOff size={16} strokeWidth={1.75} /> : <Eye size={16} strokeWidth={1.75} />}
         </button>
       </div>
     );

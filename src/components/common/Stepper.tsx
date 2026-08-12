@@ -1,8 +1,16 @@
 import { CheckIcon } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
-const stepCircleClassName =
-  "border-[1.5px] flex size-6.25 items-center justify-center rounded-full border font-mono text-[11.5px] font-semibold";
+/**
+ * 단계 표시. DESIGN.md §6 (장부 숫자), §7 (상태 전이).
+ *
+ * 연결선은 지나온 만큼만 올리브로 채운다. 진행이 어디까지 왔는지가 정보이므로
+ * 이 채움은 장식이 아니다.
+ */
+
+const circleBase =
+  "flex size-7 items-center justify-center rounded-full border tabular-nums text-cap transition-colors duration-(--dur-2)";
 
 type StepperProps = {
   steps: string[];
@@ -12,41 +20,52 @@ type StepperProps = {
 
 export default function Stepper({ steps, currentStep, showStepLabel = false }: StepperProps) {
   return (
-    <div className="flex items-center gap-3.5">
+    <ol className="flex items-start">
       {steps.map((label, index) => {
         const step = index + 1;
+        const isCurrent = step === currentStep;
+        const isDone = step < currentStep;
+
         return (
-          <div key={step} className="flex items-center gap-3.5">
-            {index > 0 && <span className="h-[1.5px] w-11.5 bg-[#D9D5CD]" />}
-            <div className="flex flex-col items-center gap-2">
+          <li key={step} className="flex items-start">
+            {index > 0 && (
               <span
+                aria-hidden
                 className={cn(
-                  stepCircleClassName,
-                  step === currentStep
-                    ? "border-[#2F6F4F] bg-[#2F6F4F] text-white shadow-[0_0_0_4px_#E7F0EA]"
-                    : step < currentStep
-                      ? "border-[#C4DDCD] bg-[#E7F0EA]"
-                      : "border-[#C3BDB3] text-[#928D84]",
+                  "mt-3.5 h-px w-10 transition-colors duration-(--dur-3) sm:w-14",
+                  step <= currentStep ? "bg-brand" : "bg-line-control",
+                )}
+              />
+            )}
+            <span className="flex flex-col items-center gap-2 px-2">
+              <span
+                aria-current={isCurrent ? "step" : undefined}
+                className={cn(
+                  circleBase,
+                  isCurrent && "border-brand bg-brand text-brand-on",
+                  isDone && "border-brand bg-brand-wash text-brand-ink",
+                  !isCurrent && !isDone && "border-line-control bg-surface text-ink-3",
                 )}
               >
-                {step < currentStep ? <CheckIcon className="size-3.5 stroke-[#2F6F4F]" /> : step}
+                {isDone ? <CheckIcon className="size-3.5" strokeWidth={2.25} /> : step}
+                <span className="sr-only">
+                  {isDone ? " 완료" : isCurrent ? " 진행 중" : " 예정"}
+                </span>
               </span>
               {showStepLabel && (
                 <span
                   className={cn(
-                    "text-[13.5px] tracking-[-0.135px]",
-                    step === currentStep
-                      ? "font-semibold text-[#222019]"
-                      : "font-medium text-[#928D84]",
+                    "text-body-sm whitespace-nowrap transition-colors duration-(--dur-2)",
+                    isCurrent ? "text-ink font-semibold" : "text-ink-3 font-medium",
                   )}
                 >
                   {label}
                 </span>
               )}
-            </div>
-          </div>
+            </span>
+          </li>
         );
       })}
-    </div>
+    </ol>
   );
 }
