@@ -23,18 +23,25 @@ export default function AccountRow({
   children,
 }: AccountRowProps) {
   return (
-    <div className={cn("flex items-start gap-4.5 border-t border-[#EBE7DF] py-4", className)}>
-      <p className="w-40 shrink-0 pt-2.5 text-[14px] font-medium whitespace-nowrap text-[#222019]">
+    <div
+      className={cn(
+        "border-line flex flex-col gap-2 border-t py-4 sm:flex-row sm:items-start sm:gap-6",
+        className,
+      )}
+    >
+      <p className="text-ink text-cap shrink-0 pt-2.5 whitespace-nowrap sm:w-36">
         {label}
-        {required && <span className="text-primary"> *</span>}
-        {optional && <span className="text-[13px] text-[#928D84]"> (선택)</span>}
+        {required && <span className="text-danger-ink"> *</span>}
+        {optional && <span className="text-ink-3 font-normal"> (선택)</span>}
       </p>
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         {children}
         {error ? (
-          <p className="text-[12px] text-red-500">{error}</p>
+          <p role="alert" className="text-danger-ink text-cap font-medium">
+            {error}
+          </p>
         ) : hint ? (
-          <p className="text-[12px] text-[#928D84]">{hint}</p>
+          <p className="text-ink-3 text-cap font-normal">{hint}</p>
         ) : null}
       </div>
     </div>

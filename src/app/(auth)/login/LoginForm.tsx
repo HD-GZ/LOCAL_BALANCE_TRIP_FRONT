@@ -73,12 +73,12 @@ export default function LoginForm() {
       <FormField label="비밀번호" error={errors.password?.message}>
         <PasswordInput {...register("password")} placeholder="비밀번호 입력" />
       </FormField>
-      {errors.root?.message && <p className="text-[12px] text-red-500">{errors.root.message}</p>}
-      <Button
-        type="submit"
-        disabled={loginMutation.isPending}
-        className="h-auto w-full rounded-lg py-3.25 text-[14px] font-semibold"
-      >
+      {errors.root?.message && (
+        <p role="alert" className="text-danger-ink text-cap font-medium">
+          {errors.root.message}
+        </p>
+      )}
+      <Button type="submit" disabled={loginMutation.isPending} size="lg" className="mt-2 w-full">
         {loginMutation.isPending ? "로그인 중..." : "로그인"}
       </Button>
     </form>

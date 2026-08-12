@@ -57,12 +57,17 @@ export default function FindPasswordForm() {
         <Input {...register("email")} type="text" inputMode="email" placeholder="local@email.com" />
       </FormField>
 
-      {errors.root?.message && <p className="text-[12px] text-red-500">{errors.root.message}</p>}
+      {errors.root?.message && (
+        <p role="alert" className="text-danger-ink text-cap font-medium">
+          {errors.root.message}
+        </p>
+      )}
 
       <Button
         type="submit"
         disabled={requestCodeMutation.isPending}
-        className="h-auto w-full rounded-lg py-3.25 text-[14px] font-semibold"
+        size="lg"
+        className="mt-2 w-full"
       >
         {requestCodeMutation.isPending ? "전송 중..." : "인증번호 받기"}
       </Button>

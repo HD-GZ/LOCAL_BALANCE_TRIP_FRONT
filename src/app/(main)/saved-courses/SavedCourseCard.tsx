@@ -4,7 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Bookmark, Check } from "lucide-react";
+import { BookmarkX } from "lucide-react";
+
 import RouteMarker from "@/assets/routeMarker.svg";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,18 +19,15 @@ import {
 import { deleteSavedCourse } from "@/features/recommendation/api";
 import { recommendationQueryKeys } from "@/features/recommendation/queries";
 import type { SavedCourse } from "@/features/recommendation/types";
-import { cn } from "@/lib/utils";
 
-type SavedCourseCardProps = {
-  course: SavedCourse;
-};
+import CourseStatusBadge from "./[courseId]/CourseStatusBadge";
 
-const STATUS_BADGE: Partial<Record<SavedCourse["status"], { label: string; className: string }>> = {
-  TRAVELING: { label: "진행 중", className: "bg-[#B5654A]/92" },
-  COMPLETED: { label: "완주", className: "bg-[#2F6F4F]/92" },
-};
-
-export default function SavedCourseCard({ course }: SavedCourseCardProps) {
+/**
+ * 저장 코스 카드. 이전 구현은 배지와 저장취소 버튼을 사진 위에 얹었다.
+ * DESIGN.md §6 규칙 4에 따라 둘 다 사진 밖으로 내렸고, 그 덕에 겹친 클릭 영역
+ * (절대 위치 Link + z-index 버튼)도 사라졌다.
+ */
+export default function SavedCourseCard({ course }: { course: SavedCourse }) {
   const [hasError, setHasError] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -40,52 +38,47 @@ export default function SavedCourseCard({ course }: SavedCourseCardProps) {
       setIsDialogOpen(false);
     },
   });
-  const statusBadge = STATUS_BADGE[course.status];
+  const hasPhoto = Boolean(course.imageUrl) && !hasError;
 
   return (
-    <div className="relative flex flex-col items-start overflow-hidden rounded-[18px] border border-[#EBE7DF] bg-white">
+    <div className="border-line bg-surface hover:border-line-strong flex h-full flex-col overflow-hidden rounded-md border transition-colors duration-(--dur-2)">
       <Link
         href={`/saved-courses/${course.savedCourseId}`}
+        className="group flex flex-1 flex-col"
         aria-label={course.courseName}
-        className="absolute inset-0 z-10"
-      />
-      <div className="relative h-44.25 w-full bg-linear-to-br from-[#E7F0EA] via-[#DFEEE4] to-[#D3E6DA]">
-        {course.imageUrl && !hasError ? (
-          <Image
-            src={course.imageUrl}
-            alt={course.courseName}
-            fill
-            sizes="236px"
-            className="object-cover"
-            onError={() => setHasError(true)}
-          />
-        ) : (
-          <RouteMarker className="absolute top-1/2 left-1/2 size-11 -translate-x-1/2 -translate-y-1/2" />
-        )}
-        {statusBadge && (
-          <span
-            className={cn(
-              "absolute top-2.5 left-2.5 flex h-6.5 items-center gap-1.25 rounded-full pr-2.75 pl-2.25 text-[11.5px] font-semibold tracking-[-0.115px] text-white",
-              statusBadge.className,
-            )}
-          >
-            {course.status === "COMPLETED" ? (
-              <Check className="size-3" />
-            ) : (
-              <span className="size-1.75 rounded-full bg-white" />
-            )}
-            {statusBadge.label}
+      >
+        <span className="bg-paper-sunk relative block aspect-[4/3] w-full overflow-hidden">
+          {hasPhoto && course.imageUrl ? (
+            <Image
+              src={course.imageUrl}
+              alt=""
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 18rem"
+              className="lift-zoom object-cover"
+              onError={() => setHasError(true)}
+            />
+          ) : (
+            <RouteMarker
+              aria-hidden
+              className="text-ink-3 absolute top-1/2 left-1/2 size-8 -translate-x-1/2 -translate-y-1/2"
+            />
+          )}
+        </span>
+        <span className="flex flex-1 flex-col gap-2 px-4 pt-4">
+          <CourseStatusBadge status={course.status} />
+          <span className="text-title-3 text-ink group-hover:text-brand-ink line-clamp-2 transition-colors duration-(--dur-1)">
+            {course.courseName}
           </span>
-        )}
+        </span>
+      </Link>
+
+      <div className="border-line mt-4 border-t px-2 py-1">
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <button
-              type="button"
-              aria-label="저장 취소"
-              className="absolute top-2.5 right-2.5 z-20 flex size-8 cursor-pointer items-center justify-center rounded-full border border-[#EBE7DF] bg-white/90"
-            >
-              <Bookmark className="size-4 fill-[#5B7488] text-[#5B7488]" />
-            </button>
+            <Button variant="ghost" size="sm" className="w-full justify-start">
+              <BookmarkX className="size-3.5" strokeWidth={1.75} />
+              저장 취소
+            </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogTitle>저장을 취소할까요?</DialogTitle>
@@ -93,18 +86,20 @@ export default function SavedCourseCard({ course }: SavedCourseCardProps) {
               이 코스가 저장한 코스 목록에서 사라져요. 코스 추천에서 언제든 다시 저장할 수 있어요.
             </DialogDescription>
             {deleteMutation.isError && (
-              <p className="mt-2 text-[12px] text-red-500">
+              <p role="alert" className="text-danger-ink text-cap mt-3 font-medium">
                 삭제 중 오류가 발생했어요. 다시 시도해 주세요.
               </p>
             )}
-            <div className="mt-5.5 flex w-full gap-2.5">
+            <div className="mt-6 flex w-full gap-3">
               <DialogClose asChild>
-                <Button className="h-12.5 flex-1 border border-[#C3BDB3] bg-white text-[15px] font-semibold tracking-[-0.15px] text-[#222019] hover:bg-gray-100">
+                <Button variant="outline" size="lg" className="flex-1">
                   돌아가기
                 </Button>
               </DialogClose>
               <Button
-                className="h-12.5 flex-1 bg-[#B97056] text-[15px] font-semibold tracking-[-0.15px] text-white hover:bg-[#B97056]/90"
+                variant="destructive"
+                size="lg"
+                className="flex-1"
                 disabled={deleteMutation.isPending}
                 onClick={() => deleteMutation.mutate()}
               >
@@ -114,9 +109,6 @@ export default function SavedCourseCard({ course }: SavedCourseCardProps) {
           </DialogContent>
         </Dialog>
       </div>
-      <p className="w-full px-4 pt-3.75 pb-4.25 text-[15.5px] font-semibold tracking-[-0.31px] text-[#222019]">
-        {course.courseName}
-      </p>
     </div>
   );
 }

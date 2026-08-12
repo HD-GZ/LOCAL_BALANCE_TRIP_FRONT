@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { GENDER_OPTIONS, MONTHS, useSignupForm } from "./useSignupForm";
 
 export default function SignupForm() {
@@ -106,11 +107,13 @@ export default function SignupForm() {
               key={g}
               type="button"
               onClick={() => setValue("gender", g, { shouldValidate: true })}
-              className={`rounded-lg border py-3 text-[14px] transition-colors ${
+              aria-pressed={selectedGender === g}
+              className={cn(
+                "press text-body-sm h-11 cursor-pointer rounded-xs border font-semibold",
                 selectedGender === g
-                  ? "border-primary bg-primary font-medium text-white"
-                  : "border-border text-label"
-              }`}
+                  ? "border-brand bg-brand-wash text-brand-ink"
+                  : "border-line-control text-ink-2 hover:border-ink-3 hover:text-ink",
+              )}
             >
               {g === "선택안함" ? "선택 안 함" : g}
             </button>
@@ -118,8 +121,8 @@ export default function SignupForm() {
         </div>
       </FormField>
 
-      <div className="bg-muted flex flex-col gap-2 rounded-[13px] p-3">
-        <label className="flex cursor-pointer items-center gap-3 rounded-[9px] bg-white px-3 py-3">
+      <div className="border-line bg-surface-2 flex flex-col gap-3 rounded-sm border p-3">
+        <label className="border-line bg-surface flex cursor-pointer items-center gap-3 rounded-xs border px-3 py-3">
           <Checkbox
             checked={
               agreeAll
@@ -132,9 +135,7 @@ export default function SignupForm() {
               handleAgreeAllChange(checked === true);
             }}
           />
-          <span className="text-foreground text-[13.5px] font-semibold">
-            약관에 모두 동의합니다
-          </span>
+          <span className="text-ink text-body-sm font-semibold">약관에 모두 동의합니다</span>
         </label>
 
         <div className="flex flex-col gap-2 px-3">
@@ -145,8 +146,13 @@ export default function SignupForm() {
                 handleIndividualChange("agreeService", checked === true)
               }
             />
-            <span className="text-label flex-1 text-[13px]">[필수] 서비스 이용약관 동의</span>
-            <ChevronRight size={16} className="text-placeholder shrink-0" />
+            <span className="text-ink-2 text-body-sm flex-1">[필수] 서비스 이용약관 동의</span>
+            <ChevronRight
+              size={16}
+              strokeWidth={1.75}
+              className="text-ink-3 shrink-0"
+              aria-hidden
+            />
           </label>
 
           <label className="flex cursor-pointer items-center gap-3">
@@ -156,8 +162,13 @@ export default function SignupForm() {
                 handleIndividualChange("agreePrivacy", checked === true)
               }
             />
-            <span className="text-label flex-1 text-[13px]">[필수] 개인정보 수집·이용 동의</span>
-            <ChevronRight size={16} className="text-placeholder shrink-0" />
+            <span className="text-ink-2 text-body-sm flex-1">[필수] 개인정보 수집·이용 동의</span>
+            <ChevronRight
+              size={16}
+              strokeWidth={1.75}
+              className="text-ink-3 shrink-0"
+              aria-hidden
+            />
           </label>
 
           <label className="flex cursor-pointer items-center gap-3">
@@ -167,23 +178,23 @@ export default function SignupForm() {
                 handleIndividualChange("agreeMarketing", checked === true)
               }
             />
-            <span className="text-label flex-1 text-[13px]">[선택] 혜택·여행 소식 알림 수신</span>
+            <span className="text-ink-2 text-body-sm flex-1">[선택] 혜택·여행 소식 알림 수신</span>
           </label>
         </div>
       </div>
       {(errors.agreeService || errors.agreePrivacy) && (
-        <p className="text-[12px] text-red-500">
+        <p role="alert" className="text-danger-ink text-cap font-medium">
           {errors.agreeService?.message ?? errors.agreePrivacy?.message}
         </p>
       )}
 
-      {errors.root?.message && <p className="text-[12px] text-red-500">{errors.root.message}</p>}
+      {errors.root?.message && (
+        <p role="alert" className="text-danger-ink text-cap font-medium">
+          {errors.root.message}
+        </p>
+      )}
 
-      <Button
-        type="submit"
-        disabled={isSubmitting}
-        className="h-auto w-full rounded-lg py-3.5 text-[14px] font-semibold"
-      >
+      <Button type="submit" disabled={isSubmitting} size="lg" className="mt-2 w-full">
         {isSubmitting ? "가입 처리 중..." : "가입하고 이메일 인증하기"}
       </Button>
     </form>

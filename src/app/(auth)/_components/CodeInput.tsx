@@ -68,7 +68,7 @@ export default function CodeInput({ value, onChange, disabled }: CodeInputProps)
   };
 
   return (
-    <div className="flex h-15 gap-2.5">
+    <div className="flex gap-2">
       {value.map((digit, index) => (
         <Input
           key={index}
@@ -85,7 +85,7 @@ export default function CodeInput({ value, onChange, disabled }: CodeInputProps)
           onChange={(event) => handleChange(index, event.target.value)}
           onKeyDown={(event) => handleKeyDown(index, event)}
           onPaste={(event) => handlePaste(index, event)}
-          className="h-full w-12.5 rounded-[13px] text-center text-xl font-semibold"
+          className="text-title-1 h-14 w-full px-0 text-center font-semibold tabular-nums"
         />
       ))}
     </div>

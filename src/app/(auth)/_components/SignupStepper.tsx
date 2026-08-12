@@ -1,45 +1,15 @@
-import { cn } from "@/lib/utils";
+import Stepper from "@/components/common/Stepper";
 
+/** 공통 Stepper 를 재사용한다 — 진단·추천 흐름과 같은 단계 언어를 쓴다. */
 const SIGNUP_STEPS = ["signup", "verify-email", "complete"] as const;
+const LABELS = ["정보 입력", "이메일 인증", "완료"];
 
 type SignupStep = (typeof SIGNUP_STEPS)[number];
 
-type SignupStepperProps = {
-  currentStep: SignupStep;
-};
-
-export default function SignupStepper({ currentStep }: SignupStepperProps) {
-  const currentStepIndex = SIGNUP_STEPS.indexOf(currentStep);
-
+export default function SignupStepper({ currentStep }: { currentStep: SignupStep }) {
   return (
-    <ol aria-label="회원가입 진행 단계" className="mb-6 flex items-center gap-[3.5px] self-center">
-      {SIGNUP_STEPS.map((step, stepIndex) => {
-        const isCurrent = stepIndex === currentStepIndex;
-        const isCompleted = stepIndex < currentStepIndex;
-        const isConnectorCompleted = stepIndex < currentStepIndex;
-
-        return (
-          <li key={step} className="contents">
-            <span
-              aria-current={isCurrent ? "step" : undefined}
-              className={cn(
-                "rounded-full",
-                isCurrent && "bg-primary size-2.5",
-                isCompleted && "size-2.25 bg-[#C4DDCD]",
-                !isCurrent && !isCompleted && "size-2.25 bg-[#C3BDB3]",
-              )}
-            >
-              <span className="sr-only">{stepIndex + 1}단계</span>
-            </span>
-            {stepIndex < SIGNUP_STEPS.length - 1 && (
-              <span
-                aria-hidden="true"
-                className={cn("h-0.5 w-2", isConnectorCompleted ? "bg-[#C4DDCD]" : "bg-[#EBE7DF]")}
-              />
-            )}
-          </li>
-        );
-      })}
-    </ol>
+    <div className="flex justify-center">
+      <Stepper steps={LABELS} currentStep={SIGNUP_STEPS.indexOf(currentStep) + 1} showStepLabel />
+    </div>
   );
 }

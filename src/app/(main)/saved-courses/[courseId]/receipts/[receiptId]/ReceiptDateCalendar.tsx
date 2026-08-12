@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 import { cn } from "@/lib/utils";
+
+/** 날짜 선택. 달력 숫자는 전부 고정폭이어야 격자가 흔들리지 않는다 (DESIGN.md §6 규칙 2). */
 
 const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -62,41 +66,40 @@ export default function ReceiptDateCalendar({
   const weeks = getCalendarWeeks(viewYear, viewMonth);
 
   return (
-    <div className="flex w-68 flex-col gap-2.5 rounded-[16px] bg-white p-3.5 shadow-[0px_12px_40px_-10px_rgba(40,36,28,0.32)]">
+    <div className="bg-surface shadow-overlay flex w-70 flex-col gap-2 rounded-md p-3">
       <div className="flex w-full items-center justify-between">
         <button
           type="button"
           aria-label="이전 달"
           onClick={() => changeMonth(-1)}
-          className="cursor-pointer text-[18px] text-[#B8B3AA]"
+          className="press text-ink-2 hover:bg-surface-2 flex size-8 cursor-pointer items-center justify-center rounded-sm"
         >
-          ‹
+          <ChevronLeft className="size-4" strokeWidth={1.75} />
         </button>
-        <p className="text-[14.5px] font-bold text-[#222019]">
-          {viewYear}년 {viewMonth + 1}월
+        <p className="text-title-3 text-ink tabular-nums">
+          {viewYear}. {String(viewMonth + 1).padStart(2, "0")}
         </p>
         <button
           type="button"
           aria-label="다음 달"
           onClick={() => changeMonth(1)}
-          className="cursor-pointer text-[18px] text-[#B8B3AA]"
+          className="press text-ink-2 hover:bg-surface-2 flex size-8 cursor-pointer items-center justify-center rounded-sm"
         >
-          ›
+          <ChevronRight className="size-4" strokeWidth={1.75} />
         </button>
       </div>
-      <div className="flex w-full items-start">
+
+      <div className="border-line flex w-full border-b pb-1.5">
         {WEEKDAY_LABELS.map((label) => (
-          <span
-            key={label}
-            className="flex h-5 flex-1 items-center justify-center text-[11px] font-bold text-[#B8B3AA]"
-          >
+          <span key={label} className="text-ink-3 text-cap flex flex-1 items-center justify-center">
             {label}
           </span>
         ))}
       </div>
+
       {weeks.map((week, weekIndex) => (
-        <div key={weekIndex} className="flex w-full items-start">
-          {week.map((cell) => {
+        <div key={weekIndex} className="flex w-full">
+          {week.map((cell, cellIndex) => {
             const isSelected =
               cell.isCurrentMonth &&
               viewYear === selectedYear &&
@@ -105,14 +108,17 @@ export default function ReceiptDateCalendar({
 
             return (
               <button
-                key={cell.day}
+                key={`${weekIndex}-${cellIndex}`}
                 type="button"
                 disabled={!cell.isCurrentMonth}
+                aria-current={isSelected ? "date" : undefined}
                 onClick={() => handleSelectDay(cell.day)}
                 className={cn(
-                  "flex h-7.5 flex-1 items-center justify-center rounded-[17px] text-[12.5px]",
-                  cell.isCurrentMonth ? "cursor-pointer text-[#222019]" : "text-[#B8B3AA]",
-                  isSelected && "bg-[#2F6F4F] font-bold text-white",
+                  "text-num mx-px flex h-8 flex-1 items-center justify-center rounded-sm tabular-nums transition-colors duration-(--dur-1)",
+                  cell.isCurrentMonth
+                    ? "text-ink hover:bg-surface-2 cursor-pointer"
+                    : "text-ink-3/60 cursor-default",
+                  isSelected && "bg-brand hover:bg-brand text-brand-on font-semibold",
                 )}
               >
                 {cell.day}
