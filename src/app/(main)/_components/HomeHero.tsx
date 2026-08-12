@@ -1,15 +1,29 @@
+"use client";
+
 import Link from "next/link";
-import { Leaf } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+
+import Skeleton from "@/components/common/Skeleton";
 import type { HeroItem } from "@/features/home/types";
-import HeroCollage from "./HeroCollage";
+
+import HeroFigure from "./HeroFigure";
+
+/**
+ * 히어로. DESIGN.md §11, 그리고 hero stack discipline:
+ * 텍스트 요소는 제목 / 본문 / CTA 세 개뿐이다. 아이브로우 배지는 제거했다.
+ *
+ * 진입 모션은 이 표면에서 유일하게 연출된 순간이다 (§7).
+ */
+
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 type HomeHeroProps = {
   ctaLabel: string;
   ctaHref: string;
   ctaCaption: string;
   heroItems: HeroItem[];
-  recommendedRegionName?: string;
-  children: React.ReactNode;
+  isHeroPending: boolean;
 };
 
 export default function HomeHero({
@@ -17,39 +31,69 @@ export default function HomeHero({
   ctaHref,
   ctaCaption,
   heroItems,
-  recommendedRegionName,
-  children,
+  isHeroPending,
 }: HomeHeroProps) {
+  const reduce = useReducedMotion();
+
+  const enter = (delay: number) =>
+    reduce
+      ? {}
+      : {
+          initial: { opacity: 0, y: 14 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.42, delay, ease: EASE },
+        };
+
   return (
-    <section className="flex w-full flex-col gap-9 overflow-hidden rounded-[26px] border border-[#C4DDCD] bg-linear-[120deg,#E9F2EA_0%,#EEF4E8_46%,#F7F1E4_100%] px-11.75 pt-13.25">
-      <div className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-9">
-        <div className="flex flex-col items-start gap-4.25">
-          <span className="flex h-8 items-center gap-2 rounded-full border border-[#C4DDCD] bg-white/82 px-3.5 text-[12.5px] font-semibold text-[#1C4631]">
-            <Leaf className="size-3.5 text-[#3C875F]" />
-            지역과 여행자를 더 가깝게
-          </span>
-          <h1 className="text-[45px] leading-[52.2px] font-bold tracking-[-1.575px] text-[#1C4631]">
-            내 취향에 맞는
-            <br />
-            로컬 여행을 찾아보세요
-          </h1>
-          <p className="max-w-107.5 text-[15.5px] leading-[25.58px] text-[#5F5B53]">
-            여행 성향과 가치소비 기준을 진단해 나에게 맞는 지역과 코스를 추천하고, 받을 수 있는
-            정부·지자체 지원 혜택까지 연결해 드려요.
-          </p>
-          <div className="flex flex-wrap items-center gap-x-4.5 pt-2.75">
-            <Link
-              href={ctaHref}
-              className="flex h-13 items-center justify-center rounded-[12px] bg-[#2F6F4F] px-7.25 text-[15.5px] font-semibold tracking-[-0.155px] text-white"
-            >
-              {ctaLabel}
-            </Link>
-            <span className="text-[13px] text-[#928D84]">{ctaCaption}</span>
-          </div>
-        </div>
-        <HeroCollage items={heroItems} recommendedRegionName={recommendedRegionName} />
+    <section className="grid w-full items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,32rem)] lg:gap-16">
+      <div className="flex flex-col items-start gap-6">
+        <motion.h1
+          {...enter(0)}
+          className="text-display-2 text-ink sm:text-display-1 max-w-[18ch] text-balance"
+        >
+          내 취향에 맞는 로컬 여행
+        </motion.h1>
+
+        <motion.p {...enter(0.08)} className="text-ink-2 text-body max-w-[46ch]">
+          취향과 가치소비 기준으로 지역과 코스를 추천하고, 받을 수 있는 정부·지자체 지원까지 연결해
+          드려요.
+        </motion.p>
+
+        <motion.div {...enter(0.16)} className="flex flex-wrap items-center gap-x-5 gap-y-3 pt-2">
+          <Link
+            href={ctaHref}
+            className="press bg-brand hover:bg-brand-hover active:bg-brand-press text-body text-brand-on flex h-13 items-center gap-2 rounded-sm px-6 font-semibold"
+          >
+            {ctaLabel}
+            <ArrowRight className="size-4" strokeWidth={1.75} />
+          </Link>
+          <span className="text-ink-3 text-body-sm">{ctaCaption}</span>
+        </motion.div>
       </div>
-      <div className="w-full border-t border-[#C4DDCD] pt-5.75 pb-7.5">{children}</div>
+
+      <motion.div {...enter(0.1)} className="w-full">
+        {isHeroPending ? (
+          // HeroFigure 와 같은 골격: 아치형 리드 + 보조 2장 + 캡션 2줄
+          <div className="flex flex-col gap-4">
+            <div className="grid gap-3 sm:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] sm:items-end">
+              <Skeleton
+                className="aspect-[4/5] w-full rounded-t-[999px] rounded-b-md"
+                rounded="none"
+              />
+              <div className="flex flex-col gap-3">
+                <Skeleton className="aspect-[3/2] w-full" rounded="md" />
+                <Skeleton className="aspect-[3/2] w-full" rounded="md" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-4 w-44" />
+            </div>
+          </div>
+        ) : (
+          <HeroFigure items={heroItems} />
+        )}
+      </motion.div>
     </section>
   );
 }
