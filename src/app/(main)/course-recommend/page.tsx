@@ -1,42 +1,70 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+
+import FlowShell from "@/components/common/FlowShell";
+import Skeleton from "@/components/common/Skeleton";
+import SurfaceState from "@/components/common/SurfaceState";
 import { recommendationQueries } from "@/features/recommendation/queries";
 import { isApiError } from "@/lib/api/error";
+
 import CourseDestinationList from "./CourseDestinationList";
-import CourseRecommendStep from "./CourseRecommendStep";
+import { COURSE_STEPS } from "./steps";
+
+function DestinationListSkeleton() {
+  return (
+    <div className="border-line divide-line flex w-full flex-col divide-y border-y">
+      {Array.from({ length: 4 }, (_, index) => (
+        <div key={index} className="flex items-center gap-4 py-4">
+          <Skeleton className="h-3 w-6" />
+          <Skeleton className="size-16" rounded="md" />
+          <span className="flex flex-1 flex-col gap-2">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-3/4" />
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function CourseRecommend() {
-  const currentStep = 1;
   const regionsQuery = useQuery(recommendationQueries.regions());
   const regions = regionsQuery.data ?? [];
 
   return (
-    <div className="flex w-full flex-col items-center pb-20">
-      <div className="mt-9.5 flex w-170 flex-col items-center gap-6.5">
-        <CourseRecommendStep currentStep={currentStep} />
-        <div className="flex w-full flex-col items-start gap-2.25">
-          <p className="text-[27px] font-semibold tracking-[-0.675px] text-[#222019]">
-            성향에 맞는 추천 여행지
-          </p>
-          <p className="text-[15px] text-[#5F5B53]">
-            성향에 꼭 맞는 여행지예요 · 지역을 누르면 맞춤 추천 코스를 볼 수 있어요
-          </p>
-        </div>
-        {regionsQuery.isError && (
-          <p className="text-[13px] text-red-500">
-            {isApiError(regionsQuery.error)
+    <FlowShell
+      steps={COURSE_STEPS}
+      currentStep={1}
+      showStepLabel
+      align="start"
+      title="성향에 맞는 추천 여행지"
+      description="지역을 누르면 맞춤 추천 코스를 볼 수 있어요."
+    >
+      {regionsQuery.isPending && <DestinationListSkeleton />}
+
+      {regionsQuery.isError && (
+        <SurfaceState
+          tone="error"
+          title="추천 여행지를 불러오지 못했어요"
+          description={
+            isApiError(regionsQuery.error)
               ? regionsQuery.error.message
-              : "추천 여행지를 불러오는 중 오류가 발생했습니다."}
-          </p>
-        )}
-        {regionsQuery.isSuccess && regions.length === 0 && (
-          <p className="text-[13px] text-[#928D84]">
-            아직 추천된 여행지가 없어요. 취향 진단 결과에서 코스 추천을 받아보세요.
-          </p>
-        )}
-        {regions.length > 0 && <CourseDestinationList destinations={regions} />}
-      </div>
-    </div>
+              : "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+          }
+          action={{ label: "다시 시도", onRetry: () => regionsQuery.refetch() }}
+        />
+      )}
+
+      {regionsQuery.isSuccess && regions.length === 0 && (
+        <SurfaceState
+          title="아직 추천된 여행지가 없어요"
+          description="취향 진단 결과 화면에서 코스 추천을 받으면 여기에 지역이 채워져요."
+          action={{ label: "취향 진단으로 가기", href: "/propensity?step=1" }}
+        />
+      )}
+
+      {regions.length > 0 && <CourseDestinationList destinations={regions} />}
+    </FlowShell>
   );
 }

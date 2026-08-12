@@ -1,31 +1,44 @@
-import ChevronRight from "@/assets/chevronRight.svg";
-import type { CourseBenefit } from "@/features/recommendation/types";
-import { cn } from "@/lib/utils";
+import { ArrowUpRight } from "lucide-react";
 
+import type { CourseBenefit } from "@/features/recommendation/types";
+
+/**
+ * 코스 적용 혜택. 홈의 혜택 장부와 같은 행 형태를 공유한다 (DESIGN.md §6 규칙 3).
+ * 행마다 위아래 테두리를 다 두르지 않고 divide-y 로만 나눈다.
+ */
 export default function CourseBenefitList({ benefits }: { benefits: CourseBenefit[] }) {
+  if (benefits.length === 0) {
+    return (
+      <p className="text-ink-3 text-body-sm border-line border-t py-4">
+        이 코스에 적용할 수 있는 혜택이 아직 없어요.
+      </p>
+    );
+  }
+
   return (
-    <div className="flex w-full flex-col items-start">
-      {benefits.map((benefit, index) => (
-        <a
-          key={benefit.title}
-          href={benefit.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={cn(
-            "flex w-full items-center gap-3 border-t border-t-[#EBE7DF] py-4",
-            index === benefits.length - 1 && "border-b border-b-[#EBE7DF]",
-          )}
-        >
-          <span className="text-[16px] font-semibold tracking-[-0.16px] text-[#222019]">
-            {benefit.title}
-          </span>
-          {benefit.description && (
-            <span className="text-[13.5px] text-[#928D84]">{benefit.description}</span>
-          )}
-          <span className="flex-1" />
-          <ChevronRight className="size-4.5 shrink-0" />
-        </a>
+    <ul className="border-line divide-line flex w-full flex-col divide-y border-t">
+      {benefits.map((benefit) => (
+        <li key={benefit.title}>
+          <a
+            href={benefit.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group hover:bg-surface-2 -mx-3 flex flex-col gap-1 rounded-sm px-3 py-3.5 transition-colors duration-(--dur-1)"
+          >
+            <span className="text-title-3 text-ink group-hover:text-brand-ink flex items-center gap-1.5 transition-colors duration-(--dur-1)">
+              <span className="min-w-0">{benefit.title}</span>
+              <ArrowUpRight
+                aria-hidden
+                strokeWidth={1.75}
+                className="text-ink-3 group-hover:text-brand-ink size-3.5 shrink-0 transition-all duration-(--dur-2) group-hover:translate-x-px group-hover:-translate-y-px"
+              />
+            </span>
+            {benefit.description && (
+              <span className="text-ink-2 text-body-sm">{benefit.description}</span>
+            )}
+          </a>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

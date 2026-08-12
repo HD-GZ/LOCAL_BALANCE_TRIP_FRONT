@@ -1,44 +1,49 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import ChevronRight from "@/assets/chevronRight.svg";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+
 import ThumbImage from "@/components/common/ThumbImage";
 import type { RecommendedRegion } from "@/features/recommendation/types";
-import { cn } from "@/lib/utils";
+
+/**
+ * 추천 지역 목록. 카드 그리드가 아니라 괘선으로 나뉜 행이다 — 순위가 있는 목록이고,
+ * 스캔이 목적이기 때문이다 (DESIGN.md §6 규칙 3).
+ *
+ * 이전 구현은 button + router.push 였다. Link 로 바꿔 새 탭 열기와 키보드 탐색이 동작한다.
+ */
 
 type CourseDestinationListProps = {
   destinations: RecommendedRegion[];
 };
 
 export default function CourseDestinationList({ destinations }: CourseDestinationListProps) {
-  const router = useRouter();
-
   return (
-    <div className="flex w-full flex-col items-start rounded-[18px] border border-[#EBE7DF] bg-white px-7.5 py-2 shadow-[0_1px_2px_0_rgba(40,36,32,0.04),0_12px_32px_-12px_rgba(40,36,32,0.1)]">
+    <ol className="border-line divide-line flex w-full flex-col divide-y border-y">
       {destinations.map((destination, index) => (
-        <button
-          key={destination.regionId}
-          type="button"
-          onClick={() =>
-            router.push(
-              `/course-recommend/${destination.regionId}?regionName=${encodeURIComponent(destination.regionName)}`,
-            )
-          }
-          className={cn(
-            "flex w-full cursor-pointer items-center gap-4 py-4.5",
-            index > 0 && "border-t border-t-[#EBE7DF]",
-          )}
-        >
-          <ThumbImage src={destination.imageUrl} alt={destination.regionName} />
-          <div className="flex flex-1 flex-col items-start gap-1.25 text-left">
-            <p className="text-[17.5px] font-semibold tracking-[-0.35px] text-[#222019]">
-              {destination.regionName}
-            </p>
-            <p className="text-[13.5px] text-[#5F5B53]">{destination.reason}</p>
-          </div>
-          <ChevronRight className="size-4.5 shrink-0" />
-        </button>
+        <li key={destination.regionId}>
+          <Link
+            href={`/course-recommend/${destination.regionId}?regionName=${encodeURIComponent(destination.regionName)}`}
+            className="group hover:bg-surface-2 -mx-3 flex items-center gap-4 rounded-sm px-3 py-4 transition-colors duration-(--dur-1)"
+          >
+            <span className="text-ink-3 text-num w-6 shrink-0 tabular-nums">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <ThumbImage src={destination.imageUrl} alt="" className="size-16" />
+            <span className="flex min-w-0 flex-1 flex-col gap-1">
+              <span className="text-title-2 text-ink group-hover:text-brand-ink transition-colors duration-(--dur-1)">
+                {destination.regionName}
+              </span>
+              <span className="text-ink-2 text-body-sm line-clamp-2">{destination.reason}</span>
+            </span>
+            <ArrowRight
+              aria-hidden
+              className="text-ink-3 group-hover:text-brand-ink size-4 shrink-0 transition-all duration-(--dur-2) group-hover:translate-x-0.5"
+              strokeWidth={1.75}
+            />
+          </Link>
+        </li>
       ))}
-    </div>
+    </ol>
   );
 }
