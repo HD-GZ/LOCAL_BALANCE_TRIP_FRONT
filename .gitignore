@@ -27,6 +27,12 @@
 # local agent settings
 .claude/settings.local.json
 
+# 로컬에 설치한 에이전트 스킬 번들. 프로젝트 자체 스킬(local-balance-pr)만 추적한다.
+.agents/skills/*
+!.agents/skills/local-balance-pr/
+.claude/skills/*
+!.claude/skills/local-balance-pr/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
