@@ -102,10 +102,10 @@ export default function SavedCourseReceipts() {
                 />
               )}
 
-              <p className="text-ink-3 text-cap font-normal">
-                영수증 촬영과 OCR 인식은 앱에서 이용할 수 있어요. 웹에서는 저장된 증빙 확인과 관리만
-                지원해요.
-              </p>
+              <div className="text-ink-3 text-cap flex flex-col font-normal">
+                <p>영수증 촬영과 OCR 인식은 앱에서 이용할 수 있어요.</p>
+                <p>웹에서는 저장된 증빙 확인과 관리만 지원해요.</p>
+              </div>
             </div>
           </>
         )}

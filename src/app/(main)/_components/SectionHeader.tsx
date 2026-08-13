@@ -3,7 +3,8 @@ import { ArrowRight } from "lucide-react";
 
 type SectionHeaderProps = {
   title: string;
-  description: string;
+  /** 배열로 주면 각 문장을 한 줄씩 나눠 쓴다. */
+  description: string | string[];
   moreHref?: string;
   moreLabel?: string;
 };
@@ -28,7 +29,11 @@ export default function SectionHeader({
           </Link>
         )}
       </div>
-      <p className="text-ink-2 text-body-sm max-w-[64ch]">{description}</p>
+      <div className="text-ink-2 text-body-sm flex max-w-[64ch] flex-col">
+        {(Array.isArray(description) ? description : [description]).map((line) => (
+          <p key={line}>{line}</p>
+        ))}
+      </div>
     </div>
   );
 }

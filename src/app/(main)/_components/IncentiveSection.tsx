@@ -78,7 +78,10 @@ export default function IncentiveSection() {
     <section className="flex w-full flex-col gap-5">
       <SectionHeader
         title="추천 지역에서 받을 수 있는 혜택"
-        description="추천받은 지역의 정부·지자체 지원을 모았어요. 신청은 각 기관 공식 채널에서 진행돼요."
+        description={[
+          "추천받은 지역의 정부·지자체 지원을 모았어요.",
+          "신청은 각 기관 공식 채널에서 진행돼요.",
+        ]}
       />
 
       {incentivesQuery.isPending && (

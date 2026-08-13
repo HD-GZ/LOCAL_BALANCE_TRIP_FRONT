@@ -64,7 +64,6 @@ export default function AccountForm({ user }: AccountFormProps) {
         label="생년월일"
         required
         error={errors.birthYear?.message ?? errors.birthMonth?.message ?? errors.birthDay?.message}
-        hint="청년 여행 혜택 판별에 사용돼요."
       >
         <div className="grid grid-cols-3 gap-2">
           <Input

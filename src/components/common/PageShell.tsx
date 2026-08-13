@@ -9,7 +9,8 @@ export default function PageShell({
   width = "wide",
 }: {
   title: string;
-  description?: string;
+  /** 배열로 주면 각 문장을 한 줄씩 나눠 쓴다. 두 문장이 한 줄로 이어지면 읽기 어렵다. */
+  description?: string | string[];
   actions?: React.ReactNode;
   children: React.ReactNode;
   width?: "wide" | "narrow";
@@ -25,7 +26,13 @@ export default function PageShell({
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
           <div className="flex flex-col gap-2">
             <h1 className="text-title-1 text-ink sm:text-display-2">{title}</h1>
-            {description && <p className="text-ink-2 text-body max-w-[64ch]">{description}</p>}
+            {description && (
+              <div className="text-ink-2 text-body flex max-w-[64ch] flex-col">
+                {(Array.isArray(description) ? description : [description]).map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </div>
+            )}
           </div>
           {actions}
         </div>

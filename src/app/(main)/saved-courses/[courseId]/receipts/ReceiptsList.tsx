@@ -21,7 +21,7 @@ export default function ReceiptsList({
     return (
       <SurfaceState
         title="저장된 영수증이 없어요"
-        description="여행하면서 영수증을 남기면 여기에 기록이 쌓여요. 촬영과 인식은 앱에서 할 수 있어요."
+        description="여행하면서 영수증을 남기면 여기에 기록이 쌓여요."
       />
     );
   }

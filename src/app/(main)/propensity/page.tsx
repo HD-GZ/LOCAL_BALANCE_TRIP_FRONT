@@ -276,6 +276,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
       steps={STEPS}
       currentStep={currentStep}
       showStepLabel
+      width="narrow"
       title={ment.title}
       description={ment.description}
     >
@@ -288,18 +289,16 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
           transition={{ duration: 0.26, ease: EASE }}
           className="border-line bg-surface flex w-full flex-col gap-6 rounded-md border px-5 py-6 sm:px-8 sm:py-8"
         >
+          {/*
+           * 남은 문항 수는 버튼에서만 알린다. 이전에는 여기 우측 상단에 "0 / 5 응답" 을
+           * 같이 뒀는데, 버튼의 "N개 문항이 남았어요" 와 같은 내용을 두 번 말하는 셈이었다.
+           */}
           {currentStep !== 3 && (
-            <>
-              <p className="text-ink-3 text-cap self-end font-normal">
-                <span className="text-ink font-semibold tabular-nums">{answeredCount}</span>
-                <span className="tabular-nums"> / {questions.length}</span> 응답
-              </p>
-              <PropensityQuestionList
-                questions={questions}
-                answers={currentAnswers}
-                onChangeAnswer={handleChangeAnswer}
-              />
-            </>
+            <PropensityQuestionList
+              questions={questions}
+              answers={currentAnswers}
+              onChangeAnswer={handleChangeAnswer}
+            />
           )}
 
           {currentStep === 3 && (

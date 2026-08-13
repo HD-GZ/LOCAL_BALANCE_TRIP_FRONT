@@ -17,10 +17,12 @@ type FlowShellProps = {
   /** 제목·설명을 가운데로 (진단) 또는 왼쪽으로 (추천 목록) */
   align?: "center" | "start";
   /**
-   * 흐름 화면의 폭. 기본값도 데스크톱에서 절반만 쓰지 않도록 넓혔다.
-   * wide 는 목록과 지도처럼 병렬 구성이 들어가는 화면용이다.
+   * 흐름 화면의 폭.
+   * narrow  — 한 가지 일에 집중하는 화면(진단). 5점 척도가 과하게 늘어나지 않는 폭.
+   * default — 목록형 흐름 화면.
+   * wide    — 목록과 지도처럼 병렬 구성이 들어가는 화면.
    */
-  width?: "default" | "wide";
+  width?: "narrow" | "default" | "wide";
   children: React.ReactNode;
 };
 
@@ -39,7 +41,9 @@ export default function FlowShell({
       <div
         className={cn(
           "mx-auto flex w-full flex-col items-center px-4 pt-10 md:px-8 md:pt-14",
-          width === "wide" ? "max-w-[1280px]" : "max-w-[62rem]",
+          width === "wide" && "max-w-[1280px]",
+          width === "default" && "max-w-[62rem]",
+          width === "narrow" && "max-w-[48rem]",
         )}
       >
         <Stepper steps={steps} currentStep={currentStep} showStepLabel={showStepLabel} />

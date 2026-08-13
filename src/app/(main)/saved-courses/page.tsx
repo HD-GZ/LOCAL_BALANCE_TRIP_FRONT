@@ -69,7 +69,10 @@ export default function SavedCourses() {
   return (
     <PageShell
       title="저장한 코스"
-      description="코스 추천에서 저장한 코스를 모아봤어요. GPS 슬로우 투어 시작은 앱에서 할 수 있어요."
+      description={[
+        "코스 추천에서 저장한 코스를 모아봤어요.",
+        "GPS 슬로우 투어 시작은 앱에서 할 수 있어요.",
+      ]}
     >
       {savedCoursesQuery.isError && (
         <SurfaceState

@@ -8,6 +8,7 @@ import { homeQueries } from "@/features/home/queries";
 import { userQueries } from "@/features/user/queries";
 import { isApiError } from "@/lib/api/error";
 
+import { MAX_PHOTOS } from "./_components/HeroFigure";
 import HomeHero from "./_components/HomeHero";
 import IncentiveSection from "./_components/IncentiveSection";
 import PopularCourseSection from "./_components/PopularCourseSection";
@@ -90,6 +91,8 @@ export default function Home() {
   const profileTypesQuery = useQuery(homeQueries.profileTypes(homeState === "undiagnosed"));
 
   const heroItems = heroQuery.data?.items ?? [];
+  // 히어로가 사진으로 실제 노출하는 지역만 피드에서 제외 대상이다.
+  const heroRegionTitles = heroItems.slice(0, MAX_PHOTOS).map((item) => item.title);
   const cta =
     homeState === "diagnosed" && summary
       ? {
@@ -130,7 +133,9 @@ export default function Home() {
           />
         )}
 
-        {homeState === "diagnosed" && <SavedCourseFeedSection />}
+        {homeState === "diagnosed" && (
+          <SavedCourseFeedSection heroRegionTitles={heroRegionTitles} />
+        )}
         {homeState !== "diagnosed" && homeState !== "error" && <PopularCourseSection />}
 
         <IncentiveSection />

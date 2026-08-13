@@ -54,9 +54,28 @@ function FeedCard({ item }: { item: HomeFeedItem }) {
   );
 }
 
-export default function SavedCourseFeedSection() {
+/**
+ * 히어로가 이미 사진으로 보여준 지역은 피드에서 뺀다.
+ * 두 API 가 같은 추천 지역 목록을 내려주기 때문에, 그대로 두면 한 화면에서 같은 지역이
+ * 위(히어로 사진)와 아래(피드 카드)에 두 번 나온다.
+ *
+ * 히어로 응답에는 id 가 없어 제목으로 맞출 수밖에 없다. 저장 코스는 대상이 아니다 —
+ * 지역과 코스는 다른 것이고, 저장 코스가 피드의 본래 내용이다.
+ */
+function excludeRegionsShownInHero(items: HomeFeedItem[], heroRegionTitles: string[]) {
+  if (heroRegionTitles.length === 0) return items;
+
+  const shown = new Set(heroRegionTitles);
+  return items.filter((item) => item.itemType !== "RECOMMENDED_REGION" || !shown.has(item.title));
+}
+
+export default function SavedCourseFeedSection({
+  heroRegionTitles = [],
+}: {
+  heroRegionTitles?: string[];
+}) {
   const feedQuery = useQuery(homeQueries.savedCourses());
-  const items = feedQuery.data?.items ?? [];
+  const items = excludeRegionsShownInHero(feedQuery.data?.items ?? [], heroRegionTitles);
 
   return (
     <section className="flex w-full flex-col gap-5">

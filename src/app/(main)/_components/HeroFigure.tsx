@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
  */
 
 /** 히어로가 담는 사진 수. 응답 개수는 백엔드가 정하므로 여기서 잘라낸다. */
-const MAX_PHOTOS = 3;
+export const MAX_PHOTOS = 3;
 
 const MOUNT = "bg-surface ring-line block overflow-hidden p-1.5 ring-1";
 const ARCH = "rounded-t-[999px] rounded-b-md";
