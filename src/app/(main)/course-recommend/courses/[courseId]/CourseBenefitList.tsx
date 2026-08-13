@@ -9,9 +9,9 @@ import type { CourseBenefit } from "@/features/recommendation/types";
 export default function CourseBenefitList({ benefits }: { benefits: CourseBenefit[] }) {
   if (benefits.length === 0) {
     return (
-      <p className="text-ink-3 text-body-sm border-line border-t py-4">
-        이 코스에 적용할 수 있는 혜택이 아직 없어요.
-      </p>
+      // 구분선은 뒤따르는 블록이 갖고 있다. 여기서 또 두르면 괘선이 겹치고
+      // 사이에 죽은 공간이 생긴다.
+      <p className="text-ink-3 text-body-sm">이 코스에 적용할 수 있는 혜택이 아직 없어요.</p>
     );
   }
 

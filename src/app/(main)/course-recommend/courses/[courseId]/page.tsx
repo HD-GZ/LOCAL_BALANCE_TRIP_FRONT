@@ -89,7 +89,7 @@ export default function CourseDetail() {
           </h2>
           <CourseBenefitList benefits={course.benefits} />
 
-          <div className="border-line mt-8 flex flex-col gap-3 border-t pt-6">
+          <div className="border-line mt-6 flex flex-col gap-3 border-t pt-6">
             {saveCourseMutation.isSuccess ? (
               <div className="flex flex-col gap-3 sm:flex-row">
                 <p className="text-brand-ink text-body-sm flex flex-1 items-center gap-1.5 font-semibold">

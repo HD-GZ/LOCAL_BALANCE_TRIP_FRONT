@@ -71,6 +71,12 @@ export default function CourseMap({ places, activeOrder, onSelect, className }: 
   const markersRef = useRef<naver.maps.Marker[]>([]);
   const pathRef = useRef<naver.maps.Polyline | null>(null);
   const [isScriptReady, setIsScriptReady] = useState(false);
+  /**
+   * 지도 인스턴스는 ref 에 담기므로 그 자체로는 리렌더를 일으키지 않는다.
+   * 마커 effect 가 "지도가 준비됨"을 감지할 수 있도록 state 로 따로 신호를 둔다.
+   * 이게 없으면 스크립트가 늦게 준비될 때 마커가 한 번도 그려지지 않는다.
+   */
+  const [isMapReady, setIsMapReady] = useState(false);
 
   // 지도와 경로선은 장소 목록이 바뀔 때만 다시 만든다.
   useEffect(() => {
@@ -87,6 +93,7 @@ export default function CourseMap({ places, activeOrder, onSelect, className }: 
       logoControlOptions: { position: maps.Position.BOTTOM_LEFT },
     });
     mapRef.current = map;
+    setIsMapReady(true);
 
     const rootStyle = getComputedStyle(document.documentElement);
     const brand = rootStyle.getPropertyValue("--brand").trim() || "#2F6F4F";
@@ -117,13 +124,14 @@ export default function CourseMap({ places, activeOrder, onSelect, className }: 
       markersRef.current = [];
       pathRef.current = null;
       mapRef.current = null;
+      setIsMapReady(false);
     };
   }, [isScriptReady, places]);
 
-  // 마커는 선택 상태가 바뀔 때마다 다시 그린다.
+  // 마커는 지도가 준비된 뒤, 그리고 선택 상태가 바뀔 때마다 다시 그린다.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || places.length === 0) return;
+    if (!isMapReady || !map || places.length === 0) return;
 
     const { maps } = window.naver;
     const rootStyle = getComputedStyle(document.documentElement);
@@ -152,7 +160,7 @@ export default function CourseMap({ places, activeOrder, onSelect, className }: 
 
       return marker;
     });
-  }, [places, activeOrder, onSelect]);
+  }, [isMapReady, places, activeOrder, onSelect]);
 
   return (
     <>

@@ -1,5 +1,8 @@
+import { Suspense } from "react";
+
 import AuthShell, { AuthLink } from "@/app/(auth)/_components/AuthShell";
 
+import AuthRedirectNotice from "./AuthRedirectNotice";
 import LoginForm from "./LoginForm";
 
 export default function LoginPage() {
@@ -15,6 +18,10 @@ export default function LoginPage() {
         </>
       }
     >
+      {/* useSearchParams 를 쓰므로 정적 프리렌더를 막지 않도록 경계를 둔다. */}
+      <Suspense fallback={null}>
+        <AuthRedirectNotice />
+      </Suspense>
       <LoginForm />
     </AuthShell>
   );

@@ -35,7 +35,7 @@ export default function ReceiptDetail() {
 
   return (
     <main className="w-full flex-1 pb-20">
-      <div className="mx-auto flex w-full max-w-[72rem] flex-col px-4 pt-10 md:px-8 md:pt-14">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col px-4 pt-10 md:px-8 md:pt-14">
         {!isValidRoute && (
           <SurfaceState
             tone="error"

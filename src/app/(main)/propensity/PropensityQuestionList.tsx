@@ -29,9 +29,8 @@ export default function PropensityQuestionList({
   onChangeAnswer,
 }: QuestionProps) {
   return (
-    // 넓은 폭에서는 2열. 축이 5개면 한 열에 쌓을 때보다 한눈에 비교하기 쉽다.
-    // 격자에서는 divide-y 가 성립하지 않으므로 구분은 여백이 맡는다.
-    <ol className="grid w-full gap-x-12 gap-y-7 lg:grid-cols-2">
+    // 1열로 되돌렸다. 축이 5개(홀수)라 2열에서는 마지막 칸이 비어 어색했다.
+    <ol className="divide-line flex w-full flex-col divide-y">
       {questions.map((question, index) => {
         const [minOption, maxOption] = question.options;
         const score = answers[question.id] ?? 0;
@@ -41,7 +40,7 @@ export default function PropensityQuestionList({
         }
 
         return (
-          <li key={question.id} className="flex min-w-0 flex-col gap-3">
+          <li key={question.id} className="flex min-w-0 flex-col gap-3 py-6 first:pt-0 last:pb-0">
             <p className="text-ink-3 text-cap flex items-center gap-2 font-normal">
               <span className="tabular-nums">{String(index + 1).padStart(2, "0")}</span>
               <span className="text-ink text-title-3">{question.title}</span>

@@ -147,7 +147,12 @@ export function AxisInput({
   const answered = value >= MIN && value <= MAX;
 
   return (
-    <div className="flex w-full flex-col gap-3">
+    /**
+     * 5점 척도는 폭을 제한한다. 패널이 넓어지면서 트랙이 850px 까지 늘어났는데,
+     * 그러면 단계 사이 간격이 200px 이 되어 마우스 이동이 과하고 눈으로 훑기도 어렵다.
+     * 라벨과 트랙은 같은 폭을 공유해야 좌우 극이 트랙 끝과 맞는다.
+     */
+    <div className="flex w-full max-w-[40rem] flex-col gap-3">
       <div className="flex items-start justify-between gap-4">
         <span className="flex min-w-0 flex-col gap-0.5 text-left">
           <span
