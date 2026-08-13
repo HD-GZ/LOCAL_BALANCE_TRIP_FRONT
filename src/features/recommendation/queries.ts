@@ -7,6 +7,15 @@ import {
   getSavedCoursesDetail,
 } from "@/features/recommendation/api";
 import type { SavedCourse } from "@/features/recommendation/types";
+import { isApiError } from "@/lib/api/error";
+
+function retryUnlessUnauthorized(failureCount: number, error: unknown) {
+  if (isApiError(error) && error.status === 401) {
+    return false;
+  }
+
+  return failureCount < 3;
+}
 
 export const recommendationQueryKeys = {
   all: ["recommendation"] as const,
@@ -27,6 +36,7 @@ export const recommendationQueries = {
     queryOptions({
       queryKey: recommendationQueryKeys.regions(),
       queryFn: getRecommendedRegions,
+      retry: retryUnlessUnauthorized,
     }),
   regionCourses: (regionId: number, enabled = true) =>
     queryOptions({
