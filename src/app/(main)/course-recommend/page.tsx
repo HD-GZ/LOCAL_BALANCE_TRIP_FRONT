@@ -48,7 +48,9 @@ export default function CourseRecommend() {
             아직 추천된 여행지가 없어요. 취향 진단 결과에서 코스 추천을 받아보세요.
           </p>
         )}
-        {regions.length > 0 && <CourseDestinationList destinations={regions} />}
+        {regionsQuery.isSuccess && regions.length > 0 && (
+          <CourseDestinationList destinations={regions} />
+        )}
       </div>
     </div>
   );
