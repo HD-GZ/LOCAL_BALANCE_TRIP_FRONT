@@ -62,7 +62,13 @@ function ReportCardBody({ report }: { report: CourseReportResponse }) {
   );
 }
 
-export default function ReportSummary({ report }: { report: CourseReportResponse }) {
+export default function ReportSummary({
+  report,
+  savedCourseId,
+}: {
+  report: CourseReportResponse;
+  savedCourseId: number;
+}) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -111,7 +117,7 @@ export default function ReportSummary({ report }: { report: CourseReportResponse
         >
           {isSaving ? "저장 중..." : "이미지 저장"}
         </Button>
-        <ShareDialog />
+        <ShareDialog report={report} savedCourseId={savedCourseId} />
       </div>
       <div className="flex w-full flex-col items-center pt-2.25">
         <p className="text-[12.5px] text-[#B8B3AA]">

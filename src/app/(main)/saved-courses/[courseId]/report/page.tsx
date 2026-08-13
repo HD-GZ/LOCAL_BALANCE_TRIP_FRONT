@@ -55,7 +55,7 @@ export default function SavedCourseReport() {
                     : "리포트를 불러오는 중 오류가 발생했습니다."}
                 </p>
               )}
-              {report && <ReportSummary report={report} />}
+              {report && <ReportSummary report={report} savedCourseId={courseId} />}
             </div>
           </>
         )}
