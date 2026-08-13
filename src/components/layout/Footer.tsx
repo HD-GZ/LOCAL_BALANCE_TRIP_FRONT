@@ -1,22 +1,21 @@
 /**
- * 원본과 동일하게 링크가 아닌 텍스트로 둔다. 해당 라우트가 아직 없으므로
- * href 를 붙이면 깨진 링크가 된다.
+ * 기존 디자인(develop)의 가운데 한 줄 형태로 되돌렸다 — 팀 합의 사항.
+ * 해당 라우트가 아직 없으므로 링크가 아닌 텍스트로 둔다.
  */
 const ITEMS = ["이용약관", "개인정보처리방침", "고객센터"];
 
 export default function Footer() {
   return (
-    <footer className="border-line mt-auto w-full border-t">
-      <div className="text-ink-3 mx-auto flex w-full max-w-[1280px] flex-col items-center gap-3 px-4 py-8 sm:flex-row sm:justify-between md:px-8">
-        <p className="text-cap font-normal">© 2026 로컬밸런스 트립</p>
-        <ul className="flex items-center gap-5">
-          {ITEMS.map((item) => (
-            <li key={item} className="text-cap font-normal">
-              {item}
-            </li>
-          ))}
-        </ul>
-      </div>
+    <footer className="text-ink-3 text-cap mt-auto w-full py-5 text-center font-normal">
+      © 2026 로컬밸런스 트립
+      {ITEMS.map((item) => (
+        <span key={item}>
+          <span aria-hidden className="px-2">
+            ·
+          </span>
+          {item}
+        </span>
+      ))}
     </footer>
   );
 }

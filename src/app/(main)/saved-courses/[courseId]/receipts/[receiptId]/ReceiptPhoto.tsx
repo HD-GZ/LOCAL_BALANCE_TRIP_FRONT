@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * 영수증 원본. 이전 구현은 사진 위에 "클릭하여 확대" pill 을 얹었다.
- * DESIGN.md §6 규칙 4에 따라 그 안내는 사진 아래로 내렸다.
+ * 영수증 원본. 기존 디자인(develop)처럼 안내 pill 을 사진 위에 얹는다 — 팀 합의 사항.
  */
 export default function ReceiptPhoto({ imageUrl }: { imageUrl: string | null }) {
   if (!imageUrl) {
@@ -27,25 +26,23 @@ export default function ReceiptPhoto({ imageUrl }: { imageUrl: string | null }) 
 
   return (
     <Dialog>
-      <div className="flex w-full flex-col gap-2">
-        <DialogTrigger asChild>
-          <button
-            type="button"
-            className="lift border-line group relative aspect-3/4 w-full cursor-pointer overflow-hidden rounded-md border"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={imageUrl}
-              alt="영수증 원본"
-              className="lift-zoom absolute inset-0 size-full object-cover"
-            />
-          </button>
-        </DialogTrigger>
-        <p className="text-ink-3 text-cap flex items-center gap-1.5 font-normal">
-          <ZoomIn className="size-3.5" strokeWidth={1.75} aria-hidden />
-          이미지를 누르면 크게 볼 수 있어요
-        </p>
-      </div>
+      <DialogTrigger asChild>
+        <button
+          type="button"
+          className="border-line group relative aspect-3/4 w-full cursor-pointer overflow-hidden rounded-md border"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt="영수증 원본"
+            className="absolute inset-0 size-full object-cover"
+          />
+          <span className="border-brand-line bg-surface/85 text-brand-ink text-cap absolute bottom-3.5 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full border px-3 py-1 backdrop-blur-[2px]">
+            <ZoomIn className="size-3.25" strokeWidth={1.75} aria-hidden />
+            영수증 원본 · 클릭하여 확대
+          </span>
+        </button>
+      </DialogTrigger>
 
       <DialogContent className="w-auto max-w-[calc(100%-4rem)] bg-transparent p-0 shadow-none">
         <DialogTitle className="sr-only">영수증 원본</DialogTitle>

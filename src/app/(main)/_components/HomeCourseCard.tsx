@@ -4,7 +4,9 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import CourseStatusBadge from "@/app/(main)/saved-courses/[courseId]/CourseStatusBadge";
 import RouteMarker from "@/assets/routeMarker.svg";
+import type { SavedCourseStatus } from "@/features/home/types";
 import { cn } from "@/lib/utils";
 
 /**
@@ -17,6 +19,11 @@ type HomeCourseCardProps = {
   href: string;
   title: string;
   imageUrl: string | null;
+  /**
+   * 저장 코스의 상태. 저장 코스 목록과 같은 배지를 쓰기 위해 상태를 그대로 받는다.
+   * 라벨 문자열을 따로 만들면 두 화면의 표시가 어긋난다(팀 피드백).
+   */
+  status?: SavedCourseStatus | null;
   badge?: { label: string; tone: "outline" | "solid" } | null;
   reason?: string | null;
   meta?: string | null;
@@ -26,6 +33,7 @@ export default function HomeCourseCard({
   href,
   title,
   imageUrl,
+  status,
   badge,
   reason,
   meta,
@@ -54,17 +62,23 @@ export default function HomeCourseCard({
             className="text-ink-3 absolute top-1/2 left-1/2 size-8 -translate-x-1/2 -translate-y-1/2"
           />
         )}
-        {badge && (
-          <span
-            className={cn(
-              "text-cap absolute top-2.5 left-2.5 flex h-6.5 items-center rounded-full px-2.75 backdrop-blur-[2px]",
-              badge.tone === "solid"
-                ? "bg-brand/92 text-brand-on"
-                : "border-brand-line bg-surface/94 text-brand-ink border",
-            )}
-          >
-            {badge.label}
+        {status ? (
+          <span className="absolute top-2.5 left-2.5">
+            <CourseStatusBadge status={status} onPhoto />
           </span>
+        ) : (
+          badge && (
+            <span
+              className={cn(
+                "text-cap absolute top-2.5 left-2.5 flex h-6.5 items-center rounded-full px-2.75 backdrop-blur-[2px]",
+                badge.tone === "solid"
+                  ? "bg-brand/92 text-brand-on"
+                  : "border-brand-line bg-surface/94 text-brand-ink border",
+              )}
+            >
+              {badge.label}
+            </span>
+          )
         )}
       </span>
 

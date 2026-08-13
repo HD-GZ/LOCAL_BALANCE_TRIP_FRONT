@@ -11,34 +11,22 @@ import type { HomeFeedItem, SavedCourseStatus } from "@/features/home/types";
 import HomeCourseCard from "./HomeCourseCard";
 import SectionHeader from "./SectionHeader";
 
-const STATUS_LABEL: Record<SavedCourseStatus, string> = {
-  BEFORE_TRIP: "저장",
-  TRAVELING: "여행 중",
-  COMPLETED: "완주",
-};
+const SAVED_COURSE_STATUSES: SavedCourseStatus[] = ["BEFORE_TRIP", "TRAVELING", "COMPLETED"];
 
-function isSavedCourseStatus(value: string): value is SavedCourseStatus {
-  return Object.hasOwn(STATUS_LABEL, value);
-}
-
-function toStatusLabel(subtitle: string | null) {
-  if (!subtitle) {
-    return null;
-  }
-
-  return isSavedCourseStatus(subtitle) ? STATUS_LABEL[subtitle] : subtitle;
+/** subtitle 에 상태 코드가 담겨 온다. 알 수 없는 값이면 배지를 그리지 않는다. */
+function toSavedCourseStatus(subtitle: string | null): SavedCourseStatus | null {
+  if (!subtitle) return null;
+  return SAVED_COURSE_STATUSES.find((status) => status === subtitle) ?? null;
 }
 
 function FeedCard({ item }: { item: HomeFeedItem }) {
   if (item.itemType === "SAVED_COURSE") {
-    const statusLabel = toStatusLabel(item.subtitle);
-
     return (
       <HomeCourseCard
         href={`/saved-courses/${item.id}`}
         title={item.title}
         imageUrl={item.imageUrl}
-        badge={statusLabel ? { label: statusLabel, tone: "solid" } : null}
+        status={toSavedCourseStatus(item.subtitle)}
       />
     );
   }
