@@ -121,7 +121,7 @@ export default function ReportSummary({
       </div>
       <div className="flex w-full flex-col items-center pt-2.25">
         <p className="text-[12.5px] text-[#B8B3AA]">
-          탄소 절감량 = 걸은 거리(m) ÷ 1,000 × 승용차 배산계수 0.21(kg/km)
+          탄소 절감량 = 걸은 거리(m) ÷ 1,000 × 승용차 배출계수 0.21(kg/km)
         </p>
       </div>
     </div>

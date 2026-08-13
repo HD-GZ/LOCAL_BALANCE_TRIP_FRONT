@@ -11,14 +11,19 @@ export async function getSharedCourse(token: string): Promise<SharedCourseResult
   const response = await fetch(new URL(`/shared-courses/${token}`, API_BASE_URL), {
     cache: "no-store",
   });
-  const payload: unknown = await response.json().catch(() => null);
+
+  if (response.status === 404) {
+    return { status: "not_found" };
+  }
 
   if (response.status === 410) {
     return { status: "expired" };
   }
 
-  if (!isApiResponse(payload) || payload.result === "ERROR") {
-    return { status: "not_found" };
+  const payload: unknown = await response.json().catch(() => null);
+
+  if (!response.ok || !isApiResponse(payload) || payload.result === "ERROR") {
+    throw new Error(`공유 코스를 불러오지 못했습니다. (status: ${response.status})`);
   }
 
   return { status: "found", course: payload.data as SharedCourseResponse };
