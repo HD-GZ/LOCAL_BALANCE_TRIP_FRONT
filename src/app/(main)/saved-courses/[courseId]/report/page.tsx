@@ -48,13 +48,18 @@ export default function SavedCourseReport() {
               status={course.status}
             />
             <div className="flex w-full flex-col items-start pt-6.5">
-              {reportQuery.isError && (
-                <p className="text-[13px] text-red-500">
-                  {isApiError(reportQuery.error)
-                    ? reportQuery.error.message
-                    : "리포트를 불러오는 중 오류가 발생했습니다."}
-                </p>
-              )}
+              {reportQuery.isError &&
+                (isApiError(reportQuery.error) && reportQuery.error.status === 409 ? (
+                  <p className="flex w-full justify-center py-10 text-[13px] text-[#928D84]">
+                    아직 리포트가 없어요.
+                  </p>
+                ) : (
+                  <p className="text-[13px] text-red-500">
+                    {isApiError(reportQuery.error)
+                      ? reportQuery.error.message
+                      : "리포트를 불러오는 중 오류가 발생했습니다."}
+                  </p>
+                ))}
               {report && <ReportSummary report={report} savedCourseId={courseId} />}
             </div>
           </>
