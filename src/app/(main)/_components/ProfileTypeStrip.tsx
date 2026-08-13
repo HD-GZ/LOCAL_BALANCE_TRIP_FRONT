@@ -41,7 +41,7 @@ type ProfileTypeStripProps = {
  */
 export default function ProfileTypeStrip({ types, isPending, isError }: ProfileTypeStripProps) {
   return (
-    <section className="border-line flex w-full flex-col gap-5 border-y py-8">
+    <section className="flex w-full flex-col gap-5">
       <div className="flex flex-col gap-1.5">
         <h2 className="text-title-1 text-ink">나는 어떤 여행자일까</h2>
         <p className="text-ink-2 text-body-sm">

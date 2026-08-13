@@ -40,6 +40,17 @@
      반드시 토큰으로 노출해 `text-brand-on` 으로 쓴다. */
   --color-brand-on: var(--brand-on);
 
+  /* --- 기존 디자인의 장식용 색 ---
+     팀 합의로 표면 스타일을 기존 디자인으로 되돌렸다(DESIGN.md §2).
+     되돌린 색도 하드코딩하지 않고 토큰으로 둬야 다크모드와 대비 수정이 유지된다.
+     이 색들은 장식·면 채움 전용이며 글자를 담지 않는다. */
+  --color-brand-line: var(--brand-line);
+  --color-brand-tint: var(--brand-tint);
+  --color-brand-tint-2: var(--brand-tint-2);
+  --color-brand-wash-soft: var(--brand-wash-soft);
+  --color-sand: var(--sand);
+  --color-decor-amber: var(--decor-amber);
+
   /* --- 의미 전용 --- */
   --color-danger: var(--danger);
   --color-danger-ink: var(--danger-ink);
@@ -133,8 +144,10 @@
   --radius-3xl: 18px;
   --radius-4xl: 18px;
 
-  /* --- 깊이: 실제로 떠 있는 것에만 --- */
+  /* --- 깊이 --- */
   --shadow-overlay: var(--overlay-shadow);
+  /* 기존 디자인의 카드 그림자. 인라인 카드·패널에 쓴다. */
+  --shadow-card: var(--card-shadow);
 
   /* --- 모션 --- */
   --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);
@@ -169,6 +182,21 @@
   --danger-ink: #a5553a; /* * #B5654A 는 paper 대비 3.78:1 */
   --danger-wash: #f7ece7;
   --danger-on: #ffffff;
+
+  --brand-line: #c4ddcd;
+  --brand-tint: #dfeee4;
+  --brand-tint-2: #d3e6da;
+  --brand-wash-soft: #f4faf6;
+  --sand: #f7f1e4;
+  --decor-amber: #e0b23d;
+
+  /* 기존 디자인의 히어로·썸네일 그라디언트. 값을 컴포넌트에 흘리지 않는다. */
+  --hero-gradient: linear-gradient(120deg, #e9f2ea 0%, #eef4e8 46%, #f7f1e4 100%);
+  --thumb-gradient: linear-gradient(150deg, #e7f0ea 0%, #dfeee4 55%, #d3e6da 100%);
+  /* 카드 상단만 살짝 물드는 기존 처리 */
+  --card-gradient: linear-gradient(to bottom, #f4faf6 0%, #ffffff 46%);
+  /* 인라인 카드·패널의 기존 그림자. 오버레이 그림자와 구분한다. */
+  --card-shadow: 0 1px 2px 0 rgb(40 36 28 / 0.04), 0 12px 32px -12px rgb(40 36 28 / 0.14);
 
   --radius: 12px;
   --overlay-shadow: 0 1px 2px rgb(34 32 25 / 0.06), 0 12px 28px -10px rgb(34 32 25 / 0.22);
@@ -207,6 +235,18 @@
   --danger-ink: #cd7d62;
   --danger-wash: #2e1f19;
   --danger-on: #ffffff;
+
+  --brand-line: #2e4436;
+  --brand-tint: #1f2c24;
+  --brand-tint-2: #24332a;
+  --brand-wash-soft: #1a2620;
+  --sand: #23211c;
+  --decor-amber: #8a6b1f;
+
+  --hero-gradient: linear-gradient(120deg, #1c2a22 0%, #1f2a1e 46%, #23211c 100%);
+  --thumb-gradient: linear-gradient(150deg, #1f2c24 0%, #24332a 55%, #1a2620 100%);
+  --card-gradient: linear-gradient(to bottom, #1f2a24 0%, #232220 46%);
+  --card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 12px 32px -12px rgb(0 0 0 / 0.5);
 
   --overlay-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 28px -10px rgb(0 0 0 / 0.6);
 }

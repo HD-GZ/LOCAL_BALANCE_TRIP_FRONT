@@ -46,7 +46,7 @@ type ProfileSummaryProps = {
  */
 export default function ProfileSummary({ userName, summary }: ProfileSummaryProps) {
   return (
-    <section className="border-line flex w-full flex-col gap-6 border-y py-8">
+    <section className="flex w-full flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <div className="flex flex-col gap-1.5">
           <p className="text-ink-3 text-cap flex items-center gap-2 font-normal">

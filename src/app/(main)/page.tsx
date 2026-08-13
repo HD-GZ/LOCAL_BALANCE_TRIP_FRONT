@@ -47,7 +47,7 @@ function resolveHomeState({
 /** 프로필 밴드 로딩 자리. 최종 레이아웃(축 5개 행)의 형태를 복제한다. */
 function ProfileBandSkeleton() {
   return (
-    <div className="border-line flex w-full flex-col gap-6 border-y py-8">
+    <div className="flex w-full flex-col gap-6">
       <div className="flex flex-col gap-2">
         <Skeleton className="h-3 w-40" />
         <Skeleton className="h-6 w-56" />
@@ -111,27 +111,27 @@ export default function Home() {
           ctaCaption={cta.caption}
           heroItems={heroItems}
           isHeroPending={heroQuery.isPending}
-        />
-
-        {homeState === "loading" && <ProfileBandSkeleton />}
-        {homeState === "error" && (
-          <SurfaceState
-            tone="error"
-            title="여행 성향을 불러오지 못했어요"
-            description="네트워크 상태를 확인한 뒤 다시 시도해 주세요."
-            action={{ label: "다시 시도", onRetry: () => profileSummaryQuery.refetch() }}
-          />
-        )}
-        {homeState === "diagnosed" && summary && meQuery.data && (
-          <ProfileSummary userName={meQuery.data.name} summary={summary} />
-        )}
-        {homeState === "undiagnosed" && (
-          <ProfileTypeStrip
-            types={profileTypesQuery.data?.types ?? []}
-            isPending={profileTypesQuery.isPending}
-            isError={profileTypesQuery.isError}
-          />
-        )}
+        >
+          {homeState === "loading" && <ProfileBandSkeleton />}
+          {homeState === "error" && (
+            <SurfaceState
+              tone="error"
+              title="여행 성향을 불러오지 못했어요"
+              description="네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+              action={{ label: "다시 시도", onRetry: () => profileSummaryQuery.refetch() }}
+            />
+          )}
+          {homeState === "diagnosed" && summary && meQuery.data && (
+            <ProfileSummary userName={meQuery.data.name} summary={summary} />
+          )}
+          {homeState === "undiagnosed" && (
+            <ProfileTypeStrip
+              types={profileTypesQuery.data?.types ?? []}
+              isPending={profileTypesQuery.isPending}
+              isError={profileTypesQuery.isError}
+            />
+          )}
+        </HomeHero>
 
         {homeState === "diagnosed" && (
           <SavedCourseFeedSection heroRegionTitles={heroRegionTitles} />

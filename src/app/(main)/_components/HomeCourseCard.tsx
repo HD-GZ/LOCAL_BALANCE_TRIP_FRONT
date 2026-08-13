@@ -8,8 +8,9 @@ import RouteMarker from "@/assets/routeMarker.svg";
 import { cn } from "@/lib/utils";
 
 /**
- * 코스 카드. DESIGN.md §6 규칙 4 — 배지를 사진 위에 얹지 않고 사진 아래로 내렸다.
- * hover 는 리프트 + 이미지 확대. 그림자를 켜지 않는다 (§7).
+ * 코스 카드. 기존 디자인(develop)의 표면 처리를 되돌린 것이다 — 팀 합의 사항.
+ * 초록 테두리, 위쪽만 물드는 카드 배경, 사진 위에 얹는 배지까지 원래대로 돌렸다.
+ * 색과 크기는 토큰을 쓰고, hover 리프트는 남긴다.
  */
 
 type HomeCourseCardProps = {
@@ -35,9 +36,9 @@ export default function HomeCourseCard({
   return (
     <Link
       href={href}
-      className="lift border-line bg-surface group flex h-full flex-col overflow-hidden rounded-md border"
+      className="lift border-brand-line group flex h-full flex-col overflow-hidden rounded-md border bg-[image:var(--card-gradient)]"
     >
-      <span className="bg-paper-sunk relative block aspect-[4/3] w-full overflow-hidden">
+      <span className="relative block aspect-[4/3] w-full overflow-hidden bg-[image:var(--thumb-gradient)]">
         {hasPhoto && imageUrl ? (
           <Image
             src={imageUrl}
@@ -53,25 +54,25 @@ export default function HomeCourseCard({
             className="text-ink-3 absolute top-1/2 left-1/2 size-8 -translate-x-1/2 -translate-y-1/2"
           />
         )}
-      </span>
-
-      <span className="flex flex-1 flex-col gap-2 px-4 pt-4 pb-5">
         {badge && (
           <span
             className={cn(
-              "text-cap w-fit rounded-xs px-2 py-0.5",
+              "text-cap absolute top-2.5 left-2.5 flex h-6.5 items-center rounded-full px-2.75 backdrop-blur-[2px]",
               badge.tone === "solid"
-                ? "bg-brand text-brand-on"
-                : "border-line-control text-ink-2 border",
+                ? "bg-brand/92 text-brand-on"
+                : "border-brand-line bg-surface/94 text-brand-ink border",
             )}
           >
             {badge.label}
           </span>
         )}
+      </span>
+
+      <span className="flex flex-1 flex-col gap-1.5 px-4 pt-3 pb-4">
         <span className="text-title-3 text-ink group-hover:text-brand-ink line-clamp-2 transition-colors duration-(--dur-1)">
           {title}
         </span>
-        {reason && <span className="text-ink-2 text-body-sm line-clamp-2">{reason}</span>}
+        {reason && <span className="text-brand-ink text-body-sm line-clamp-2">{reason}</span>}
         {meta && (
           <span className="text-ink-3 text-cap mt-auto truncate pt-1 font-normal">{meta}</span>
         )}

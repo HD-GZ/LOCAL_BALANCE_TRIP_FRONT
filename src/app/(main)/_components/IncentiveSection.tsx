@@ -13,11 +13,8 @@ import { cn } from "@/lib/utils";
 import SectionHeader from "./SectionHeader";
 
 /**
- * 혜택. 이전 구현은 3열 카드 그리드였고, 그러면 위쪽 코스 그리드와 같은 레이아웃 계열이
- * 되어 표면이 단조로워진다 (DESIGN.md §11).
- *
- * 그래서 여기는 장부(ledger) 계열이다: 괘선으로 나뉜 행, 오른쪽에 고정폭 마감일.
- * 마감이 스캔의 핵심이므로 브릭은 여기서 의미로서 쓰인다 (§3).
+ * 혜택. 기존 디자인(develop)의 흰 카드 그리드로 되돌린 것이다 — 팀 합의 사항.
+ * 마감일은 카드 안에서 의미 색(danger)으로 표시한다.
  */
 
 function DeadlineMark({ dday }: { dday: number | null }) {
@@ -40,29 +37,33 @@ function DeadlineMark({ dday }: { dday: number | null }) {
   );
 }
 
-function IncentiveRow({ incentive }: { incentive: Incentive }) {
+function IncentiveCard({ incentive, regionName }: { incentive: Incentive; regionName: string }) {
   return (
-    <li>
+    <li className="flex">
       <a
         href={incentive.url}
         target="_blank"
         rel="noreferrer"
-        className="group hover:bg-surface-2 border-line -mx-3 flex h-full items-start gap-4 rounded-sm border-b px-3 py-4 transition-colors duration-(--dur-1)"
+        className="lift border-line bg-surface group flex flex-1 flex-col items-start gap-3 rounded-md border px-5 py-5"
       >
-        <span className="flex min-w-0 flex-1 flex-col gap-1">
-          <span className="text-title-3 text-ink group-hover:text-brand-ink flex items-center gap-1.5 transition-colors duration-(--dur-1)">
-            <span className="min-w-0">{incentive.title}</span>
-            <ArrowUpRight
-              aria-hidden
-              className="text-ink-3 group-hover:text-brand-ink size-3.5 shrink-0 transition-all duration-(--dur-2) group-hover:translate-x-px group-hover:-translate-y-px"
-              strokeWidth={1.75}
-            />
+        <span className="flex w-full items-center justify-between gap-2.5">
+          <span className="border-brand-line bg-brand-wash text-brand-ink text-cap flex h-6.5 shrink-0 items-center rounded-full border px-3">
+            {regionName}
           </span>
-          {incentive.description && (
-            <span className="text-ink-2 text-body-sm line-clamp-2">{incentive.description}</span>
-          )}
+          <DeadlineMark dday={incentive.dday} />
         </span>
-        <DeadlineMark dday={incentive.dday} />
+
+        <span className="text-title-2 text-ink group-hover:text-brand-ink transition-colors duration-(--dur-1)">
+          {incentive.title}
+        </span>
+        {incentive.description && (
+          <span className="text-ink-2 text-body-sm line-clamp-2">{incentive.description}</span>
+        )}
+
+        <span className="border-line text-brand-ink text-body-sm mt-auto flex w-full items-center gap-0.5 border-t pt-3 font-semibold">
+          신청 페이지 바로가기
+          <ArrowUpRight className="size-3.5" strokeWidth={1.75} aria-hidden />
+        </span>
       </a>
     </li>
   );
@@ -91,14 +92,16 @@ export default function IncentiveSection() {
               <Skeleton key={index} className="h-8 w-20" rounded="full" />
             ))}
           </div>
-          <div className="border-line divide-line flex flex-col divide-y border-t">
-            {Array.from({ length: 4 }, (_, index) => (
-              <div key={index} className="flex items-start gap-4 py-4">
-                <span className="flex flex-1 flex-col gap-2">
-                  <Skeleton className="h-4 w-1/2" />
-                  <Skeleton className="h-3 w-3/4" />
-                </span>
-                <Skeleton className="h-3 w-10" />
+          <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }, (_, index) => (
+              <div
+                key={index}
+                className="border-line bg-surface flex flex-col gap-3 rounded-md border p-5"
+              >
+                <Skeleton className="h-6 w-20" rounded="full" />
+                <Skeleton className="h-5 w-3/4" />
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-2/3" />
               </div>
             ))}
           </div>
@@ -164,9 +167,13 @@ export default function IncentiveSection() {
             ) : (
               // 넓은 폭에서는 2열로 밀도를 올린다. 격자에서는 divide-y 가 성립하지 않아
               // 행마다 위쪽 괘선을 두고 첫 행만 예외 처리한다.
-              <ul className="border-line grid border-t xl:grid-cols-2 xl:gap-x-10">
+              <ul className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {selectedRegion.incentives.map((incentive) => (
-                  <IncentiveRow key={`${incentive.title}-${incentive.url}`} incentive={incentive} />
+                  <IncentiveCard
+                    key={`${incentive.title}-${incentive.url}`}
+                    incentive={incentive}
+                    regionName={selectedRegion.regionName}
+                  />
                 ))}
               </ul>
             )}
