@@ -75,7 +75,7 @@ export default function ShareDialog({
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>어디에 공유할까요?</DialogTitle>
-        <DialogDescription>지역 소비 금액과 이동 경로는 공유되지 않아요.</DialogDescription>
+        <DialogDescription>지역 소비 금액은 공유되지 않아요.</DialogDescription>
         <div className="flex w-full items-start gap-2.5 pt-3.75">
           <button
             type="button"
