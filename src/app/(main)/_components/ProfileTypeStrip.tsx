@@ -72,6 +72,7 @@ export default function ProfileTypeStrip({ types, isPending, isError }: ProfileT
 
       {!isPending && !isError && types.length === 0 && (
         <SurfaceState
+          variant="plain"
           title="표시할 여행자 유형이 아직 없어요"
           description="유형 목록은 준비 중이지만, 진단 자체는 지금 받을 수 있어요."
           action={{ label: "취향 진단 시작하기", href: PROPENSITY_HREF }}

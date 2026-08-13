@@ -119,6 +119,7 @@ export default function IncentiveSection() {
 
       {incentivesQuery.isSuccess && regions.length === 0 && (
         <SurfaceState
+          variant="plain"
           title="진행 중인 혜택이 아직 없어요"
           description="지역을 추천받으면 그 지역의 지원 사업이 여기에 모여요."
           action={{ label: "코스 추천 보기", href: "/course-recommend?step=1" }}
@@ -161,12 +162,11 @@ export default function IncentiveSection() {
           >
             {selectedRegion.incentives.length === 0 ? (
               <SurfaceState
+                variant="plain"
                 title={`${selectedRegion.regionName}에 진행 중인 혜택이 없어요`}
                 description="다른 지역 탭을 눌러 확인해 보세요."
               />
             ) : (
-              // 넓은 폭에서는 2열로 밀도를 올린다. 격자에서는 divide-y 가 성립하지 않아
-              // 행마다 위쪽 괘선을 두고 첫 행만 예외 처리한다.
               <ul className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {selectedRegion.incentives.map((incentive) => (
                   <IncentiveCard

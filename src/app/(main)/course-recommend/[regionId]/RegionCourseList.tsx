@@ -12,12 +12,12 @@ type RegionCourseListProps = {
 
 export default function RegionCourseList({ courses }: RegionCourseListProps) {
   return (
-    <ol className="border-line divide-line flex w-full flex-col divide-y border-y">
+    <ol className="border-line bg-surface shadow-card divide-line flex w-full flex-col divide-y rounded-md border px-6">
       {courses.map((course, index) => (
         <li key={course.courseId}>
           <Link
             href={`/course-recommend/courses/${course.courseId}`}
-            className="group hover:bg-surface-2 -mx-3 flex items-center gap-4 rounded-sm px-3 py-4 transition-colors duration-(--dur-1)"
+            className="group flex items-center gap-4 py-4 transition-colors duration-(--dur-1)"
           >
             <span className="text-ink-3 text-num w-6 shrink-0 tabular-nums">
               {String(index + 1).padStart(2, "0")}

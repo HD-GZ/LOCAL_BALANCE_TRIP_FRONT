@@ -19,7 +19,7 @@ import CourseRoute from "./CourseRoute";
 
 function CourseDetailSkeleton() {
   return (
-    <div className="border-line bg-surface flex w-full flex-col gap-4 rounded-md border px-5 py-6 sm:px-8">
+    <div className="border-line bg-surface shadow-card flex w-full flex-col gap-4 rounded-md border px-5 py-6 sm:px-8">
       <Skeleton className="h-3 w-20" />
       {Array.from({ length: 4 }, (_, index) => (
         <div key={index} className="flex items-start gap-3 py-2">
@@ -80,7 +80,7 @@ export default function CourseDetail() {
       )}
 
       {course && (
-        <div className="border-line bg-surface flex w-full flex-col rounded-md border px-5 py-6 sm:px-8 sm:py-8">
+        <div className="border-line bg-surface shadow-card flex w-full flex-col rounded-md border px-5 py-6 sm:px-8 sm:py-8">
           <h2 className="text-title-2 text-ink pb-4">코스 순서</h2>
           <CourseRoute places={course.places} />
 

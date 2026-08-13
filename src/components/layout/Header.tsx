@@ -69,8 +69,11 @@ export default function Header() {
     };
   }, [isMenuOpen]);
 
+  // 표면은 기존 디자인(흰 배경, 굵은 글씨 활성 표시)으로 되돌렸다 — 팀 합의 사항.
+  // 스티키는 유지한다. 장식이 아니라 이동 수단이고, 화면이 길어진 지금
+  // 상단으로 돌아가려면 매번 끝까지 스크롤해야 한다.
   return (
-    <header className="border-line bg-paper/85 sticky top-0 z-40 w-full border-b backdrop-blur-md">
+    <header className="border-line bg-surface sticky top-0 z-40 w-full border-b">
       <div className="mx-auto flex h-16 w-full max-w-[1280px] items-center justify-between gap-4 px-4 md:px-8">
         <nav className="flex min-w-0 items-center gap-6 md:gap-8" aria-label="주요 메뉴">
           <Link
@@ -96,11 +99,8 @@ export default function Header() {
                     onNavigate={handleNavigate(item.href)}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "text-body-sm relative block py-1 whitespace-nowrap transition-colors duration-(--dur-1)",
-                      "after:bg-brand after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:transition-[width] after:duration-(--dur-2) after:ease-(--ease-out-quart)",
-                      active
-                        ? "text-ink font-semibold after:w-full"
-                        : "text-ink-2 hover:text-ink font-medium after:w-0 hover:after:w-full",
+                      "text-body-sm block py-1 whitespace-nowrap transition-colors duration-(--dur-1)",
+                      active ? "text-ink font-semibold" : "text-ink-2 hover:text-ink font-normal",
                     )}
                   >
                     {item.name}

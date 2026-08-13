@@ -68,7 +68,7 @@ export default function SavedCourseDetail() {
               regionName={course.regionName}
               status={course.status}
             />
-            <div className="flex w-full flex-col">
+            <div className="border-line bg-surface shadow-card flex w-full flex-col rounded-md border px-5 py-6 sm:px-8 sm:py-8">
               <h2 className="text-title-2 text-ink pb-4">코스 순서</h2>
               <CourseRoute places={course.places} />
 

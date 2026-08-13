@@ -42,8 +42,9 @@ export default function Stepper({ steps, currentStep, showStepLabel = false }: S
                 aria-current={isCurrent ? "step" : undefined}
                 className={cn(
                   circleBase,
-                  isCurrent && "border-brand bg-brand text-brand-on",
-                  isDone && "border-brand bg-brand-wash text-brand-ink",
+                  isCurrent &&
+                    "border-brand bg-brand text-brand-on shadow-[0_0_0_4px_var(--brand-wash)]",
+                  isDone && "border-brand-line bg-brand-wash text-brand-ink",
                   !isCurrent && !isDone && "border-line-control bg-surface text-ink-3",
                 )}
               >

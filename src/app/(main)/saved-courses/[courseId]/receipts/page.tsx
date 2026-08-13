@@ -64,7 +64,7 @@ export default function SavedCourseReceipts() {
               status={course.status}
             />
 
-            <div className="flex w-full flex-col gap-4">
+            <div className="border-line bg-surface shadow-card flex w-full flex-col gap-4 rounded-md border px-5 py-6 sm:px-8 sm:py-8">
               <h2 className="text-title-2 text-ink">저장된 영수증</h2>
 
               {receiptsQuery.isPending && (

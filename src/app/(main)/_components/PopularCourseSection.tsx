@@ -41,6 +41,7 @@ export default function PopularCourseSection() {
 
       {popularCoursesQuery.isSuccess && courses.length === 0 && (
         <SurfaceState
+          variant="plain"
           title="지금 보여드릴 인기 코스가 없어요"
           description="취향 진단을 마치면 내 기준에 맞는 코스를 바로 추천해 드려요."
           action={{ label: "취향 진단 시작하기", href: "/propensity?step=1" }}

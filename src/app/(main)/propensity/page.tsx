@@ -287,7 +287,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
           animate={reduce ? undefined : { opacity: 1, x: 0 }}
           exit={reduce ? undefined : { opacity: 0, x: direction * -20 }}
           transition={{ duration: 0.26, ease: EASE }}
-          className="border-line bg-surface flex w-full flex-col gap-6 rounded-md border px-5 py-6 sm:px-8 sm:py-8"
+          className="border-line bg-surface shadow-card flex w-full flex-col gap-6 rounded-md border px-5 py-6 sm:px-8 sm:py-8"
         >
           {/*
            * 남은 문항 수는 버튼에서만 알린다. 이전에는 여기 우측 상단에 "0 / 5 응답" 을

@@ -104,6 +104,7 @@ export default function SavedCourseFeedSection({
 
       {feedQuery.isSuccess && items.length === 0 && (
         <SurfaceState
+          variant="plain"
           title="아직 저장한 코스가 없어요"
           description="코스 추천에서 마음에 드는 코스를 저장하면 여기에 모여요."
           action={{ label: "코스 추천 보기", href: "/course-recommend?step=1" }}

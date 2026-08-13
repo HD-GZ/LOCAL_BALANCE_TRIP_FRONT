@@ -28,7 +28,7 @@ export default function AuthShell({
         </span>
       </Link>
 
-      <div className="border-line bg-surface flex w-full max-w-[27rem] flex-col rounded-md border px-6 py-8 sm:px-8">
+      <div className="border-line bg-surface shadow-card flex w-full max-w-[27rem] flex-col rounded-md border px-6 py-8 sm:px-8">
         <div className="flex flex-col gap-2 pb-6">
           <h1 className="text-title-1 text-ink">{title}</h1>
           {description && <p className="text-ink-2 text-body-sm">{description}</p>}

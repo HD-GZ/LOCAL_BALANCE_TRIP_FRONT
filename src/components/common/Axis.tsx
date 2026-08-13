@@ -180,9 +180,10 @@ export function AxisInput({
         aria-label={`${minLabel} 대 ${maxLabel}`}
         className="relative flex items-center justify-between"
       >
+        {/* 트랙은 기존 디자인처럼 조금 굵게. 양 끝은 점 반지름만큼 물린다. */}
         <span
           aria-hidden
-          className="bg-line-control absolute inset-x-5.5 top-1/2 h-px -translate-y-1/2"
+          className="bg-line-strong absolute inset-x-5.5 top-1/2 h-0.5 -translate-y-1/2"
         />
         {STEPS.map((step) => {
           const isSelected = value === step;
@@ -204,19 +205,22 @@ export function AxisInput({
               onClick={() => onChange(step)}
               className="group press relative z-10 flex size-11 cursor-pointer items-center justify-center rounded-full"
             >
+              {/*
+               * 기존 디자인의 점 스타일: 선택하면 큰 wash 링 안에 초록 점이 들어앉는다.
+               * 가운데(3)는 더 작아서 "중립"임을 형태로 알린다.
+               */}
               <span
                 className={cn(
-                  "flex items-center justify-center rounded-full transition-all duration-(--dur-2) ease-(--ease-out-quart)",
+                  "bg-surface flex items-center justify-center rounded-full border-2 transition-all duration-(--dur-2) ease-(--ease-out-quart)",
                   isSelected
-                    ? "bg-brand size-6"
+                    ? "border-brand-wash size-9"
                     : cn(
-                        "bg-surface border-line-control border",
-                        isCenter ? "size-2" : "size-3.5",
-                        "group-hover:border-brand group-hover:bg-brand-wash",
+                        isCenter ? "border-line-strong size-2.5" : "border-line-control size-3.5",
+                        "group-hover:border-brand",
                       ),
                 )}
               >
-                {isSelected && <span className="bg-brand-wash size-2 rounded-full" />}
+                {isSelected && <span className="bg-brand block size-5.5 rounded-full" />}
               </span>
             </button>
           );
