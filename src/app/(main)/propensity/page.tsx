@@ -34,18 +34,18 @@ const SAVE_SPEND_OPTIONS = [
 ];
 const INITIAL_ANSWERS = {
   preference: {
-    locality: 0,
-    frugality: 0,
-    experientiality: 0,
-    vitality: 0,
-    sociality: 0,
+    locality: 3,
+    frugality: 3,
+    experientiality: 3,
+    vitality: 3,
+    sociality: 3,
   },
   valueConsumption: {
-    accommodation: 0,
-    food: 0,
-    experience: 0,
-    transportation: 0,
-    cafeExhibition: 0,
+    accommodation: 3,
+    food: 3,
+    experience: 3,
+    transportation: 3,
+    cafeExhibition: 3,
   },
 };
 const PROPENSITY_QUESTIONS = {
