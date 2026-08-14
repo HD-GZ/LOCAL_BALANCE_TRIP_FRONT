@@ -85,34 +85,43 @@ export default async function SharedCoursePage({ params }: SharedCoursePageProps
             <CourseStatusBadge status={course.status} />
           </div>
 
-          <div className="border-line relative h-56 w-full overflow-hidden rounded-md border bg-[image:var(--thumb-gradient)]">
-            {course.imageUrl ? (
-              <Image
-                src={course.imageUrl}
-                alt={course.title}
-                fill
-                sizes="(min-width: 1280px) 1216px, 100vw"
-                className="object-cover"
-              />
-            ) : (
-              <RouteMarker className="absolute top-1/2 left-1/2 size-11 -translate-x-1/2 -translate-y-1/2" />
-            )}
-          </div>
+          {/*
+           * 코스 썸네일은 297×198 수준으로 내려온다. 전폭 배너로 늘리면 4배 확대에
+           * 5:1 크롭이 되어 뭉개지므로, 원본 비율(3:2)을 지키는 상자에 담고 제목·지표를
+           * 옆에 세운다.
+           */}
+          <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:items-center lg:gap-10">
+            <div className="border-line relative aspect-3/2 w-full overflow-hidden rounded-md border bg-[image:var(--thumb-gradient)]">
+              {course.imageUrl ? (
+                <Image
+                  src={course.imageUrl}
+                  alt={course.title}
+                  fill
+                  sizes="(min-width: 1024px) 24rem, 100vw"
+                  className="object-cover"
+                />
+              ) : (
+                <RouteMarker className="absolute top-1/2 left-1/2 size-11 -translate-x-1/2 -translate-y-1/2" />
+              )}
+            </div>
 
-          <div className="flex w-full flex-col items-start gap-1.25">
-            <p className="text-ink-3 text-cap font-normal">{course.regionName}</p>
-            <h1 className="text-display-2 text-ink text-balance">{course.title}</h1>
-          </div>
+            <div className="flex w-full flex-col items-start gap-5">
+              <div className="flex w-full flex-col items-start gap-1.25">
+                <p className="text-ink-3 text-cap font-normal">{course.regionName}</p>
+                <h1 className="text-display-2 text-ink text-balance">{course.title}</h1>
+              </div>
 
-          <div className="border-line flex w-full items-start justify-center gap-5 border-t pt-5.5">
-            <SharedStat value={`${course.places.length}곳`} label="방문 장소" />
-            <SharedStat
-              value={
-                totalWalkMinutes >= 60 ? `${walkHours}시간 ${walkMinutes}분` : `${walkMinutes}분`
-              }
-              label="총 도보"
-            />
-            <SharedStat value={`${audioGuideCount}개`} label="오디오 가이드" />
+              <div className="border-line flex w-full items-start gap-5 border-t pt-5.5">
+                <SharedStat value={`${course.places.length}곳`} label="방문 장소" />
+                <SharedStat
+                  value={
+                    totalWalkMinutes >= 60 ? `${walkHours}시간 ${walkMinutes}분` : `${walkMinutes}분`
+                  }
+                  label="총 도보"
+                />
+                <SharedStat value={`${audioGuideCount}개`} label="오디오 가이드" />
+              </div>
+            </div>
           </div>
         </div>
 

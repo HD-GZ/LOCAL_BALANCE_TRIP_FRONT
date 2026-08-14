@@ -8,6 +8,9 @@ import { cn } from "@/lib/utils";
 /**
  * 코스 순서 / 환급 증빙 / 리포트 전환.
  * 코스 순서는 나머지 둘이 아닐 때 활성이므로 마지막에 판별한다.
+ *
+ * 비활성 라벨은 `ink-2`를 쓴다. `ink-3`은 paper·surface 위에서만 4.5:1을 넘고
+ * 이 트랙의 `paper-sunk` 위에서는 4.21:1로 미달한다 (DESIGN.md §3).
  */
 const tabClassName =
   "text-body-sm flex h-9.5 items-center justify-center rounded-full px-5.5 font-semibold transition-colors duration-(--dur-1)";
@@ -38,7 +41,7 @@ export default function SavedCourseDetailTabs({ courseId }: { courseId: number }
             tabClassName,
             tab.active
               ? "bg-surface text-brand-ink shadow-[0_1px_2px_0_rgb(40_36_28/0.08)]"
-              : "text-ink-3 hover:text-ink",
+              : "text-ink-2 hover:text-ink",
           )}
         >
           {tab.label}
