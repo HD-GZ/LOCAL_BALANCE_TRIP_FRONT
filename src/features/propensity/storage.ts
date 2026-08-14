@@ -1,21 +1,5 @@
 import type { PropensityRequest, PropensityResult } from "./types";
 
-const MEDIAN_ANSWER_VALUE = 3;
-
-function normalizeLegacyAnswers(answers: PropensityRequest): PropensityRequest {
-  const normalizeGroup = <T extends Record<string, number>>(group: T): T =>
-    Object.fromEntries(
-      Object.entries(group).map(([key, value]) => [
-        key,
-        value === 0 ? MEDIAN_ANSWER_VALUE : value,
-      ]),
-    ) as T;
-  return {
-    preference: normalizeGroup(answers.preference),
-    valueConsumption: normalizeGroup(answers.valueConsumption),
-  };
-}
-
 const PROPENSITY_ANSWERS_STORAGE_KEY = "local-balance-trip:propensity-answers";
 const PROPENSITY_RESULT_STORAGE_KEY = "local-balance-trip:propensity-result";
 
@@ -55,8 +39,7 @@ export function getPropensityAnswers(userId: number): PropensityRequest | null {
 
   try {
     const parsed = JSON.parse(item) as StoredPropensityAnswers;
-    cachedAnswersValue =
-      parsed.userId === userId ? normalizeLegacyAnswers(parsed.answers) : null;
+    cachedAnswersValue = parsed.userId === userId ? parsed.answers : null;
   } catch {
     cachedAnswersValue = null;
   }
