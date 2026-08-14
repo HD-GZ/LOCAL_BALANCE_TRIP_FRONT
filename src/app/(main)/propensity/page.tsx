@@ -141,10 +141,6 @@ function getHydratedServerSnapshot() {
   return false;
 }
 
-function countAnswered(answers: Record<string, number>) {
-  return Object.values(answers).filter((value) => value !== 0).length;
-}
-
 function PropensityContent({ userId }: { userId: number | undefined }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -186,9 +182,6 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
   const currentStep = getCurrentStep(rawStep);
   const questions = currentStep === 1 || currentStep === 2 ? PROPENSITY_QUESTIONS[currentStep] : [];
   const currentAnswers = currentStep === 1 ? answers.preference : answers.valueConsumption;
-  const isPreferenceAnswered = Object.values(answers.preference).every((value) => value !== 0);
-  const isAllAnswered =
-    isPreferenceAnswered && Object.values(answers.valueConsumption).every((value) => value !== 0);
   const propensityResult =
     postPropensityMutation.data?.propensityResult ??
     propensityResultQuery.data?.propensityResult ??
@@ -252,14 +245,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
     }
   }, [rawStep, router]);
 
-  useEffect(() => {
-    if (currentStep === 2 && !isPreferenceAnswered) {
-      router.replace("/propensity?step=1");
-    }
-  }, [currentStep, isPreferenceAnswered, router]);
-
   const ment = STEP_MENT[currentStep] ?? STEP_MENT[1]!;
-  const answeredCount = countAnswered(currentAnswers);
   const submitError = postPropensityMutation.isError
     ? isApiError(postPropensityMutation.error)
       ? postPropensityMutation.error.message
@@ -289,10 +275,6 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
           transition={{ duration: 0.26, ease: EASE }}
           className="border-line bg-surface shadow-card flex w-full flex-col gap-6 rounded-md border px-5 py-6 sm:px-8 sm:py-8"
         >
-          {/*
-           * 남은 문항 수는 버튼에서만 알린다. 이전에는 여기 우측 상단에 "0 / 5 응답" 을
-           * 같이 뒀는데, 버튼의 "N개 문항이 남았어요" 와 같은 내용을 두 번 말하는 셈이었다.
-           */}
           {currentStep !== 3 && (
             <PropensityQuestionList
               questions={questions}
@@ -311,15 +293,8 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
 
           <div className="border-line flex flex-col gap-3 border-t pt-6">
             {currentStep === 1 && (
-              <Button
-                size="xl"
-                className="w-full"
-                disabled={!isPreferenceAnswered}
-                onClick={() => goStep(2)}
-              >
-                {isPreferenceAnswered
-                  ? "가치소비 설정하기"
-                  : `${questions.length - answeredCount}개 문항이 남았어요`}
+              <Button size="xl" className="w-full" onClick={() => goStep(2)}>
+                가치소비 설정하기
               </Button>
             )}
 
@@ -337,7 +312,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
                   <Button
                     size="xl"
                     className="sm:flex-2"
-                    disabled={!isAllAnswered || postPropensityMutation.isPending}
+                    disabled={postPropensityMutation.isPending}
                     onClick={() => {
                       postPropensityMutation.mutate(answers, {
                         onSuccess: (data) => {
@@ -349,11 +324,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
                       });
                     }}
                   >
-                    {postPropensityMutation.isPending
-                      ? "결과를 만들고 있어요..."
-                      : isAllAnswered
-                        ? "결과 보기"
-                        : `${questions.length - answeredCount}개 문항이 남았어요`}
+                    {postPropensityMutation.isPending ? "결과를 만들고 있어요..." : "결과 보기"}
                   </Button>
                 </div>
                 {submitError && (
