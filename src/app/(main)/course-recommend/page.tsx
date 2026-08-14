@@ -31,6 +31,11 @@ function DestinationListSkeleton() {
 export default function CourseRecommend() {
   const regionsQuery = useQuery(recommendationQueries.regions());
   const regions = regionsQuery.data ?? [];
+  /**
+   * 진단을 아직 받지 않은 계정은 401로 돌아온다. 네트워크 오류가 아니라 순서 문제이므로
+   * "다시 시도"가 아니라 진단으로 보낸다.
+   */
+  const needsPropensity = isApiError(regionsQuery.error) && regionsQuery.error.status === 401;
 
   return (
     <FlowShell
@@ -43,18 +48,25 @@ export default function CourseRecommend() {
     >
       {regionsQuery.isPending && <DestinationListSkeleton />}
 
-      {regionsQuery.isError && (
-        <SurfaceState
-          tone="error"
-          title="추천 여행지를 불러오지 못했어요"
-          description={
-            isApiError(regionsQuery.error)
-              ? regionsQuery.error.message
-              : "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
-          }
-          action={{ label: "다시 시도", onRetry: () => regionsQuery.refetch() }}
-        />
-      )}
+      {regionsQuery.isError &&
+        (needsPropensity ? (
+          <SurfaceState
+            title="취향 진단을 먼저 받아야 해요"
+            description="진단을 마치면 성향에 맞는 여행지를 추천해 드려요."
+            action={{ label: "취향 진단 하러 가기", href: "/propensity?step=1" }}
+          />
+        ) : (
+          <SurfaceState
+            tone="error"
+            title="추천 여행지를 불러오지 못했어요"
+            description={
+              isApiError(regionsQuery.error)
+                ? regionsQuery.error.message
+                : "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+            }
+            action={{ label: "다시 시도", onRetry: () => regionsQuery.refetch() }}
+          />
+        ))}
 
       {regionsQuery.isSuccess && regions.length === 0 && (
         <SurfaceState
@@ -64,7 +76,9 @@ export default function CourseRecommend() {
         />
       )}
 
-      {regions.length > 0 && <CourseDestinationList destinations={regions} />}
+      {regionsQuery.isSuccess && regions.length > 0 && (
+        <CourseDestinationList destinations={regions} />
+      )}
     </FlowShell>
   );
 }
