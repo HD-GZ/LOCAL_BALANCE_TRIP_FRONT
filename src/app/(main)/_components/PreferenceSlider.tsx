@@ -1,6 +1,14 @@
 import type { ProfileSlider } from "@/features/home/types";
 import { cn } from "@/lib/utils";
 
+/**
+ * 홈 프로필의 성향 슬라이더. 기존 디자인(develop)의 형태를 되돌린 것이다 — 팀 합의 사항.
+ * 흰 트랙 + 초록 마커 + 그림자.
+ *
+ * 값은 토큰으로 쓴다. 원본의 #928D84 는 paper 대비 2.92:1 이라 캡션을 담을 수 없어
+ * ink-3 로 올렸다(4.55:1).
+ */
+
 const MIN_SCORE = 1;
 const MAX_SCORE = 5;
 
@@ -27,12 +35,13 @@ function toCaption({ minLabel, maxLabel, score }: ProfileSlider) {
   }
 }
 
-const labelClassName = "text-[12.5px] whitespace-nowrap";
-const activeLabelClassName = "font-semibold text-[#2F6F4F]";
-const inactiveLabelClassName = "font-medium text-[#928D84]";
+const labelClassName = "text-cap whitespace-nowrap";
+const activeLabelClassName = "text-brand font-semibold";
+const inactiveLabelClassName = "text-ink-3 font-medium";
 
 export default function PreferenceSlider({ slider }: { slider: ProfileSlider }) {
   const score = clampScore(slider.score);
+  const caption = toCaption(slider);
 
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-2">
@@ -48,20 +57,23 @@ export default function PreferenceSlider({ slider }: { slider: ProfileSlider }) 
           {slider.maxLabel}
         </span>
       </div>
+
       <div
-        className="relative h-2 w-full rounded-full border border-[#C4DDCD] bg-white/85"
+        className="border-brand-line bg-surface/85 relative h-2 w-full rounded-full border"
         role="meter"
-        aria-label={`${slider.minLabel} - ${slider.maxLabel}`}
+        aria-label={`${slider.minLabel} 대 ${slider.maxLabel}`}
         aria-valuemin={MIN_SCORE}
         aria-valuemax={MAX_SCORE}
         aria-valuenow={score}
+        aria-valuetext={caption}
       >
         <span
-          className="absolute top-1/2 size-4.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-3 border-white bg-[#2F6F4F] shadow-[0_1px_4px_0_rgba(40,36,28,0.22)]"
+          className="border-surface bg-brand axis-marker absolute top-1/2 size-4.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-3 shadow-[0_1px_4px_0_rgb(40_36_28/0.22)]"
           style={{ left: `${toTrackPercent(score)}%` }}
         />
       </div>
-      <p className="text-[11px] leading-[16.5px] text-[#928D84]">{toCaption(slider)}</p>
+
+      <p className="text-ink-3 text-cap font-normal">{caption}</p>
     </div>
   );
 }

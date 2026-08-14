@@ -1,26 +1,39 @@
 import { Check } from "lucide-react";
+
 import type { SavedCourseDetailResponse } from "@/features/recommendation/types";
 import { cn } from "@/lib/utils";
 
+/**
+ * 저장 코스 상태. 여기서 브릭은 장식이 아니라 "지금 진행 중"이라는 실제 상태를 나타낸다
+ * (DESIGN.md §3 — 브릭은 의미 전용).
+ */
 const STATUS_BADGE: Partial<
-  Record<SavedCourseDetailResponse["status"], { label: string; className: string; dotClassName: string }>
+  Record<SavedCourseDetailResponse["status"], { label: string; inline: string; onPhoto: string }>
 > = {
+  BEFORE_TRIP: {
+    label: "여행 전",
+    inline: "border-line-control bg-surface text-ink-2",
+    onPhoto: "border-line bg-surface/94 text-ink-2 backdrop-blur-[2px]",
+  },
   TRAVELING: {
     label: "여행 중",
-    className: "border-[#E3C9BC] bg-[#F3E8E3] text-[#B5654A]",
-    dotClassName: "bg-[#B5654A]",
+    inline: "border-danger/40 bg-danger-wash text-danger-ink",
+    onPhoto: "bg-danger/92 text-danger-on border-transparent backdrop-blur-[2px]",
   },
   COMPLETED: {
     label: "완주",
-    className: "border-[#C4DDCD] bg-[#E7F0EA] text-[#2F6F4F]",
-    dotClassName: "bg-[#2F6F4F]",
+    inline: "border-brand/40 bg-brand-wash text-brand-ink",
+    onPhoto: "bg-brand/92 text-brand-on border-transparent backdrop-blur-[2px]",
   },
 };
 
 export default function CourseStatusBadge({
   status,
+  onPhoto = false,
 }: {
   status: SavedCourseDetailResponse["status"];
+  /** 사진 위에 얹을 때는 채움을 반투명으로 바꿔 사진과 섞이게 한다. */
+  onPhoto?: boolean;
 }) {
   const badge = STATUS_BADGE[status];
 
@@ -31,15 +44,15 @@ export default function CourseStatusBadge({
   return (
     <span
       className={cn(
-        "flex h-6 items-center gap-1.5 rounded-full border pr-2.75 pl-2.25 text-[11.5px] font-semibold",
-        badge.className,
+        "text-cap flex h-6.5 w-fit items-center gap-1.5 rounded-full border px-2.75",
+        onPhoto ? badge.onPhoto : badge.inline,
       )}
     >
       {status === "COMPLETED" ? (
-        <Check className="size-3" />
-      ) : (
-        <span className={cn("size-1.75 rounded-full", badge.dotClassName)} />
-      )}
+        <Check className="size-3" strokeWidth={2.25} aria-hidden />
+      ) : status === "TRAVELING" ? (
+        <span aria-hidden className="size-1.75 rounded-full bg-current" />
+      ) : null}
       {badge.label}
     </span>
   );

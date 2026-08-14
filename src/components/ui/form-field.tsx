@@ -4,6 +4,10 @@ import { cn } from "@/lib/utils";
 
 import { Label } from "./label";
 
+/**
+ * 폼 필드. DESIGN.md §8.
+ * 라벨은 항상 인풋 위에, 오류는 항상 인풋 바로 아래. placeholder 를 라벨로 쓰지 않는다.
+ */
 interface FormFieldProps {
   label: string;
   required?: boolean;
@@ -15,16 +19,22 @@ interface FormFieldProps {
 
 function FormField({ label, required, error, hint, className, children }: FormFieldProps) {
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
-      <Label className="text-label text-[13px]">
+    <div className={cn("flex flex-col gap-2", className)}>
+      <Label className="text-ink text-cap">
         {label}
-        {required && <span className="text-primary"> *</span>}
+        {required && (
+          <span className="text-danger-ink" aria-label="필수">
+            *
+          </span>
+        )}
       </Label>
       {children}
       {error ? (
-        <p className="text-[12px] text-red-500">{error}</p>
+        <p role="alert" className="text-danger-ink text-cap font-medium">
+          {error}
+        </p>
       ) : hint ? (
-        <p className="text-muted-foreground text-[12px]">{hint}</p>
+        <p className="text-ink-3 text-cap font-normal">{hint}</p>
       ) : null}
     </div>
   );

@@ -11,7 +11,9 @@ export async function getReceipts(savedCourseId: number) {
 }
 
 export async function getReceiptsDetail(savedCourseId: number, receiptId: number) {
-  return apiClient.get<ReceiptDetailResponse>(`/api/saved-courses/${savedCourseId}/receipts/${receiptId}`);
+  return apiClient.get<ReceiptDetailResponse>(
+    `/api/saved-courses/${savedCourseId}/receipts/${receiptId}`,
+  );
 }
 
 export async function deleteReceipt(savedCourseId: number, receiptId: number) {

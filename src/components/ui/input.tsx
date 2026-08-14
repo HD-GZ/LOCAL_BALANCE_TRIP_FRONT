@@ -2,13 +2,20 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/** 인풋. DESIGN.md §5 (라디우스 2px), §8 (대비·포커스). */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input
       type={type}
       data-slot="input"
       className={cn(
-        "border-input file:text-foreground placeholder:text-placeholder focus-visible:border-ring focus-visible:ring-ring/50 disabled:bg-input/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 h-auto w-full min-w-0 rounded-lg border bg-transparent px-3.5 py-3 text-sm transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-3 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-3 md:text-sm",
+        "border-line-control bg-surface text-ink text-body h-11 w-full min-w-0 rounded-xs border px-3.5",
+        "placeholder:text-ink-3 placeholder:font-normal",
+        "transition-colors duration-(--dur-1) outline-none",
+        "hover:border-ink-3 focus-visible:border-brand",
+        "disabled:bg-surface-2 disabled:text-ink-3 disabled:cursor-not-allowed",
+        "aria-invalid:border-danger aria-invalid:bg-danger-wash/40",
+        "file:text-ink file:mr-3 file:inline-flex file:border-0 file:bg-transparent file:text-sm file:font-semibold",
         className,
       )}
       {...props}

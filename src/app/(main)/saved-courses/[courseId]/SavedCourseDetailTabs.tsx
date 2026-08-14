@@ -2,51 +2,51 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
 import { cn } from "@/lib/utils";
+
+/**
+ * 코스 순서 / 환급 증빙 / 리포트 전환.
+ * 코스 순서는 나머지 둘이 아닐 때 활성이므로 마지막에 판별한다.
+ *
+ * 비활성 라벨은 `ink-2`를 쓴다. `ink-3`은 paper·surface 위에서만 4.5:1을 넘고
+ * 이 트랙의 `paper-sunk` 위에서는 4.21:1로 미달한다 (DESIGN.md §3).
+ */
+const tabClassName =
+  "text-body-sm flex h-9.5 items-center justify-center rounded-full px-5.5 font-semibold transition-colors duration-(--dur-1)";
 
 export default function SavedCourseDetailTabs({ courseId }: { courseId: number }) {
   const pathname = usePathname();
   const orderHref = `/saved-courses/${courseId}`;
   const receiptsHref = `/saved-courses/${courseId}/receipts`;
   const reportHref = `/saved-courses/${courseId}/report`;
-  const isReceiptsActive = pathname === receiptsHref;
-  const isReportActive = pathname === reportHref;
+  const isReceiptsActive = pathname.startsWith(receiptsHref);
+  const isReportActive = pathname.startsWith(reportHref);
 
   return (
-    <div className="flex items-center gap-0.5 rounded-full bg-[#E9E5DC] p-1">
-      <Link
-        href={orderHref}
-        className={cn(
-          "flex h-9.5 items-center justify-center rounded-full px-5.5 text-[14px] font-semibold tracking-[-0.14px]",
-          !isReceiptsActive && !isReportActive
-            ? "bg-white text-[#2F6F4F] shadow-[0_1px_2px_0_rgba(40,36,28,0.08)]"
-            : "text-[#928D84]",
-        )}
-      >
-        코스 순서
-      </Link>
-      <Link
-        href={receiptsHref}
-        className={cn(
-          "flex h-9.5 items-center justify-center rounded-full px-5.5 text-[14px] font-semibold tracking-[-0.14px]",
-          isReceiptsActive
-            ? "bg-white text-[#2F6F4F] shadow-[0_1px_2px_0_rgba(40,36,28,0.08)]"
-            : "text-[#928D84]",
-        )}
-      >
-        환급 증빙
-      </Link>
-      <Link
-        href={reportHref}
-        className={cn(
-          "flex h-9.5 items-center justify-center rounded-full px-5.5 text-[14px] font-semibold tracking-[-0.14px]",
-          isReportActive
-            ? "bg-white text-[#2F6F4F] shadow-[0_1px_2px_0_rgba(40,36,28,0.08)]"
-            : "text-[#928D84]",
-        )}
-      >
-        리포트
-      </Link>
-    </div>
+    <nav
+      className="bg-paper-sunk flex w-fit items-center gap-0.5 rounded-full p-1"
+      aria-label="코스 상세"
+    >
+      {[
+        { href: orderHref, label: "코스 순서", active: !isReceiptsActive && !isReportActive },
+        { href: receiptsHref, label: "환급 증빙", active: isReceiptsActive },
+        { href: reportHref, label: "리포트", active: isReportActive },
+      ].map((tab) => (
+        <Link
+          key={tab.href}
+          href={tab.href}
+          aria-current={tab.active ? "page" : undefined}
+          className={cn(
+            tabClassName,
+            tab.active
+              ? "bg-surface text-brand-ink shadow-[0_1px_2px_0_rgb(40_36_28/0.08)]"
+              : "text-ink-2 hover:text-ink",
+          )}
+        >
+          {tab.label}
+        </Link>
+      ))}
+    </nav>
   );
 }

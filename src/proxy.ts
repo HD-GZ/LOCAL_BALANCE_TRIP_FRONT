@@ -34,7 +34,15 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const redirectResponse = NextResponse.redirect(new URL("/login", request.url));
+  /**
+   * 왜 로그인 화면에 왔는지 알려줘야 한다. 미들웨어에서는 토스트를 띄울 수 없으므로
+   * 이유를 쿼리 파라미터로 넘기고 로그인 화면이 그것을 읽어 안내한다.
+   * 라우트는 그대로 두고 파라미터만 붙인다.
+   */
+  const loginUrl = new URL("/login", request.url);
+  loginUrl.searchParams.set("reason", "auth");
+
+  const redirectResponse = NextResponse.redirect(loginUrl);
 
   clearAuthCookies(redirectResponse.cookies);
 

@@ -25,7 +25,7 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-[#221F19]/42",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-[oklch(0_0_0/0.5)] backdrop-blur-[2px]",
         className,
       )}
       {...props}
@@ -44,7 +44,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-1/2 left-1/2 z-50 w-105 max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-[20px] border border-[#EBE7DF] bg-white px-7 pt-7 pb-5.5 shadow-[0px_12px_40px_-10px_rgba(40,36,28,0.32)]",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 bg-surface text-ink shadow-overlay fixed top-1/2 left-1/2 z-50 w-105 max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-md px-6 pt-6 pb-5",
           className,
         )}
         {...props}
@@ -59,7 +59,7 @@ function DialogTitle({ className, ...props }: React.ComponentProps<typeof Dialog
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-[19px] font-semibold tracking-[-0.38px] text-[#222019]", className)}
+      className={cn("font-display text-title-1 text-ink", className)}
       {...props}
     />
   );
@@ -72,7 +72,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("mt-2 text-[14px] leading-[1.6] text-[#5F5B53]", className)}
+      className={cn("text-ink-2 text-body-sm mt-2", className)}
       {...props}
     />
   );

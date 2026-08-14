@@ -34,11 +34,7 @@ export default function WithdrawDialog() {
   return (
     <Dialog open={isOpen} onOpenChange={(next) => (next ? open() : close())}>
       <DialogTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          className="h-12.5 flex-1 border-[#D8B5A6] bg-white text-[15px] font-semibold tracking-[-0.15px] text-[#B97056] hover:bg-[#FBF6F3] hover:text-[#B97056]"
-        >
+        <Button type="button" variant="destructive-outline" size="lg" className="flex-1">
           회원탈퇴
         </Button>
       </DialogTrigger>
@@ -49,20 +45,26 @@ export default function WithdrawDialog() {
           없습니다.
         </DialogDescription>
         {withdrawMutation.isError && (
-          <p className="mt-2 text-[12px] text-red-500">
+          <p
+            role="alert"
+            className="text-danger-ink text-cap font-medium"
+            style={{ marginTop: "0.75rem" }}
+          >
             {isApiError(withdrawMutation.error)
               ? withdrawMutation.error.message
               : "회원탈퇴 중 오류가 발생했어요. 다시 시도해 주세요."}
           </p>
         )}
-        <div className="mt-5.5 flex w-full gap-2.5">
+        <div className="mt-6 flex w-full gap-3">
           <DialogClose asChild>
-            <Button className="h-12.5 flex-1 border border-[#C3BDB3] bg-white text-[15px] font-semibold tracking-[-0.15px] text-[#222019] hover:bg-gray-100">
+            <Button variant="outline" size="lg" className="flex-1">
               돌아가기
             </Button>
           </DialogClose>
           <Button
-            className="h-12.5 flex-1 bg-[#B97056] text-[15px] font-semibold tracking-[-0.15px] text-white hover:bg-[#B97056]/90"
+            variant="destructive"
+            size="lg"
+            className="flex-1"
             disabled={withdrawMutation.isPending}
             onClick={() => withdrawMutation.mutate()}
           >

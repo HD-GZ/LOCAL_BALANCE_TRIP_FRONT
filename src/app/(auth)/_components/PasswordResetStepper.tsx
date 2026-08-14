@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 
+/** 비밀번호 찾기 진행 표시. 기존 디자인(develop)의 점 + 라벨 형태. */
 const PASSWORD_RESET_STEPS = [
   { key: "email", label: "이메일 확인" },
   { key: "verify", label: "인증번호 입력" },
@@ -8,21 +9,14 @@ const PASSWORD_RESET_STEPS = [
 
 export type PasswordResetStep = (typeof PASSWORD_RESET_STEPS)[number]["key"];
 
-type PasswordResetStepperProps = {
-  currentStep: PasswordResetStep;
-};
-
-export default function PasswordResetStepper({ currentStep }: PasswordResetStepperProps) {
-  const currentStepIndex = PASSWORD_RESET_STEPS.findIndex((step) => step.key === currentStep);
+export default function PasswordResetStepper({ currentStep }: { currentStep: PasswordResetStep }) {
+  const currentIndex = PASSWORD_RESET_STEPS.findIndex((step) => step.key === currentStep);
 
   return (
-    <ol
-      aria-label="비밀번호 찾기 진행 단계"
-      className="mb-6 flex items-start gap-[3.5px] self-center"
-    >
-      {PASSWORD_RESET_STEPS.map(({ key, label }, stepIndex) => {
-        const isCurrent = stepIndex === currentStepIndex;
-        const isCompleted = stepIndex < currentStepIndex;
+    <ol aria-label="비밀번호 찾기 진행 단계" className="flex items-start justify-center gap-1">
+      {PASSWORD_RESET_STEPS.map(({ key, label }, index) => {
+        const isCurrent = index === currentIndex;
+        const isDone = index < currentIndex;
 
         return (
           <li key={key} className="contents">
@@ -31,27 +25,27 @@ export default function PasswordResetStepper({ currentStep }: PasswordResetStepp
               className="flex w-16 flex-col items-center gap-1.5"
             >
               <span
-                aria-hidden="true"
+                aria-hidden
                 className={cn(
                   "rounded-full",
-                  isCurrent && "bg-primary size-2.5",
-                  isCompleted && "size-2.25 bg-[#C4DDCD]",
-                  !isCurrent && !isCompleted && "size-2.25 bg-[#C3BDB3]",
+                  isCurrent && "bg-brand size-2.5",
+                  isDone && "bg-brand-line size-2",
+                  !isCurrent && !isDone && "bg-line-control size-2",
                 )}
               />
               <span
                 className={cn(
-                  "text-[11px] whitespace-nowrap",
-                  isCurrent ? "text-foreground font-semibold" : "text-muted-foreground",
+                  "text-cap whitespace-nowrap",
+                  isCurrent ? "text-ink font-semibold" : "text-ink-3 font-normal",
                 )}
               >
                 {label}
               </span>
             </div>
-            {stepIndex < PASSWORD_RESET_STEPS.length - 1 && (
+            {index < PASSWORD_RESET_STEPS.length - 1 && (
               <span
-                aria-hidden="true"
-                className={cn("mt-1 h-0.5 w-6", isCompleted ? "bg-[#C4DDCD]" : "bg-[#EBE7DF]")}
+                aria-hidden
+                className={cn("mt-1 h-0.5 w-6", isDone ? "bg-brand-line" : "bg-line-strong")}
               />
             )}
           </li>

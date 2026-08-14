@@ -114,15 +114,15 @@ export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps
                 aria-hidden="true"
                 className={cn(
                   "flex size-3 items-center justify-center rounded-full",
-                  isSatisfied ? "bg-primary text-white" : "bg-[#E9E5DC] text-transparent",
+                  isSatisfied ? "bg-brand text-brand-on" : "bg-surface-2 text-transparent",
                 )}
               >
                 <Check className="size-2" strokeWidth={4} />
               </span>
               <span
                 className={cn(
-                  "text-[12px]",
-                  isSatisfied ? "text-primary" : "text-muted-foreground",
+                  "text-cap font-normal",
+                  isSatisfied ? "text-brand-ink" : "text-ink-3",
                 )}
               >
                 {label}
@@ -141,12 +141,17 @@ export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps
         />
       </FormField>
 
-      {errors.root?.message && <p className="text-[12px] text-red-500">{errors.root.message}</p>}
+      {errors.root?.message && (
+        <p role="alert" className="text-danger-ink text-cap font-medium">
+          {errors.root.message}
+        </p>
+      )}
 
       <Button
         type="submit"
         disabled={resetPasswordMutation.isPending}
-        className="h-auto w-full rounded-lg py-3.25 text-[14px] font-semibold"
+        size="lg"
+        className="mt-2 w-full"
       >
         {resetPasswordMutation.isPending ? "변경 중..." : "비밀번호 변경하기"}
       </Button>

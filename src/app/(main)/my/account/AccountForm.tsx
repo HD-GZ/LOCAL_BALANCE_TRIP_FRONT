@@ -29,10 +29,10 @@ export default function AccountForm({ user }: AccountFormProps) {
 
   return (
     <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex items-end justify-between pb-4">
-        <h1 className="text-[27px] font-semibold tracking-[-0.675px] text-[#222019]">정보 변경</h1>
-        <p className="text-[13px] text-[#928D84]">
-          <span className="text-primary">*</span> 필수 입력사항
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 pb-6">
+        <h1 className="text-title-1 text-ink sm:text-display-2">정보 변경</h1>
+        <p className="text-ink-3 text-cap font-normal">
+          <span className="text-danger-ink">*</span> 필수 입력사항
         </p>
       </div>
 
@@ -64,7 +64,6 @@ export default function AccountForm({ user }: AccountFormProps) {
         label="생년월일"
         required
         error={errors.birthYear?.message ?? errors.birthMonth?.message ?? errors.birthDay?.message}
-        hint="청년 여행 혜택 판별에 사용돼요."
       >
         <div className="grid grid-cols-3 gap-2">
           <Input
@@ -110,10 +109,10 @@ export default function AccountForm({ user }: AccountFormProps) {
               aria-pressed={selectedGender === option}
               onClick={() => setValue("gender", option, { shouldValidate: true })}
               className={cn(
-                "cursor-pointer rounded-lg border py-3 text-[14px] transition-colors",
+                "press text-body-sm h-11 cursor-pointer rounded-xs border font-semibold",
                 selectedGender === option
-                  ? "border-primary bg-[#E7F0EA] font-medium text-[#2F6F4F]"
-                  : "border-border text-label",
+                  ? "border-brand bg-brand-wash text-brand-ink"
+                  : "border-line-control text-ink-2 hover:border-ink-3 hover:text-ink",
               )}
             >
               {option === "선택안함" ? "선택 안 함" : option}
@@ -123,15 +122,13 @@ export default function AccountForm({ user }: AccountFormProps) {
       </AccountRow>
 
       {errors.root?.message && (
-        <p className="pt-4 text-[12px] text-red-500">{errors.root.message}</p>
+        <p role="alert" className="text-danger-ink text-cap pt-4 font-medium">
+          {errors.root.message}
+        </p>
       )}
 
-      <div className="flex gap-3 pt-6">
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="h-12.5 flex-1 text-[15px] font-semibold tracking-[-0.15px]"
-        >
+      <div className="flex gap-3 pt-8">
+        <Button type="submit" size="lg" disabled={isSubmitting} className="flex-2">
           {isSubmitting ? "저장 중..." : "정보수정"}
         </Button>
         <WithdrawDialog />

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 
+import AuthShell from "@/app/(auth)/_components/AuthShell";
 import CodeInput, { createEmptyCode } from "@/app/(auth)/_components/CodeInput";
 import PasswordResetStepper from "@/app/(auth)/_components/PasswordResetStepper";
 import { Button } from "@/components/ui/button";
@@ -112,67 +113,61 @@ export default function FindPasswordVerifyPage() {
   const isResendDisabled = resendMutation.isPending || resendCooldownSeconds > 0;
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-5 py-12">
-      <h1 className="text-center font-bold">로컬밸런스 트립</h1>
-      <main className="flex w-full max-w-110 flex-col rounded-[18px] bg-white px-11 py-10 shadow-[0_12px_32px_-12px_rgba(41,36,28,0.14)]">
+    <AuthShell
+      title="이메일을 확인해 주세요"
+      description={`${email} 으로 6자리 인증번호를 보냈어요.`}
+    >
+      <div className="pb-6">
         <PasswordResetStepper currentStep="verify" />
-        <div className="flex flex-col gap-1.5 pb-5 text-center">
-          <p className="text-foreground text-2xl font-semibold">이메일을 확인해 주세요</p>
-          <p className="text-label text-[14px]">
-            {email} 으로 <br /> 6자리 인증번호를 보냈어요.
-          </p>
-        </div>
-        <CodeInput value={code} onChange={handleCodeChange} disabled={isExpired} />
-        <p className="mt-3 text-center text-[13px] text-[#928D84]" aria-live="polite">
-          {isExpired
-            ? "인증번호가 만료되었습니다. 코드를 다시 받아주세요."
-            : `남은 시간 ${formatRemainingTime(remainingSeconds)}`}
-        </p>
-        <div className="mt-1 flex w-full gap-2.5">
-          <Button
-            type="button"
-            variant="outline"
-            disabled={isResendDisabled}
-            onClick={handleResendCode}
-            className="text-foreground h-12.5 flex-1 rounded-xl border-[#C3BDB3] bg-white text-[15px] hover:bg-white"
-          >
-            {resendMutation.isPending
-              ? "전송 중..."
-              : resendCooldownSeconds > 0
-                ? `코드 재전송 (${resendCooldownSeconds}초)`
-                : "코드 재전송"}
-          </Button>
-          <Button
-            type="button"
-            disabled={!isCodeComplete || isExpired || confirmMutation.isPending}
-            onClick={handleConfirmCode}
-            className={cn(
-              "h-12.5 flex-1 rounded-xl text-[15px]",
-              (!isCodeComplete || isExpired) &&
-                "text-placeholder border border-[#EBE7DF] bg-[#E9E5DC] disabled:opacity-100",
-            )}
-          >
-            {confirmMutation.isPending ? "확인 중..." : "인증 확인"}
-          </Button>
-        </div>
-        <p
-          aria-live="polite"
-          className={cn(
-            "mt-3 text-center text-[12px]",
-            !feedback && "sr-only",
-            feedback?.type === "error" ? "text-red-500" : "text-primary",
-          )}
-        >
-          {feedback?.message ?? ""}
-        </p>
-        <button
+      </div>
+      <CodeInput value={code} onChange={handleCodeChange} disabled={isExpired} />
+      <p className="text-ink-2 text-body-sm mt-3 text-center tabular-nums" aria-live="polite">
+        {isExpired
+          ? "인증번호가 만료되었습니다. 코드를 다시 받아주세요."
+          : `남은 시간 ${formatRemainingTime(remainingSeconds)}`}
+      </p>
+      <div className="mt-4 flex w-full gap-3">
+        <Button
           type="button"
-          onClick={() => router.push("/find-password")}
-          className="text-label mt-4 text-center text-[13px] hover:underline"
+          variant="outline"
+          disabled={isResendDisabled}
+          onClick={handleResendCode}
+          size="lg"
+          className="flex-1"
         >
-          이메일 주소를 잘못 입력했나요?
-        </button>
-      </main>
-    </div>
+          {resendMutation.isPending
+            ? "전송 중..."
+            : resendCooldownSeconds > 0
+              ? `코드 재전송 (${resendCooldownSeconds}초)`
+              : "코드 재전송"}
+        </Button>
+        <Button
+          type="button"
+          disabled={!isCodeComplete || isExpired || confirmMutation.isPending}
+          onClick={handleConfirmCode}
+          size="lg"
+          className="flex-1"
+        >
+          {confirmMutation.isPending ? "확인 중..." : "인증 확인"}
+        </Button>
+      </div>
+      <p
+        aria-live="polite"
+        className={cn(
+          "text-cap mt-3 text-center font-medium",
+          !feedback && "sr-only",
+          feedback?.type === "error" ? "text-danger-ink" : "text-brand-ink",
+        )}
+      >
+        {feedback?.message ?? ""}
+      </p>
+      <button
+        type="button"
+        onClick={() => router.push("/find-password")}
+        className="text-ink-2 text-body-sm hover:text-brand-ink mt-4 cursor-pointer text-center font-medium underline-offset-4 transition-colors duration-(--dur-1) hover:underline"
+      >
+        이메일 주소를 잘못 입력했나요?
+      </button>
+    </AuthShell>
   );
 }

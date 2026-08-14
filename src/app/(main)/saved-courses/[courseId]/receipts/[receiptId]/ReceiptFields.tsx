@@ -1,10 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { PencilLine, Calendar } from "lucide-react";
+import { useId, useState } from "react";
+import { CalendarDays } from "lucide-react";
+
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { formatPaidDate } from "@/features/receipts/utils";
+
 import ReceiptDateCalendar from "./ReceiptDateCalendar";
+
+/**
+ * 증빙 필드. 이전 구현은 연필 아이콘을 눌러야 input 으로 바뀌는 방식이었다 —
+ * 수정 가능하다는 사실이 보이지 않고, 라벨과 입력의 관계도 없었다.
+ *
+ * 항상 편집 가능한 입력으로 바꾸고 좌측에 라벨을 두었다 (DESIGN.md §8).
+ * 필드 이름과 순서는 그대로다 (PRODUCT.md).
+ */
+
+const rowClassName = "flex flex-col gap-1.5 px-4 py-3.5 sm:flex-row sm:items-center sm:gap-4";
+const labelClassName = "text-ink-2 text-cap w-20 shrink-0";
+const inputClassName =
+  "text-title-3 text-ink placeholder:text-ink-3 min-w-0 flex-1 rounded-xs bg-transparent px-2 py-1 outline-none transition-colors duration-(--dur-1) hover:bg-surface-2 focus-visible:bg-surface-2";
 
 type ReceiptFieldsProps = {
   merchantName: string;
@@ -23,80 +38,76 @@ export default function ReceiptFields({
   paidDate,
   onPaidDateChange,
 }: ReceiptFieldsProps) {
-  const [isEditingMerchantName, setIsEditingMerchantName] = useState(false);
-  const [isEditingAmount, setIsEditingAmount] = useState(false);
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
+  const baseId = useId();
+  const isMerchantNameEmpty = merchantName.trim().length === 0;
 
   return (
-    <div className="flex w-full flex-col items-start overflow-hidden rounded-[14px] border border-[#EBE7DF] bg-white">
-      <div className="flex w-full items-center gap-3.5 border-b border-b-[#EBE7DF] px-4.5 py-3.75">
-        <p className="w-22 shrink-0 text-[13px] font-medium text-[#928D84]">가맹점명</p>
-        {isEditingMerchantName ? (
-          <input
-            type="text"
-            autoFocus
-            value={merchantName}
-            onChange={(event) => onMerchantNameChange(event.target.value)}
-            onBlur={() => setIsEditingMerchantName(false)}
-            onKeyDown={(event) => event.key === "Enter" && event.currentTarget.blur()}
-            className="flex-1 text-[16px] font-semibold tracking-[-0.16px] text-[#222019] outline-none"
-          />
-        ) : (
-          <p className="flex-1 text-[16px] font-semibold tracking-[-0.16px] text-[#222019]">
-            {merchantName}
-          </p>
-        )}
-        <button
-          type="button"
-          aria-label="가맹점명 수정"
-          onClick={() => setIsEditingMerchantName(true)}
-        >
-          <PencilLine className="size-3.5 shrink-0 cursor-pointer text-[#928D84]" />
-        </button>
+    <div className="border-line divide-line bg-surface flex w-full flex-col divide-y rounded-md border">
+      <div className={rowClassName}>
+        <label className={labelClassName} htmlFor={`${baseId}-merchant`}>
+          가맹점명
+        </label>
+        <input
+          id={`${baseId}-merchant`}
+          name="merchantName"
+          type="text"
+          value={merchantName}
+          aria-invalid={isMerchantNameEmpty}
+          onChange={(event) => onMerchantNameChange(event.target.value)}
+          className={inputClassName}
+        />
       </div>
-      <div className="flex w-full items-center gap-3.5 border-b border-b-[#EBE7DF] px-4.5 py-3.75">
-        <p className="w-22 shrink-0 text-[13px] font-medium text-[#928D84]">금액</p>
-        {isEditingAmount ? (
+
+      <div className={rowClassName}>
+        <label className={labelClassName} htmlFor={`${baseId}-amount`}>
+          금액
+        </label>
+        <div className="flex min-w-0 flex-1 items-center gap-1">
           <input
+            id={`${baseId}-amount`}
+            name="amount"
             type="text"
             inputMode="numeric"
-            autoFocus
-            value={amount}
+            value={amount.toLocaleString()}
             onChange={(event) => onAmountChange(Number(event.target.value.replace(/\D/g, "")) || 0)}
-            onBlur={() => setIsEditingAmount(false)}
-            onKeyDown={(event) => event.key === "Enter" && event.currentTarget.blur()}
-            className="flex-1 font-mono text-[16px] font-semibold tracking-[-0.16px] text-[#222019] outline-none"
+            className={`${inputClassName} text-right tabular-nums`}
           />
-        ) : (
-          <p className="flex-1 font-mono text-[16px] font-semibold tracking-[-0.16px] text-[#222019]">
-            {amount.toLocaleString()}
-          </p>
-        )}
-        <button type="button" aria-label="금액 수정" onClick={() => setIsEditingAmount(true)}>
-          <PencilLine className="size-3.5 shrink-0 cursor-pointer text-[#928D84]" />
-        </button>
+          <span className="text-ink-2 text-body-sm shrink-0">원</span>
+        </div>
       </div>
-      <div className="flex w-full items-center gap-3.5 px-4.5 py-3.75">
-        <p className="w-22 shrink-0 text-[13px] font-medium text-[#928D84]">날짜</p>
-        <p className="flex-1 font-mono text-[16px] font-semibold tracking-[-0.16px] text-[#222019]">
-          {formatPaidDate(paidDate)}
-        </p>
-        <Popover open={isDatePopoverOpen} onOpenChange={setIsDatePopoverOpen}>
-          <PopoverTrigger asChild>
-            <button type="button" aria-label="날짜 수정">
-              <Calendar className="size-3.5 shrink-0 cursor-pointer text-[#928D84]" />
-            </button>
-          </PopoverTrigger>
-          <PopoverContent align="end">
-            <ReceiptDateCalendar
-              value={paidDate}
-              onSelect={(date) => {
-                onPaidDateChange(date);
-                setIsDatePopoverOpen(false);
-              }}
-            />
-          </PopoverContent>
-        </Popover>
+
+      <div className={rowClassName}>
+        <span className={labelClassName} id={`${baseId}-date-label`}>
+          날짜
+        </span>
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <span className="text-title-3 text-ink flex-1 px-2 tabular-nums">
+            {formatPaidDate(paidDate)}
+          </span>
+          <Popover open={isDatePopoverOpen} onOpenChange={setIsDatePopoverOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                aria-labelledby={`${baseId}-date-label`}
+                aria-label="날짜 수정"
+                className="press border-line-control text-ink-2 text-cap hover:bg-surface-2 flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-sm border px-2.5"
+              >
+                <CalendarDays className="size-3.5" strokeWidth={1.75} aria-hidden />
+                변경
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end">
+              <ReceiptDateCalendar
+                value={paidDate}
+                onSelect={(date) => {
+                  onPaidDateChange(date);
+                  setIsDatePopoverOpen(false);
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
     </div>
   );

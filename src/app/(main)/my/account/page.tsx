@@ -1,25 +1,49 @@
 "use client";
 
+import Skeleton from "@/components/common/Skeleton";
+import SurfaceState from "@/components/common/SurfaceState";
 import { useMeQuery } from "@/features/user/queries";
 import { isApiError } from "@/lib/api/error";
+
 import AccountForm from "./AccountForm";
 
 export default function MyAccountPage() {
   const meQuery = useMeQuery();
 
   return (
-    <div className="flex w-full justify-center px-6 pt-11 pb-16">
-      <main className="w-full max-w-170 rounded-[18px] border border-[#EBE7DF] bg-white px-8 py-7 shadow-[0_12px_32px_-12px_rgba(41,36,28,0.14)]">
-        {meQuery.isPending && <p className="text-[14px] text-[#928D84]">불러오는 중...</p>}
-        {meQuery.isError && (
-          <p className="text-[13px] text-red-500">
-            {isApiError(meQuery.error)
-              ? meQuery.error.message
-              : "회원 정보를 불러오는 중 오류가 발생했습니다."}
-          </p>
+    <main className="w-full flex-1 pb-20">
+      <div className="mx-auto w-full max-w-[62rem] px-4 pt-10 md:px-8 md:pt-14">
+        {meQuery.isPending && (
+          <div className="flex flex-col gap-6">
+            <Skeleton className="h-8 w-40" />
+            {Array.from({ length: 5 }, (_, index) => (
+              <div key={index} className="flex flex-col gap-2">
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-11 w-full" rounded="xs" />
+              </div>
+            ))}
+          </div>
         )}
-        {meQuery.isSuccess && <AccountForm user={meQuery.data} />}
-      </main>
-    </div>
+
+        {meQuery.isError && (
+          <SurfaceState
+            tone="error"
+            title="회원 정보를 불러오지 못했어요"
+            description={
+              isApiError(meQuery.error)
+                ? meQuery.error.message
+                : "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+            }
+            action={{ label: "다시 시도", onRetry: () => meQuery.refetch() }}
+          />
+        )}
+
+        {meQuery.isSuccess && (
+          <div className="border-line bg-surface shadow-card rounded-md border px-6 py-7 sm:px-8">
+            <AccountForm user={meQuery.data} />
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

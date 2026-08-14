@@ -1,8 +1,14 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Pause } from "lucide-react";
-import Play from "@/assets/play.svg";
+import { Pause, Play } from "lucide-react";
+
+/**
+ * 오디오 가이드. DESIGN.md §3 예외 — 재생 진행은 실제 "충전량"이므로
+ * 이 표면에서 유일하게 채워지는 트랙이다.
+ *
+ * 이전 구현은 진행 바를 보여주기만 했다. 탐색 가능한 range 로 바꿨다.
+ */
 
 function formatTime(seconds: number) {
   if (!Number.isFinite(seconds)) return "0:00";
@@ -27,19 +33,28 @@ export default function AudioPlayer({ src }: { src: string }) {
 
     if (isPlaying) {
       audio.pause();
-    } else {
-      try {
-        await audio.play();
-      } catch {
-        setIsPlaying(false);
-      }
+      return;
     }
+
+    try {
+      await audio.play();
+    } catch {
+      setIsPlaying(false);
+    }
+  };
+
+  const handleSeek = (value: number) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.currentTime = value;
+    setCurrentTime(value);
   };
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="flex w-full max-w-85 items-center gap-3 rounded-full border border-[#EBE7DF] bg-[#F0EDE6] py-2.25 pr-3.25 pl-2.25">
+    <div className="border-line bg-surface-2 flex w-full max-w-90 items-center gap-3 rounded-full border py-1.5 pr-4 pl-1.5">
       <audio
         ref={audioRef}
         src={src}
@@ -49,21 +64,41 @@ export default function AudioPlayer({ src }: { src: string }) {
         onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
         onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
       />
+
       <button
         type="button"
         onClick={togglePlay}
-        className="flex size-8.5 shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#2F6F4F]"
+        aria-label={isPlaying ? "일시정지" : "재생"}
+        className="press bg-brand hover:bg-brand-hover text-brand-on flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full"
       >
         {isPlaying ? (
-          <Pause className="size-3.75 fill-white stroke-white" />
+          <Pause className="size-3.5 fill-current" strokeWidth={0} />
         ) : (
-          <Play className="size-3.75" />
+          <Play className="size-3.5 translate-x-px fill-current" strokeWidth={0} />
         )}
       </button>
-      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#C3BDB3]">
-        <div className="h-full rounded-full bg-[#3C875F]" style={{ width: `${progress}%` }} />
-      </div>
-      <span className="shrink-0 font-mono text-[11px] tracking-[-0.22px] text-[#928D84]">
+
+      <label className="relative flex flex-1 items-center">
+        <span className="sr-only">재생 위치</span>
+        <span
+          aria-hidden
+          className="bg-line-control/60 pointer-events-none absolute inset-x-0 h-1 rounded-full"
+        >
+          <span className="bg-brand block h-full rounded-full" style={{ width: `${progress}%` }} />
+        </span>
+        <input
+          type="range"
+          min={0}
+          max={duration || 0}
+          step={0.1}
+          value={currentTime}
+          onChange={(event) => handleSeek(Number(event.target.value))}
+          disabled={!duration}
+          className="[&::-webkit-slider-thumb]:bg-brand [&::-webkit-slider-thumb]:border-surface [&::-moz-range-thumb]:bg-brand [&::-moz-range-thumb]:border-surface relative w-full cursor-pointer appearance-none bg-transparent disabled:cursor-not-allowed [&::-moz-range-thumb]:size-3 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2"
+        />
+      </label>
+
+      <span className="text-ink-2 text-cap shrink-0 tabular-nums">
         {formatTime(currentTime)} / {formatTime(duration)}
       </span>
     </div>

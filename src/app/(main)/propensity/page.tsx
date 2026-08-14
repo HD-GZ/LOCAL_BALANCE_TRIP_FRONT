@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+
+import FlowShell from "@/components/common/FlowShell";
 import { Button } from "@/components/ui/button";
 import {
   propensityQueryKeys,
@@ -22,9 +24,9 @@ import type { PropensityResult } from "@/features/propensity/types";
 import { postRecommendations } from "@/features/recommendation/api";
 import { useMeQuery } from "@/features/user/queries";
 import { isApiError } from "@/lib/api/error";
-import { cn } from "@/lib/utils";
+
 import PropensityQuestionList from "./PropensityQuestionList";
-import PropensityStep from "./PropensityStep";
+import PropensityResultView from "./PropensityResult";
 
 const SAVE_SPEND_OPTIONS = [
   { value: "save", label: "아끼기", description: "SAVE" },
@@ -90,34 +92,33 @@ const PROPENSITY_QUESTIONS = {
     },
   ],
   2: [
-    {
-      id: "accommodation",
-      title: "숙소",
-      options: SAVE_SPEND_OPTIONS,
-    },
-    {
-      id: "food",
-      title: "음식",
-      options: SAVE_SPEND_OPTIONS,
-    },
-    {
-      id: "experience",
-      title: "체험",
-      options: SAVE_SPEND_OPTIONS,
-    },
-    {
-      id: "transportation",
-      title: "이동",
-      options: SAVE_SPEND_OPTIONS,
-    },
-    {
-      id: "cafeExhibition",
-      title: "카페·전시",
-      options: SAVE_SPEND_OPTIONS,
-    },
+    { id: "accommodation", title: "숙소", options: SAVE_SPEND_OPTIONS },
+    { id: "food", title: "음식", options: SAVE_SPEND_OPTIONS },
+    { id: "experience", title: "체험", options: SAVE_SPEND_OPTIONS },
+    { id: "transportation", title: "이동", options: SAVE_SPEND_OPTIONS },
+    { id: "cafeExhibition", title: "카페·전시", options: SAVE_SPEND_OPTIONS },
   ],
 };
 const VALID_STEPS = [1, 2, 3];
+const STEPS = ["성향", "가치소비", "결과"];
+
+const STEP_MENT: Record<number, { title: string; description: string }> = {
+  1: {
+    title: "어떤 여행을 좋아하세요?",
+    description: "각 축에서 나에게 더 가까운 단계를 골라 주세요.",
+  },
+  2: {
+    title: "어디에 아끼고, 어디에 투자할까요?",
+    description: "항목마다 아끼기와 투자 사이를 조정해 주세요.",
+  },
+  3: {
+    title: "당신의 여행 프로필이 완성됐어요",
+    description:
+      "취향진단과 가치소비를 하나로 모은 결과예요. 이 기준으로 코스와 혜택을 매칭해 드려요.",
+  },
+};
+
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 function getRawStep(searchParams: ReturnType<typeof useSearchParams>) {
   return Number(searchParams.get("step") ?? "1");
@@ -140,9 +141,14 @@ function getHydratedServerSnapshot() {
   return false;
 }
 
+function countAnswered(answers: Record<string, number>) {
+  return Object.values(answers).filter((value) => value !== 0).length;
+}
+
 function PropensityContent({ userId }: { userId: number | undefined }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const reduce = useReducedMotion();
   const [draftAnswers, setDraftAnswers] = useState<typeof INITIAL_ANSWERS | null>(null);
   const [resultOverride, setResultOverride] = useState<PropensityResult | null | undefined>(
     undefined,
@@ -188,7 +194,18 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
     propensityResultQuery.data?.propensityResult ??
     localResult ??
     undefined;
-  const propensityType = propensityResult?.type ?? "";
+
+  /**
+   * 단계 전환 방향. 앞으로 갈 때와 뒤로 갈 때 슬라이드 방향이 다르다 (DESIGN.md §7).
+   * 같은 렌더 안에서 방향이 정해져야 exit 애니메이션이 맞으므로,
+   * 렌더 중 상태 조정 패턴을 쓴다.
+   */
+  const [trackedStep, setTrackedStep] = useState(currentStep);
+  const [direction, setDirection] = useState(1);
+  if (trackedStep !== currentStep) {
+    setDirection(currentStep > trackedStep ? 1 : -1);
+    setTrackedStep(currentStep);
+  }
 
   const goStep = (step: number) => {
     if (step === 1 || step === 2 || step === 3) {
@@ -241,139 +258,158 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
     }
   }, [currentStep, isPreferenceAnswered, router]);
 
+  const ment = STEP_MENT[currentStep] ?? STEP_MENT[1]!;
+  const answeredCount = countAnswered(currentAnswers);
+  const submitError = postPropensityMutation.isError
+    ? isApiError(postPropensityMutation.error)
+      ? postPropensityMutation.error.message
+      : "진단 결과 제출 중 오류가 발생했습니다."
+    : null;
+  const recommendError = postRecommendationsMutation.isError
+    ? isApiError(postRecommendationsMutation.error)
+      ? postRecommendationsMutation.error.message
+      : "코스 추천 생성 중 오류가 발생했습니다."
+    : null;
+
   return (
-    <div className="flex w-full flex-col items-center pb-20">
-      <PropensityStep currentStep={currentStep} />
-      <div className="mt-6 flex w-170 flex-col items-start gap-5.5 rounded-[18px] border border-[#EBE7DF] bg-white px-7.5 pt-8 pb-7 shadow-[0_1px_2px_0_rgba(40,36,28,0.04),0_12px_32px_-12px_rgba(40,36,28,0.14)]">
-        <PropensityQuestionList
-          questions={questions}
-          answers={currentAnswers}
-          onChangeAnswer={handleChangeAnswer}
-        />
-        <div className="flex w-full flex-col items-center self-stretch pt-5">
-          {currentStep === 1 && (
-            <Button
-              className={cn(
-                "h-13.5 min-w-75 cursor-pointer px-5.5 text-[15.5px] font-semibold",
-                !isPreferenceAnswered && "bg-gray-300",
-              )}
-              disabled={!isPreferenceAnswered}
-              onClick={() => goStep(2)}
-            >
-              가치소비 설정하기
-            </Button>
+    <FlowShell
+      steps={STEPS}
+      currentStep={currentStep}
+      showStepLabel
+      width="narrow"
+      title={ment.title}
+      description={ment.description}
+    >
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={currentStep}
+          initial={reduce ? undefined : { opacity: 0, x: direction * 20 }}
+          animate={reduce ? undefined : { opacity: 1, x: 0 }}
+          exit={reduce ? undefined : { opacity: 0, x: direction * -20 }}
+          transition={{ duration: 0.26, ease: EASE }}
+          className="border-line bg-surface shadow-card flex w-full flex-col gap-6 rounded-md border px-5 py-6 sm:px-8 sm:py-8"
+        >
+          {/*
+           * 남은 문항 수는 버튼에서만 알린다. 이전에는 여기 우측 상단에 "0 / 5 응답" 을
+           * 같이 뒀는데, 버튼의 "N개 문항이 남았어요" 와 같은 내용을 두 번 말하는 셈이었다.
+           */}
+          {currentStep !== 3 && (
+            <PropensityQuestionList
+              questions={questions}
+              answers={currentAnswers}
+              onChangeAnswer={handleChangeAnswer}
+            />
           )}
-          {currentStep === 2 && (
-            <div className="flex w-full flex-col gap-2">
-              <div className="flex w-full gap-3">
-                <Button
-                  className="h-12.5 flex-1 border border-[#C3BDB3] bg-white px-5.5 text-[15px] font-semibold text-[#222019] hover:bg-gray-200"
-                  onClick={() => goStep(1)}
-                >
-                  이전 단계
-                </Button>
-                <Button
-                  className={cn(
-                    "h-12.5 min-w-75 px-5.5 text-[15.5px] font-semibold",
-                    !isAllAnswered && "bg-gray-300",
-                  )}
-                  disabled={!isAllAnswered || postPropensityMutation.isPending}
-                  onClick={() => {
-                    postPropensityMutation.mutate(answers, {
-                      onSuccess: (data) => {
-                        queryClient.setQueryData(propensityQueryKeys.result(), data);
-                        clearPropensityAnswers();
-                        setIsRetaking(false);
-                        goStep(3);
-                      },
-                    });
-                  }}
-                >
-                  결과보기
-                </Button>
-              </div>
-              {postPropensityMutation.isError && (
-                <p className="self-end text-center text-[12px] text-red-500">
-                  {isApiError(postPropensityMutation.error)
-                    ? postPropensityMutation.error.message
-                    : "진단 결과 제출 중 오류가 발생했습니다."}
-                </p>
-              )}
-            </div>
-          )}
+
           {currentStep === 3 && (
-            <div className="flex w-full flex-col gap-5.5">
-              <div className="flex flex-col items-center gap-2 text-center">
-                {propensityResult ? (
-                  <>
-                    <Image
-                      src={propensityResult.imageUrl}
-                      alt="Propensity Result"
-                      width={150}
-                      height={150}
-                      className="rounded-full"
-                    />
-                    <span className="text-[29px] leading-[35.96px] font-semibold tracking-[-0.87px] text-[#245A40]">
-                      {propensityResult.code}
-                    </span>
-                    <p className="text-[29px] leading-[35.96px] font-semibold tracking-[-0.87px] text-[#222019]">
-                      <span className="text-[#245A40]">{propensityType} </span>
-                      여행자
-                    </p>
-                    <p className="w-115 text-[14.5px] leading-[23.925px] text-[#5F5B53]">
-                      {propensityResult.description}
-                    </p>
-                  </>
-                ) : propensityResultQuery.isError ? (
-                  <p className="py-8 text-[14px] text-red-500">
-                    결과를 불러오지 못했어요. 다시 시도해 주세요.
-                  </p>
-                ) : (
-                  <p className="py-8 text-[14px] text-[#5F5B53]">결과를 불러오는 중이에요...</p>
-                )}
-              </div>
-              <div className="flex w-full gap-2.75">
-                <Button
-                  className="h-12.5 flex-1 border border-[#C3BDB3] bg-white px-5.5 text-[15px] font-semibold text-[#222019] hover:bg-gray-200"
-                  onClick={() => {
-                    setIsRetaking(true);
-                    setDraftAnswers(INITIAL_ANSWERS);
-                    clearPropensityAnswers();
-                    clearPropensityResult();
-                    setResultOverride(null);
-                    postPropensityMutation.reset();
-                    queryClient.removeQueries({ queryKey: propensityQueryKeys.result() });
-                    goStep(1);
-                  }}
-                >
-                  처음부터 다시
-                </Button>
-                <Button
-                  className="h-12.5 min-w-75 px-5.5 font-semibold"
-                  disabled={postRecommendationsMutation.isPending || !propensityResult}
-                  onClick={() => {
-                    postRecommendationsMutation.mutate(undefined, {
-                      onSuccess: () => {
-                        router.push("/course-recommend");
-                      },
-                    });
-                  }}
-                >
-                  {postRecommendationsMutation.isPending ? "추천 생성 중..." : "코스 추천받기"}
-                </Button>
-              </div>
-              {postRecommendationsMutation.isError && (
-                <p className="self-end text-center text-[12px] text-red-500">
-                  {isApiError(postRecommendationsMutation.error)
-                    ? postRecommendationsMutation.error.message
-                    : "코스 추천 생성 중 오류가 발생했습니다."}
-                </p>
-              )}
-            </div>
+            <PropensityResultView
+              result={propensityResult}
+              isError={propensityResultQuery.isError}
+              onRetry={() => propensityResultQuery.refetch()}
+            />
           )}
-        </div>
-      </div>
-    </div>
+
+          <div className="border-line flex flex-col gap-3 border-t pt-6">
+            {currentStep === 1 && (
+              <Button
+                size="xl"
+                className="w-full"
+                disabled={!isPreferenceAnswered}
+                onClick={() => goStep(2)}
+              >
+                {isPreferenceAnswered
+                  ? "가치소비 설정하기"
+                  : `${questions.length - answeredCount}개 문항이 남았어요`}
+              </Button>
+            )}
+
+            {currentStep === 2 && (
+              <>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Button
+                    variant="outline"
+                    size="xl"
+                    className="sm:flex-1"
+                    onClick={() => goStep(1)}
+                  >
+                    이전 단계
+                  </Button>
+                  <Button
+                    size="xl"
+                    className="sm:flex-2"
+                    disabled={!isAllAnswered || postPropensityMutation.isPending}
+                    onClick={() => {
+                      postPropensityMutation.mutate(answers, {
+                        onSuccess: (data) => {
+                          queryClient.setQueryData(propensityQueryKeys.result(), data);
+                          clearPropensityAnswers();
+                          setIsRetaking(false);
+                          goStep(3);
+                        },
+                      });
+                    }}
+                  >
+                    {postPropensityMutation.isPending
+                      ? "결과를 만들고 있어요..."
+                      : isAllAnswered
+                        ? "결과 보기"
+                        : `${questions.length - answeredCount}개 문항이 남았어요`}
+                  </Button>
+                </div>
+                {submitError && (
+                  <p role="alert" className="text-danger-ink text-cap text-center font-medium">
+                    {submitError}
+                  </p>
+                )}
+              </>
+            )}
+
+            {currentStep === 3 && (
+              <>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Button
+                    variant="outline"
+                    size="xl"
+                    className="sm:flex-1"
+                    onClick={() => {
+                      setIsRetaking(true);
+                      setDraftAnswers(INITIAL_ANSWERS);
+                      clearPropensityAnswers();
+                      clearPropensityResult();
+                      setResultOverride(null);
+                      postPropensityMutation.reset();
+                      queryClient.removeQueries({ queryKey: propensityQueryKeys.result() });
+                      goStep(1);
+                    }}
+                  >
+                    처음부터 다시
+                  </Button>
+                  <Button
+                    size="xl"
+                    className="sm:flex-2"
+                    disabled={postRecommendationsMutation.isPending || !propensityResult}
+                    onClick={() => {
+                      postRecommendationsMutation.mutate(undefined, {
+                        onSuccess: () => {
+                          router.push("/course-recommend");
+                        },
+                      });
+                    }}
+                  >
+                    {postRecommendationsMutation.isPending ? "추천 생성 중..." : "코스 추천받기"}
+                  </Button>
+                </div>
+                {recommendError && (
+                  <p role="alert" className="text-danger-ink text-cap text-center font-medium">
+                    {recommendError}
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </FlowShell>
   );
 }
 

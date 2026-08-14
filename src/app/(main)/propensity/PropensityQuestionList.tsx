@@ -1,4 +1,13 @@
-import { cn } from "@/lib/utils";
+"use client";
+
+import { AxisInput } from "@/components/common/Axis";
+
+/**
+ * 진단 문항. 각 문항은 하나의 축이다 — 홈 프로필 요약의 축과 같은 형태를 공유한다
+ * (DESIGN.md §6 규칙 1).
+ *
+ * 문항끼리는 괘선으로만 나눈다. 각 문항을 카드에 담으면 카드 안의 카드가 된다.
+ */
 
 interface QuestionProps {
   questions: {
@@ -20,80 +29,33 @@ export default function PropensityQuestionList({
   onChangeAnswer,
 }: QuestionProps) {
   return (
-    <>
-      {questions.map((question) => {
-        const selectedScore = answers[question.id] ?? 0;
-        return (
-          <div
-            key={question.id}
-            className="flex w-full flex-col gap-3.25 border-b border-b-[#EBE7DF]"
-          >
-            <p className="text-[14.5px] font-semibold tracking-[-0.145px] text-[#222019]">
-              {question.title}
-            </p>
+    // 1열로 되돌렸다. 축이 5개(홀수)라 2열에서는 마지막 칸이 비어 어색했다.
+    <ol className="divide-line flex w-full flex-col divide-y">
+      {questions.map((question, index) => {
+        const [minOption, maxOption] = question.options;
+        const score = answers[question.id] ?? 0;
 
-            <div className="flex justify-between">
-              {question.options.map((option, optionIndex) => {
-                const isLeftActive = optionIndex === 0 && selectedScore >= 1 && selectedScore <= 2;
-                const isRightActive = optionIndex === 1 && selectedScore >= 4 && selectedScore <= 5;
-                const isLeftOption = optionIndex === 0;
-                const isRightOption = optionIndex === 1;
-                return (
-                  <div
-                    key={option.value}
-                    className={cn(
-                      "flex flex-col gap-0.5",
-                      isLeftOption && "items-start text-left",
-                      isRightOption && "items-end text-right",
-                    )}
-                  >
-                    <p
-                      className={cn(
-                        "text-[14px] font-semibold tracking-[-0.14px] text-[#5F5B53]",
-                        (isLeftActive || isRightActive) && "text-[#1C4632]",
-                      )}
-                    >
-                      {option.label}
-                    </p>
-                    <p
-                      className={cn(
-                        "text-[11.5px] text-[#B9B3AA]",
-                        (isLeftActive || isRightActive) && "text-[#3C875F]",
-                      )}
-                    >
-                      {option.description}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="relative mb-5 flex h-8.75 w-full max-w-154 items-center justify-between">
-              <span className="absolute top-1/2 right-[17.5px] left-[17.5px] h-0.5 -translate-y-1/2 bg-[#D9D5CD]" />
-              {[1, 2, 3, 4, 5].map((score) => {
-                const isSelected = selectedScore === score;
-                return (
-                  <button
-                    key={score}
-                    type="button"
-                    onClick={() => onChangeAnswer(question.id, score)}
-                    className="relative z-10 flex size-8.75 shrink-0 items-center justify-center"
-                  >
-                    <span
-                      className={cn(
-                        "flex items-center justify-center rounded-full border-2 bg-white",
-                        score === 3 ? "size-2.25 border-[#D9D5CD]" : "size-3.5 border-[#C3BDB3]",
-                        isSelected && "size-8.75 border-[#E7F0EA]",
-                      )}
-                    >
-                      {isSelected && <span className="block size-5.25 rounded-full bg-[#2F6F4F]" />}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+        if (!minOption || !maxOption) {
+          return null;
+        }
+
+        return (
+          <li key={question.id} className="flex min-w-0 flex-col gap-3 py-6 first:pt-0 last:pb-0">
+            <p className="text-ink-3 text-cap flex items-center gap-2 font-normal">
+              <span className="tabular-nums">{String(index + 1).padStart(2, "0")}</span>
+              <span className="text-ink text-title-3">{question.title}</span>
+            </p>
+            <AxisInput
+              minLabel={minOption.label}
+              maxLabel={maxOption.label}
+              minHint={minOption.description}
+              maxHint={maxOption.description}
+              value={score}
+              onChange={(value) => onChangeAnswer(question.id, value)}
+            />
+          </li>
         );
       })}
-    </>
+    </ol>
   );
 }

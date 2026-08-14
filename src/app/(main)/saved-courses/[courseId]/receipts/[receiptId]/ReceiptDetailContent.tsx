@@ -3,18 +3,22 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Info } from "lucide-react";
+import { ChevronRight, Info } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useNavigationGuard } from "@/contexts/NavigationGuardContext";
 import { useUpdateReceiptMutation } from "@/features/receipts/queries";
 import type { ReceiptDetailResponse } from "@/features/receipts/types";
 import type { SavedCourseDetailResponse } from "@/features/recommendation/types";
-import { cn } from "@/lib/utils";
+
 import ReceiptDeleteDialog from "./ReceiptDeleteDialog";
 import ReceiptDownloadButton from "./ReceiptDownloadButton";
 import ReceiptFields from "./ReceiptFields";
 import ReceiptPhoto from "./ReceiptPhoto";
+
+const breadcrumbLinkClassName =
+  "text-ink-2 hover:text-brand-ink transition-colors duration-(--dur-1)";
 
 export default function ReceiptDetailContent({
   course,
@@ -78,36 +82,43 @@ export default function ReceiptDetailContent({
     if (href) router.push(href);
   };
 
+  const updateError = updateMutation.isError
+    ? "저장 중 오류가 발생했어요. 다시 시도해 주세요."
+    : null;
+
   return (
     <>
-      <div className="flex items-center gap-1.75 text-[13px] text-[#5F5B53]">
+      <nav aria-label="현재 위치" className="text-body-sm flex flex-wrap items-center gap-1.5">
         <Link
           href="/saved-courses"
           onNavigate={(event) => guardedNavigate(event, "/saved-courses")}
-          className="hover:text-[#2F6F4F]"
+          className={breadcrumbLinkClassName}
         >
           저장한 코스
         </Link>
-        <span className="text-[#B8B3AA]">›</span>
+        <ChevronRight className="text-ink-3 size-3.5 shrink-0" strokeWidth={1.75} aria-hidden />
         <Link
           href={receiptsListHref}
           onNavigate={(event) => guardedNavigate(event, receiptsListHref)}
-          className="hover:text-[#2F6F4F]"
+          className={breadcrumbLinkClassName}
         >
           {course.title}
         </Link>
-        <span className="text-[#B8B3AA]">›</span>
-        <span className="text-[#222019]">증빙 상세</span>
-      </div>
-      <p className="pt-3.5 text-[24px] font-semibold tracking-[-0.6px] text-[#222019]">
-        증빙 상세
-      </p>
-      <div className="flex w-full gap-6.5 pt-5.5">
-        <div className="flex w-109.25 shrink-0 flex-col items-start gap-3">
+        <ChevronRight className="text-ink-3 size-3.5 shrink-0" strokeWidth={1.75} aria-hidden />
+        <span className="text-ink font-semibold" aria-current="page">
+          증빙 상세
+        </span>
+      </nav>
+
+      <h1 className="text-title-1 text-ink sm:text-display-2 mt-5">증빙 상세</h1>
+
+      <div className="mt-8 grid w-full gap-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
+        <div className="flex flex-col gap-3">
           <ReceiptPhoto imageUrl={receipt.imageUrl} />
           <ReceiptDownloadButton savedCourseId={courseId} receiptId={receiptId} />
         </div>
-        <div className="flex flex-1 flex-col items-start">
+
+        <div className="flex flex-col gap-3">
           <ReceiptFields
             merchantName={merchantName}
             onMerchantNameChange={setMerchantName}
@@ -116,32 +127,36 @@ export default function ReceiptDetailContent({
             paidDate={paidDate}
             onPaidDateChange={setPaidDate}
           />
-          <div className="flex w-full items-center gap-1.75 pt-3">
-            <Info className="size-3.5 shrink-0 text-[#B8B3AA]" />
-            <p className="flex-1 text-[12.5px] leading-relaxed text-[#B8B3AA]">
-              OCR로 자동 추출된 값이에요 · 잘못 인식된 항목은 직접 수정할 수 있어요
-            </p>
-          </div>
+
+          <p className="text-ink-3 text-cap flex items-start gap-1.5 font-normal">
+            <Info className="mt-0.5 size-3.5 shrink-0" strokeWidth={1.75} aria-hidden />
+            <span>OCR로 자동 추출된 값이에요. 잘못 인식된 항목은 직접 수정할 수 있어요.</span>
+          </p>
+
           {isMerchantNameEmpty && (
-            <p className="pt-2 text-[12px] text-red-500">가맹점명을 입력해주세요.</p>
-          )}
-          {updateMutation.isError && (
-            <p className="pt-2 text-[12px] text-red-500">
-              저장 중 오류가 발생했어요. 다시 시도해 주세요.
+            <p role="alert" className="text-danger-ink text-cap font-medium">
+              가맹점명을 입력해 주세요.
             </p>
           )}
-          <div className="flex w-full gap-2.5 pt-6">
-            <button
-              type="button"
+          {updateError && (
+            <p role="alert" className="text-danger-ink text-cap font-medium">
+              {updateError}
+            </p>
+          )}
+
+          <div className="mt-3 flex gap-3">
+            <Button
+              size="lg"
+              className="flex-2"
               disabled={!isDirty || isMerchantNameEmpty || updateMutation.isPending}
               onClick={() => updateMutation.mutate({ merchantName, amount, paidDate })}
-              className={cn(
-                "h-12.5 flex-1 rounded-[12px] text-[15px] font-semibold text-white disabled:cursor-not-allowed",
-                isDirty && !isMerchantNameEmpty ? "cursor-pointer bg-[#2F6F4F]" : "bg-[#A7C7B5]",
-              )}
             >
-              {updateMutation.isPending ? "저장하는 중..." : "저장하기"}
-            </button>
+              {updateMutation.isPending
+                ? "저장하는 중..."
+                : isDirty
+                  ? "저장하기"
+                  : "변경된 내용 없음"}
+            </Button>
             <ReceiptDeleteDialog savedCourseId={courseId} receiptId={receiptId} />
           </div>
         </div>
@@ -151,17 +166,20 @@ export default function ReceiptDetailContent({
         <DialogContent>
           <DialogTitle>수정한 내용을 저장할까요?</DialogTitle>
           <DialogDescription>
-            저장하지 않고 이동하면 수정한 가맹점명·금액·날짜가 사라져요.
+            저장하지 않고 이동하면 수정한 가맹점명, 금액, 날짜가 사라져요.
           </DialogDescription>
-          <div className="mt-5.5 flex w-full gap-2.5">
+          <div className="mt-6 flex w-full gap-3">
             <Button
-              className="h-12.5 flex-1 border border-[#C3BDB3] bg-white text-[15px] font-semibold tracking-[-0.15px] text-[#222019] hover:bg-gray-100"
+              variant="outline"
+              size="lg"
+              className="flex-1"
               onClick={handleLeaveWithoutSaving}
             >
               저장 안 함
             </Button>
             <Button
-              className="h-12.5 flex-1 bg-[#2F6F4F] text-[15px] font-semibold tracking-[-0.15px] text-white hover:bg-[#2F6F4F]/90"
+              size="lg"
+              className="flex-1"
               disabled={updateMutation.isPending || isMerchantNameEmpty}
               onClick={handleSaveAndLeave}
             >
@@ -169,13 +187,13 @@ export default function ReceiptDetailContent({
             </Button>
           </div>
           {isMerchantNameEmpty && (
-            <p className="mt-2 text-[12px] text-red-500">
+            <p role="alert" className="text-danger-ink text-cap mt-3 font-medium">
               가맹점명을 입력해야 저장할 수 있어요.
             </p>
           )}
-          {updateMutation.isError && (
-            <p className="mt-2 text-[12px] text-red-500">
-              저장 중 오류가 발생했어요. 다시 시도해 주세요.
+          {updateError && (
+            <p role="alert" className="text-danger-ink text-cap mt-3 font-medium">
+              {updateError}
             </p>
           )}
         </DialogContent>
