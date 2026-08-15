@@ -105,7 +105,7 @@ export function useAccountForm(user: MeResponse) {
     reset,
     setError,
     setValue,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = form;
 
   const selectedBirthMonth = useWatch({ control, name: "birthMonth" });
@@ -149,6 +149,10 @@ export function useAccountForm(user: MeResponse) {
   });
 
   const onSubmit = (data: AccountFormValues) => {
+    if (!isDirty) {
+      return;
+    }
+
     clearErrors("root");
 
     updateMutation.mutate({
@@ -177,6 +181,7 @@ export function useAccountForm(user: MeResponse) {
     },
     status: {
       isSubmitting: updateMutation.isPending,
+      isDirty,
     },
   };
 }
