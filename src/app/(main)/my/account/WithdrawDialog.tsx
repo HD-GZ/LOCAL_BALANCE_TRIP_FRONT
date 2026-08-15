@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
@@ -17,10 +17,16 @@ import { userQueryKeys } from "@/features/user/queries";
 import { useBooleanState } from "@/hooks/useBooleanState";
 import { isApiError } from "@/lib/api/error";
 
+// 구글 플레이 콘솔 앱 심사(계정 삭제) 제출용: ?withdraw=open 접속 시 모달이 바로 열림
 export default function WithdrawDialog() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
-  const { value: isOpen, setTrue: open, setFalse: close } = useBooleanState();
+  const {
+    value: isOpen,
+    setTrue: open,
+    setFalse: close,
+  } = useBooleanState(searchParams.get("withdraw") === "open");
 
   const withdrawMutation = useMutation({
     mutationFn: withdrawMe,
