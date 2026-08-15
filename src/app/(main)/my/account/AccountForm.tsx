@@ -24,7 +24,7 @@ export default function AccountForm({ user }: AccountFormProps) {
   const accountForm = useAccountForm(user);
   const { errors, handleSubmit, register, setValue } = accountForm.form;
   const { selectedBirthMonth, selectedGender } = accountForm.fields;
-  const { isSubmitting } = accountForm.status;
+  const { isSubmitting, isDirty } = accountForm.status;
   const { onSubmit } = accountForm.handlers;
 
   return (
@@ -76,7 +76,9 @@ export default function AccountForm({ user }: AccountFormProps) {
           />
           <Select
             value={selectedBirthMonth || undefined}
-            onValueChange={(value) => setValue("birthMonth", value, { shouldValidate: true })}
+            onValueChange={(value) =>
+              setValue("birthMonth", value, { shouldValidate: true, shouldDirty: true })
+            }
           >
             <SelectTrigger aria-label="생월">
               <SelectValue placeholder="월" />
@@ -107,7 +109,9 @@ export default function AccountForm({ user }: AccountFormProps) {
               key={option}
               type="button"
               aria-pressed={selectedGender === option}
-              onClick={() => setValue("gender", option, { shouldValidate: true })}
+              onClick={() =>
+                setValue("gender", option, { shouldValidate: true, shouldDirty: true })
+              }
               className={cn(
                 "press text-body-sm h-11 cursor-pointer rounded-xs border font-semibold",
                 selectedGender === option
@@ -128,7 +132,7 @@ export default function AccountForm({ user }: AccountFormProps) {
       )}
 
       <div className="flex gap-3 pt-8">
-        <Button type="submit" size="lg" disabled={isSubmitting} className="flex-2">
+        <Button type="submit" size="lg" disabled={isSubmitting || !isDirty} className="flex-2">
           {isSubmitting ? "저장 중..." : "정보수정"}
         </Button>
         <WithdrawDialog />
