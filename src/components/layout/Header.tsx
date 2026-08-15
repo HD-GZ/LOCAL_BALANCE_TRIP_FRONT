@@ -4,9 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+
 import ChevronDown from "@/assets/chevronDown.svg";
 import Logo from "@/assets/logo.svg";
+import { useNavigationGuard } from "@/contexts/NavigationGuardContext";
 import { logout } from "@/features/auth/api";
+import { homeQueryKeys } from "@/features/home/queries";
 import { userQueries, userQueryKeys } from "@/features/user/queries";
 import { cn } from "@/lib/utils";
 
@@ -16,25 +20,34 @@ const NAV_LIST = [
   { name: "코스 추천", path: "/course-recommend", href: "/course-recommend?step=1" },
 ];
 
+function isActive(pathname: string, path: string) {
+  return path === "/" ? pathname === "/" : pathname.startsWith(path);
+}
+
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data: user } = useQuery(userQueries.me());
-  const isHome = pathname === "/";
+  const meQuery = useQuery(userQueries.me());
+  const user = meQuery.data;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { requestNavigate } = useNavigationGuard();
+  const reduce = useReducedMotion();
+
+  const handleNavigate = (href: string) => (event: { preventDefault: () => void }) => {
+    if (requestNavigate(href)) event.preventDefault();
+  };
 
   const logoutMutation = useMutation({
     mutationFn: logout,
     onSuccess: () => {
       setIsMenuOpen(false);
       queryClient.removeQueries({ queryKey: userQueryKeys.me() });
+      queryClient.removeQueries({ queryKey: homeQueryKeys.all });
       router.push("/");
     },
   });
-
-  const navLinkClassName = "text-[#5F5B53] text-[14px]";
 
   useEffect(() => {
     if (!isMenuOpen) return;
@@ -44,73 +57,125 @@ export default function Header() {
         setIsMenuOpen(false);
       }
     }
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setIsMenuOpen(false);
+    }
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
   }, [isMenuOpen]);
 
+  // 표면은 기존 디자인(흰 배경, 굵은 글씨 활성 표시)으로 되돌렸다 — 팀 합의 사항.
+  // 스티키는 유지한다. 장식이 아니라 이동 수단이고, 화면이 길어진 지금
+  // 상단으로 돌아가려면 매번 끝까지 스크롤해야 한다.
   return (
-    <header className="flex h-16.5 w-full items-center justify-between bg-white px-9.5">
-      <section className="flex gap-8">
-        <Link className="flex h-full cursor-pointer items-center gap-2.5" href={"/"}>
-          <Logo className="h-6 w-6" />
-          <div className="text-[16.5px] font-semibold">
-            <span>로컬</span>
-            <span className="text-[#2F6F4F]">밸런스</span>
-            <span> 트립</span>
-          </div>
-        </Link>
-        {!isHome && (
-          <div className="flex gap-6">
-            {NAV_LIST.map((item) => (
-              <Link
-                href={item.href}
-                key={item.path}
-                className={cn(
-                  navLinkClassName,
-                  pathname === item.path ? "font-semibold text-black" : "font-normal",
-                )}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
-      <section className="flex items-center">
-        <div className="relative" ref={menuRef}>
-          <div
-            className="flex cursor-pointer items-center gap-2.25 rounded-[100px] border border-[#EBE7DF] px-2.75 py-1.25"
-            onClick={() => {
-              setIsMenuOpen((prev) => !prev);
-            }}
+    <header className="border-line bg-surface sticky top-0 z-40 w-full border-b">
+      <div className="mx-auto flex h-16 w-full max-w-[1280px] items-center justify-between gap-4 px-4 md:px-8">
+        <nav className="flex min-w-0 items-center gap-6 md:gap-8" aria-label="주요 메뉴">
+          <Link
+            className="text-ink flex shrink-0 items-center gap-2"
+            href="/"
+            onNavigate={handleNavigate("/")}
           >
-            <span className="text-[13.5px] font-medium">{user?.name}</span>
-            <ChevronDown className="size-3.5" />
-          </div>
-          {isMenuOpen && (
-            <div className="absolute top-full right-0 flex w-53 flex-col items-start gap-0.5 rounded-[13px] border border-[#EBE7DF] bg-white p-1.75 shadow-[0_8px_28px_-8px_rgba(40,36,28,0.22)]">
-              <div className="flex flex-col items-start gap-0.75 self-stretch rounded-[8px] px-2.75 pt-2.25 pb-2.75">
-                <span className="text-[14px] text-[#222019]">{user?.name}님</span>
-                <span className="text-[12px] text-[#928D84]">{user?.email}</span>
-              </div>
-              <span className="h-px w-full bg-[#EBE7DF]" />
-              <button className="flex cursor-pointer items-center self-stretch rounded-[8px] px-2.75 py-2.25 hover:bg-gray-100">
-                <span className="text-[14px] text-[#222019]">마이페이지</span>
-              </button>
-              <span className="h-px w-full bg-[#EBE7DF]" />
-              <button
-                className="flex cursor-pointer items-center self-stretch rounded-[8px] px-2.75 py-2.25 hover:bg-gray-100"
-                onClick={() => logoutMutation.mutate()}
-              >
-                <span className="text-[14px] text-[#B5654A]">
-                  {logoutMutation.isPending ? "로그아웃 중..." : "로그아웃"}
-                </span>
-              </button>
-            </div>
+            <Logo className="size-6 shrink-0" />
+            <span className="text-title-3 font-display hidden whitespace-nowrap sm:inline">
+              <span>로컬</span>
+              <span className="text-brand-ink">밸런스</span>
+              <span> 트립</span>
+            </span>
+          </Link>
+          <ul className="flex items-center gap-4 md:gap-6">
+            {NAV_LIST.map((item) => {
+              const active = isActive(pathname, item.path);
+
+              return (
+                <li key={item.path}>
+                  <Link
+                    href={item.href}
+                    onNavigate={handleNavigate(item.href)}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "text-body-sm block py-1 whitespace-nowrap transition-colors duration-(--dur-1)",
+                      active ? "text-ink font-semibold" : "text-ink-2 hover:text-ink font-normal",
+                    )}
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        <div className="flex shrink-0 items-center">
+          {!meQuery.isPending && !user && (
+            <Link
+              href="/login"
+              className="press border-line-control text-ink text-body-sm hover:bg-surface-2 flex h-9 items-center rounded-sm border px-3.5 font-semibold"
+              onNavigate={handleNavigate("/login")}
+            >
+              로그인
+            </Link>
           )}
+          <div className={cn("relative", !user && "hidden")} ref={menuRef}>
+            <button
+              type="button"
+              aria-expanded={isMenuOpen}
+              aria-haspopup="menu"
+              className="press border-line-control hover:bg-surface-2 flex h-9 cursor-pointer items-center gap-2 rounded-sm border px-3"
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+            >
+              <span className="text-body-sm text-ink font-semibold">{user?.name}</span>
+              <ChevronDown
+                className={cn(
+                  "size-3 transition-transform duration-(--dur-2)",
+                  isMenuOpen && "rotate-180",
+                )}
+              />
+            </button>
+            <AnimatePresence>
+              {isMenuOpen && (
+                <motion.div
+                  role="menu"
+                  initial={reduce ? undefined : { opacity: 0, y: -4 }}
+                  animate={reduce ? undefined : { opacity: 1, y: 0 }}
+                  exit={reduce ? undefined : { opacity: 0, y: -4 }}
+                  transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
+                  className="bg-surface shadow-overlay absolute top-[calc(100%+0.5rem)] right-0 flex w-56 flex-col rounded-md p-1.5"
+                >
+                  <div className="flex flex-col gap-0.5 px-2.5 pt-2 pb-3">
+                    <span className="text-body-sm text-ink font-semibold">{user?.name}님</span>
+                    <span className="text-cap text-ink-3 font-normal break-all">{user?.email}</span>
+                  </div>
+                  <span aria-hidden className="bg-line -mx-1.5 h-px" />
+                  <Link
+                    role="menuitem"
+                    href="/my/account"
+                    className="text-body-sm text-ink hover:bg-surface-2 mt-1 flex items-center rounded-xs px-2.5 py-2 font-medium transition-colors duration-(--dur-1)"
+                    onClick={() => setIsMenuOpen(false)}
+                    onNavigate={handleNavigate("/my/account")}
+                  >
+                    마이페이지
+                  </Link>
+                  <button
+                    role="menuitem"
+                    type="button"
+                    className="text-body-sm text-danger-ink hover:bg-danger-wash flex cursor-pointer items-center rounded-xs px-2.5 py-2 font-medium transition-colors duration-(--dur-1) disabled:opacity-45"
+                    disabled={logoutMutation.isPending}
+                    onClick={() => logoutMutation.mutate()}
+                  >
+                    {logoutMutation.isPending ? "로그아웃 중..." : "로그아웃"}
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-      </section>
+      </div>
     </header>
   );
 }

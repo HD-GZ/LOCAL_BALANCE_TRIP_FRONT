@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "tong.visitkorea.or.kr" },
       { protocol: "http", hostname: "tong.visitkorea.or.kr" },
+      { protocol: "https", hostname: "stage.images.lb-trip.live" },
     ],
   },
   turbopack: {

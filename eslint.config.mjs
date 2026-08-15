@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // 설치된 에이전트 스킬 번들. 우리 코드가 아니다.
+    ".agents/**",
+    ".claude/skills/**",
   ]),
 
   {
