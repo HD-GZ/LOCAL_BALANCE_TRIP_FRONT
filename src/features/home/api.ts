@@ -6,6 +6,7 @@ import type {
   ProfileSummaryResponse,
   ProfileTypesResponse,
 } from "@/features/home/types";
+import type { CourseDetailResponse } from "@/features/recommendation/types";
 import { apiClient } from "@/lib/api/client";
 
 export function getHomeHero() {
@@ -22,6 +23,10 @@ export function getHomeProfileSummary() {
 
 export function getHomePopularCourses() {
   return apiClient.get<PopularCoursesResponse>("/api/home/popular-courses");
+}
+
+export function getHomePopularCourseDetail(courseId: number) {
+  return apiClient.get<CourseDetailResponse>(`/api/home/popular-courses/${courseId}`);
 }
 
 export function getHomeIncentives() {

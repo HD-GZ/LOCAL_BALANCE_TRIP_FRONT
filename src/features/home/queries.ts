@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import {
   getHomeHero,
   getHomeIncentives,
+  getHomePopularCourseDetail,
   getHomePopularCourses,
   getHomeProfileSummary,
   getHomeProfileTypes,
@@ -14,6 +15,8 @@ export const homeQueryKeys = {
   profileTypes: () => [...homeQueryKeys.all, "profile-types"] as const,
   profileSummary: () => [...homeQueryKeys.all, "profile-summary"] as const,
   popularCourses: () => [...homeQueryKeys.all, "popular-courses"] as const,
+  popularCourseDetail: (courseId: number) =>
+    [...homeQueryKeys.all, "popular-courses", courseId] as const,
   incentives: () => [...homeQueryKeys.all, "incentives"] as const,
   savedCourses: () => [...homeQueryKeys.all, "saved-courses"] as const,
 };
@@ -42,6 +45,12 @@ export const homeQueries = {
       enabled,
       queryKey: homeQueryKeys.popularCourses(),
       queryFn: getHomePopularCourses,
+    }),
+  popularCourseDetail: (courseId: number, enabled = true) =>
+    queryOptions({
+      enabled,
+      queryKey: homeQueryKeys.popularCourseDetail(courseId),
+      queryFn: () => getHomePopularCourseDetail(courseId),
     }),
   incentives: () =>
     queryOptions({
