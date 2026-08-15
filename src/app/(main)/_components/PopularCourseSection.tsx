@@ -53,7 +53,7 @@ export default function PopularCourseSection() {
           {courses.map((course, index) => (
             <Reveal as="li" key={course.courseId} index={index}>
               <HomeCourseCard
-                href={`/course-recommend/courses/${course.courseId}`}
+                href={`/home/popular-courses/${course.courseId}`}
                 title={course.title}
                 imageUrl={course.imageUrl}
                 badge={{ label: "인기 지역", tone: "outline" }}
