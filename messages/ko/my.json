@@ -29,7 +29,7 @@
       "nameRequired": "이름을 입력해 주세요.",
       "birthYearInvalid": "년도 4자리를 입력해 주세요.",
       "birthMonthRequired": "월을 선택해 주세요.",
-      "birthDayInvalid": "올바른 일을 입력해 주세요.",
+      "birthDayInvalid": "올바른 날짜를 입력해 주세요.",
       "genderRequired": "성별을 선택해 주세요.",
       "passwordMinLength": "비밀번호는 8자 이상이어야 해요.",
       "passwordPattern": "영문·숫자를 포함해 주세요.",

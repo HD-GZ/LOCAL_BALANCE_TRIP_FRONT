@@ -26,6 +26,7 @@ function toDiagnosedDate(diagnosedAt: string, locale: string) {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
+      timeZone: "UTC",
     }).format(new Date(diagnosedAt));
   }
 
