@@ -2,6 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useTranslations } from "next-intl";
 
 import Walk from "@/assets/walk.svg";
 import type { CoursePlace } from "@/features/recommendation/types";
@@ -31,6 +32,7 @@ type CourseTimelineProps = {
 };
 
 export default function CourseTimeline({ places, expandedOrder, onToggle }: CourseTimelineProps) {
+  const t = useTranslations("courseRecommend.timeline");
   const reduce = useReducedMotion();
 
   return (
@@ -52,7 +54,9 @@ export default function CourseTimeline({ places, expandedOrder, onToggle }: Cour
             {index > 0 && place.walkMinutes != null && (
               <p className="text-ink-3 text-cap flex items-center gap-1.5 py-2 pl-11 font-normal">
                 <Walk className="size-3 shrink-0" aria-hidden />
-                <span className="tabular-nums">도보 {place.walkMinutes}분</span>
+                <span className="tabular-nums">
+                  {t("walkMinutes", { minutes: place.walkMinutes })}
+                </span>
               </p>
             )}
 
@@ -114,7 +118,7 @@ export default function CourseTimeline({ places, expandedOrder, onToggle }: Cour
                         <p className="text-ink-2 text-body-sm max-w-[68ch]">{place.description}</p>
                         {place.hasAudio && place.audioUrl && (
                           <div className="flex w-full flex-col gap-2">
-                            <p className="text-ink-3 text-cap font-normal">오디오 가이드</p>
+                            <p className="text-ink-3 text-cap font-normal">{t("audioGuide")}</p>
                             <AudioPlayer src={place.audioUrl} />
                           </div>
                         )}

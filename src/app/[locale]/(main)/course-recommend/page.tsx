@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import FlowShell from "@/components/common/FlowShell";
 import Skeleton from "@/components/common/Skeleton";
@@ -9,7 +10,7 @@ import { recommendationQueries } from "@/features/recommendation/queries";
 import { isApiError } from "@/lib/api/error";
 
 import CourseDestinationList from "./CourseDestinationList";
-import { COURSE_STEPS } from "./steps";
+import { useCourseSteps } from "./steps";
 
 function DestinationListSkeleton() {
   return (
@@ -29,6 +30,9 @@ function DestinationListSkeleton() {
 }
 
 export default function CourseRecommend() {
+  const t = useTranslations("courseRecommend.page");
+  const tCommon = useTranslations();
+  const courseSteps = useCourseSteps();
   const regionsQuery = useQuery(recommendationQueries.regions());
   const regions = regionsQuery.data ?? [];
   /**
@@ -39,40 +43,38 @@ export default function CourseRecommend() {
 
   return (
     <FlowShell
-      steps={COURSE_STEPS}
+      steps={courseSteps}
       currentStep={1}
       showStepLabel
       align="start"
-      title="성향에 맞는 추천 여행지"
-      description="지역을 누르면 맞춤 추천 코스를 볼 수 있어요."
+      title={t("title")}
+      description={t("description")}
     >
       {regionsQuery.isPending && <DestinationListSkeleton />}
 
       {regionsQuery.isError &&
         (needsPropensity ? (
           <SurfaceState
-            title="취향 진단을 먼저 받아야 해요"
-            description="진단을 마치면 성향에 맞는 여행지를 추천해 드려요."
-            action={{ label: "취향 진단 하러 가기", href: "/propensity?step=1" }}
+            title={t("needsPropensity.title")}
+            description={t("needsPropensity.description")}
+            action={{ label: t("needsPropensity.cta"), href: "/propensity?step=1" }}
           />
         ) : (
           <SurfaceState
             tone="error"
-            title="추천 여행지를 불러오지 못했어요"
+            title={t("error.title")}
             description={
-              isApiError(regionsQuery.error)
-                ? regionsQuery.error.message
-                : "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+              isApiError(regionsQuery.error) ? regionsQuery.error.message : t("error.description")
             }
-            action={{ label: "다시 시도", onRetry: () => regionsQuery.refetch() }}
+            action={{ label: tCommon("retry"), onRetry: () => regionsQuery.refetch() }}
           />
         ))}
 
       {regionsQuery.isSuccess && regions.length === 0 && (
         <SurfaceState
-          title="아직 추천된 여행지가 없어요"
-          description="취향 진단 결과 화면에서 코스 추천을 받으면 여기에 지역이 채워져요."
-          action={{ label: "취향 진단으로 가기", href: "/propensity?step=1" }}
+          title={t("empty.title")}
+          description={t("empty.description")}
+          action={{ label: t("empty.cta"), href: "/propensity?step=1" }}
         />
       )}
 

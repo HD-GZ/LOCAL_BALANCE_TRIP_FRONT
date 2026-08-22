@@ -1,4 +1,7 @@
+"use client";
+
 import { ArrowUpRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import type { CourseBenefit } from "@/features/recommendation/types";
 
@@ -7,11 +10,13 @@ import type { CourseBenefit } from "@/features/recommendation/types";
  * 행마다 위아래 테두리를 다 두르지 않고 divide-y 로만 나눈다.
  */
 export default function CourseBenefitList({ benefits }: { benefits: CourseBenefit[] }) {
+  const t = useTranslations("courseRecommend.benefitList");
+
   if (benefits.length === 0) {
     return (
       // 구분선은 뒤따르는 블록이 갖고 있다. 여기서 또 두르면 괘선이 겹치고
       // 사이에 죽은 공간이 생긴다.
-      <p className="text-ink-3 text-body-sm">이 코스에 적용할 수 있는 혜택이 아직 없어요.</p>
+      <p className="text-ink-3 text-body-sm">{t("empty")}</p>
     );
   }
 
