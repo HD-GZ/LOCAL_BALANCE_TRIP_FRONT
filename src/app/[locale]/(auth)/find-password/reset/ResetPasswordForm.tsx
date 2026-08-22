@@ -1,9 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
@@ -13,38 +13,44 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { resetPassword } from "@/features/auth/api";
 import { isResetTokenInvalidCode } from "@/features/auth/passwordReset";
 import { clearPasswordResetSession } from "@/features/auth/passwordResetStorage";
+import { useRouter } from "@/i18n/navigation";
 import { getFieldErrors, isApiError } from "@/lib/api/error";
 import { cn } from "@/lib/utils";
 
 const hasLetterAndDigit = (value: string) => /(?=.*[a-zA-Z])(?=.*\d)/.test(value);
 const hasMinLength = (value: string) => value.length >= 8;
 
-const PASSWORD_RULES = [
-  { label: "영문 · 숫자 조합", test: hasLetterAndDigit },
-  { label: "8자 이상", test: hasMinLength },
-] as const;
-
-const schema = z
-  .object({
-    newPassword: z
-      .string()
-      .min(8, "비밀번호는 8자 이상이어야 해요.")
-      .regex(/^(?=.*[a-zA-Z])(?=.*\d)/, "영문·숫자를 포함해 주세요."),
-    confirmPassword: z.string().min(1, "비밀번호를 다시 입력해 주세요."),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "비밀번호가 일치하지 않습니다",
-    path: ["confirmPassword"],
-  });
-
-type ResetPasswordFormValues = z.infer<typeof schema>;
+type ResetPasswordFormValues = {
+  newPassword: string;
+  confirmPassword: string;
+};
 
 type ResetPasswordFormProps = {
   resetToken: string;
 };
 
 export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps) {
+  const t = useTranslations();
   const router = useRouter();
+
+  const PASSWORD_RULES = [
+    { label: t("findPassword.reset.ruleLetterDigit"), test: hasLetterAndDigit },
+    { label: t("findPassword.reset.ruleMinLength"), test: hasMinLength },
+  ];
+
+  const schema = z
+    .object({
+      newPassword: z
+        .string()
+        .min(8, t("validation.passwordMinLength"))
+        .regex(/^(?=.*[a-zA-Z])(?=.*\d)/, t("validation.passwordPattern")),
+      confirmPassword: z.string().min(1, t("validation.confirmPasswordRequired")),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: t("validation.passwordMismatch"),
+      path: ["confirmPassword"],
+    });
+
   const {
     control,
     register,
@@ -70,7 +76,7 @@ export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps
     },
     onError: (error) => {
       if (!isApiError(error)) {
-        setError("root", { message: "비밀번호 변경 중 오류가 발생했습니다." });
+        setError("root", { message: t("findPassword.reset.errorGeneric") });
         return;
       }
 
@@ -96,11 +102,15 @@ export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-      <FormField label="새 비밀번호" required error={errors.newPassword?.message}>
+      <FormField
+        label={t("findPassword.reset.newPasswordLabel")}
+        required
+        error={errors.newPassword?.message}
+      >
         <PasswordInput
           {...register("newPassword")}
           autoComplete="new-password"
-          placeholder="영문·숫자 8자 이상"
+          placeholder={t("findPassword.reset.newPasswordPlaceholder")}
         />
       </FormField>
 
@@ -126,18 +136,26 @@ export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps
                 )}
               >
                 {label}
-                <span className="sr-only">{isSatisfied ? " 충족" : " 미충족"}</span>
+                <span className="sr-only">
+                  {isSatisfied
+                    ? t("findPassword.reset.ruleSatisfied")
+                    : t("findPassword.reset.ruleUnsatisfied")}
+                </span>
               </span>
             </li>
           );
         })}
       </ul>
 
-      <FormField label="새 비밀번호 확인" required error={errors.confirmPassword?.message}>
+      <FormField
+        label={t("findPassword.reset.confirmPasswordLabel")}
+        required
+        error={errors.confirmPassword?.message}
+      >
         <PasswordInput
           {...register("confirmPassword")}
           autoComplete="new-password"
-          placeholder="다시 입력"
+          placeholder={t("findPassword.reset.confirmPasswordPlaceholder")}
         />
       </FormField>
 
@@ -153,7 +171,9 @@ export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps
         size="lg"
         className="mt-2 w-full"
       >
-        {resetPasswordMutation.isPending ? "변경 중..." : "비밀번호 변경하기"}
+        {resetPasswordMutation.isPending
+          ? t("findPassword.reset.submitting")
+          : t("findPassword.reset.submit")}
       </Button>
     </form>
   );

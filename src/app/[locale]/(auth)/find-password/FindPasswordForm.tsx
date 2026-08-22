@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -11,16 +11,17 @@ import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { requestPasswordResetCode } from "@/features/auth/api";
 import { savePasswordResetCodeRequest } from "@/features/auth/passwordResetStorage";
+import { useRouter } from "@/i18n/navigation";
 import { isApiError } from "@/lib/api/error";
 
-const schema = z.object({
-  email: z.email("올바른 이메일 형식을 입력해 주세요."),
-});
-
-type FindPasswordFormValues = z.infer<typeof schema>;
+type FindPasswordFormValues = {
+  email: string;
+};
 
 export default function FindPasswordForm() {
+  const t = useTranslations();
   const router = useRouter();
+  const schema = z.object({ email: z.email(t("validation.emailInvalid")) });
   const {
     register,
     handleSubmit,
@@ -41,7 +42,7 @@ export default function FindPasswordForm() {
     },
     onError: (error) => {
       setError("root", {
-        message: isApiError(error) ? error.message : "인증번호 요청 중 오류가 발생했습니다.",
+        message: isApiError(error) ? error.message : t("findPassword.errors.generic"),
       });
     },
   });
@@ -53,8 +54,13 @@ export default function FindPasswordForm() {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-      <FormField label="이메일" required error={errors.email?.message}>
-        <Input {...register("email")} type="text" inputMode="email" placeholder="local@email.com" />
+      <FormField label={t("findPassword.form.emailLabel")} required error={errors.email?.message}>
+        <Input
+          {...register("email")}
+          type="text"
+          inputMode="email"
+          placeholder={t("findPassword.form.emailPlaceholder")}
+        />
       </FormField>
 
       {errors.root?.message && (
@@ -69,7 +75,9 @@ export default function FindPasswordForm() {
         size="lg"
         className="mt-2 w-full"
       >
-        {requestCodeMutation.isPending ? "전송 중..." : "인증번호 받기"}
+        {requestCodeMutation.isPending
+          ? t("findPassword.form.submitting")
+          : t("findPassword.form.submit")}
       </Button>
     </form>
   );

@@ -6,6 +6,7 @@ type AccountRowProps = {
   label: string;
   required?: boolean;
   optional?: boolean;
+  optionalLabel?: string;
   error?: string;
   hint?: string;
   className?: string;
@@ -17,6 +18,7 @@ export default function AccountRow({
   label,
   required,
   optional,
+  optionalLabel,
   error,
   hint,
   className,
@@ -32,7 +34,7 @@ export default function AccountRow({
       <p className="text-ink text-cap shrink-0 pt-2.5 whitespace-nowrap sm:w-36">
         {label}
         {required && <span className="text-danger-ink"> *</span>}
-        {optional && <span className="text-ink-3 font-normal"> (선택)</span>}
+        {optional && <span className="text-ink-3 font-normal">{optionalLabel}</span>}
       </p>
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         {children}

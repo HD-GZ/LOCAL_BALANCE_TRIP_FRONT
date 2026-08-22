@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -13,57 +14,53 @@ import type { MeResponse } from "@/features/user/types";
 import { getFieldErrors, isApiError } from "@/lib/api/error";
 
 export const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
-export const GENDER_OPTIONS = ["남성", "여성", "선택안함"] as const;
+export const GENDER_OPTIONS = [GENDER.MALE, GENDER.FEMALE, GENDER.NOT_SPECIFIED] as const;
 
-type GenderOption = (typeof GENDER_OPTIONS)[number];
+function createSchema(t: ReturnType<typeof useTranslations>) {
+  return z
+    .object({
+      name: z.string().min(1, t("account.validation.nameRequired")),
+      password: z.string(),
+      confirmPassword: z.string(),
+      birthYear: z.string().regex(/^\d{4}$/, t("account.validation.birthYearInvalid")),
+      birthMonth: z.string().min(1, t("account.validation.birthMonthRequired")),
+      birthDay: z
+        .string()
+        .regex(/^\d{1,2}$/, t("account.validation.birthDayInvalid"))
+        .refine((value) => {
+          const day = Number(value);
+          return day >= 1 && day <= 31;
+        }, t("account.validation.birthDayInvalid")),
+      gender: z.enum(GENDER_OPTIONS, { message: t("account.validation.genderRequired") }),
+    })
+    // 비밀번호는 변경할 때만 입력하므로, 값이 있을 때만 규칙을 검사한다.
+    .refine((data) => !data.password || data.password.length >= 8, {
+      message: t("account.validation.passwordMinLength"),
+      path: ["password"],
+    })
+    .refine((data) => !data.password || /(?=.*[a-zA-Z])(?=.*\d)/.test(data.password), {
+      message: t("account.validation.passwordPattern"),
+      path: ["password"],
+    })
+    .refine((data) => !data.password || data.confirmPassword.length > 0, {
+      message: t("account.validation.confirmPasswordRequired"),
+      path: ["confirmPassword"],
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("account.validation.passwordMismatch"),
+      path: ["confirmPassword"],
+    });
+}
 
-const GENDER_MAP = {
-  남성: GENDER.MALE,
-  여성: GENDER.FEMALE,
-  선택안함: GENDER.NOT_SPECIFIED,
-} as const satisfies Record<GenderOption, Gender>;
-
-const GENDER_OPTION_MAP = {
-  [GENDER.MALE]: "남성",
-  [GENDER.FEMALE]: "여성",
-  [GENDER.NOT_SPECIFIED]: "선택안함",
-} as const satisfies Record<Gender, GenderOption>;
-
-const schema = z
-  .object({
-    name: z.string().min(1, "이름을 입력해 주세요."),
-    password: z.string(),
-    confirmPassword: z.string(),
-    birthYear: z.string().regex(/^\d{4}$/, "년도 4자리를 입력해 주세요."),
-    birthMonth: z.string().min(1, "월을 선택해 주세요."),
-    birthDay: z
-      .string()
-      .regex(/^\d{1,2}$/, "일을 입력해 주세요.")
-      .refine((value) => {
-        const day = Number(value);
-        return day >= 1 && day <= 31;
-      }, "올바른 일을 입력해 주세요."),
-    gender: z.enum(GENDER_OPTIONS, { message: "성별을 선택해 주세요." }),
-  })
-  // 비밀번호는 변경할 때만 입력하므로, 값이 있을 때만 규칙을 검사한다.
-  .refine((data) => !data.password || data.password.length >= 8, {
-    message: "비밀번호는 8자 이상이어야 해요.",
-    path: ["password"],
-  })
-  .refine((data) => !data.password || /(?=.*[a-zA-Z])(?=.*\d)/.test(data.password), {
-    message: "영문·숫자를 포함해 주세요.",
-    path: ["password"],
-  })
-  .refine((data) => !data.password || data.confirmPassword.length > 0, {
-    message: "비밀번호를 다시 입력해 주세요.",
-    path: ["confirmPassword"],
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "비밀번호가 일치하지 않습니다.",
-    path: ["confirmPassword"],
-  });
-
-type AccountFormValues = z.infer<typeof schema>;
+type AccountFormValues = {
+  name: string;
+  password: string;
+  confirmPassword: string;
+  birthYear: string;
+  birthMonth: string;
+  birthDay: string;
+  gender: Gender;
+};
 
 const FORM_FIELDS = new Set<string>([
   "name",
@@ -85,12 +82,14 @@ function toFormValues(user: MeResponse): AccountFormValues {
     birthYear: year ?? "",
     birthMonth: month ? String(Number(month)) : "",
     birthDay: day ? String(Number(day)) : "",
-    gender: GENDER_OPTION_MAP[user.gender] ?? "선택안함",
+    gender: user.gender ?? GENDER.NOT_SPECIFIED,
   };
 }
 
 export function useAccountForm(user: MeResponse) {
   const queryClient = useQueryClient();
+  const t = useTranslations();
+  const schema = createSchema(t);
 
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(schema),
@@ -117,11 +116,11 @@ export function useAccountForm(user: MeResponse) {
       queryClient.setQueryData(userQueryKeys.me(), updatedUser);
       await queryClient.invalidateQueries({ queryKey: userQueryKeys.me() });
       reset(toFormValues(updatedUser));
-      toast.success("변경한 정보를 저장했어요.");
+      toast.success(t("account.saveSuccess"));
     },
     onError: (error) => {
       if (!isApiError(error)) {
-        setError("root", { message: "정보 수정 중 오류가 발생했습니다." });
+        setError("root", { message: t("account.errors.generic") });
         return;
       }
 
@@ -158,7 +157,7 @@ export function useAccountForm(user: MeResponse) {
     updateMutation.mutate({
       name: data.name.trim(),
       birthDate: `${data.birthYear}-${data.birthMonth.padStart(2, "0")}-${data.birthDay.padStart(2, "0")}`,
-      gender: GENDER_MAP[data.gender],
+      gender: data.gender,
       ...(data.password
         ? { password: data.password, passwordConfirm: data.confirmPassword }
         : undefined),

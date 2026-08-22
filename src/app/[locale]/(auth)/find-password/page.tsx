@@ -1,17 +1,21 @@
+import { getTranslations } from "next-intl/server";
+
 import AuthShell, { AuthLink } from "@/app/[locale]/(auth)/_components/AuthShell";
 import PasswordResetStepper from "@/app/[locale]/(auth)/_components/PasswordResetStepper";
 
 import FindPasswordForm from "./FindPasswordForm";
 
-export default function FindPasswordPage() {
+export default async function FindPasswordPage() {
+  const t = await getTranslations("findPassword");
+
   return (
     <AuthShell
-      title="가입한 이메일을 알려주세요"
+      title={t("title")}
       footer={
         <>
-          <AuthLink href="/login">로그인으로 돌아가기</AuthLink>
+          <AuthLink href="/login">{t("backToLogin")}</AuthLink>
           <span aria-hidden className="bg-line h-3 w-px" />
-          <AuthLink href="/signup">회원가입</AuthLink>
+          <AuthLink href="/signup">{t("signupLink")}</AuthLink>
         </>
       }
     >
@@ -20,7 +24,7 @@ export default function FindPasswordPage() {
       </div>
       <FindPasswordForm />
       <p className="bg-surface-2 text-ink-2 text-cap mt-5 rounded-sm px-3 py-2.5 font-normal">
-        가입 이력이 없는 이메일이면 발송되지 않아요. 계정 존재 여부는 별도로 알리지 않습니다.
+        {t("disclaimer")}
       </p>
     </AuthShell>
   );

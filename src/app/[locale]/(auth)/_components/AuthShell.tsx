@@ -1,10 +1,17 @@
-import Link from "next/link";
+"use client";
+
+import { useTranslations } from "next-intl";
 
 import Logo from "@/assets/logo.svg";
+import { Link } from "@/i18n/navigation";
 
 /**
  * 인증 표면의 공통 골격. Operate 모드다 — 디자인이 눈에 띄면 실패이고,
  * 막힘 없이 통과하는 것이 성공이다 (PRODUCT.md).
+ *
+ * 일부 호출부(이메일 인증, 비밀번호 재설정)가 Client Component라서
+ * 이 컴포넌트도 Client Component로 둔다 — Server Component는 Client
+ * Component 안에서 직접 import해 렌더링할 수 없다.
  */
 export default function AuthShell({
   title,
@@ -17,14 +24,16 @@ export default function AuthShell({
   children: React.ReactNode;
   footer?: React.ReactNode;
 }) {
+  const t = useTranslations();
+
   return (
     <main className="flex w-full flex-1 flex-col items-center justify-center gap-6 px-4 py-16">
       <Link href="/" className="text-ink flex items-center gap-2">
         <Logo className="size-5" />
         <span className="text-title-3 font-display">
-          <span>로컬</span>
-          <span className="text-brand-ink">밸런스</span>
-          <span> 트립</span>
+          <span>{t("brand.prefix")}</span>
+          <span className="text-brand-ink">{t("brand.emphasis")}</span>
+          <span>{t("brand.suffix")}</span>
         </span>
       </Link>
 

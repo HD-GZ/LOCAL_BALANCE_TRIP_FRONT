@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import AuthShell from "@/app/[locale]/(auth)/_components/AuthShell";
 import CodeInput, { createEmptyCode } from "@/app/[locale]/(auth)/_components/CodeInput";
@@ -17,6 +17,7 @@ import {
   savePasswordResetToken,
   usePasswordResetSession,
 } from "@/features/auth/passwordResetStorage";
+import { useRouter } from "@/i18n/navigation";
 import { isApiError } from "@/lib/api/error";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +27,7 @@ type VerificationFeedback = {
 };
 
 export default function FindPasswordVerifyPage() {
+  const t = useTranslations("findPassword.verify");
   const router = useRouter();
 
   const [now, setNow] = useState(() => Date.now());
@@ -67,7 +69,7 @@ export default function FindPasswordVerifyPage() {
     onError: (error) => {
       setFeedback({
         type: "error",
-        message: isApiError(error) ? error.message : "인증번호 확인 중 오류가 발생했습니다.",
+        message: isApiError(error) ? error.message : t("confirmError"),
       });
     },
   });
@@ -77,12 +79,12 @@ export default function FindPasswordVerifyPage() {
     onSuccess: ({ verificationCodeExpiresIn }, { email: resentEmail }) => {
       savePasswordResetCodeRequest({ email: resentEmail, verificationCodeExpiresIn });
       setCode(createEmptyCode());
-      setFeedback({ type: "success", message: "인증번호를 다시 보냈어요." });
+      setFeedback({ type: "success", message: t("resendSuccess") });
     },
     onError: (error) => {
       setFeedback({
         type: "error",
-        message: isApiError(error) ? error.message : "인증번호 재전송 중 오류가 발생했습니다.",
+        message: isApiError(error) ? error.message : t("resendError"),
       });
     },
   });
@@ -113,18 +115,15 @@ export default function FindPasswordVerifyPage() {
   const isResendDisabled = resendMutation.isPending || resendCooldownSeconds > 0;
 
   return (
-    <AuthShell
-      title="이메일을 확인해 주세요"
-      description={`${email} 으로 6자리 인증번호를 보냈어요.`}
-    >
+    <AuthShell title={t("title")} description={t("description", { email })}>
       <div className="pb-6">
         <PasswordResetStepper currentStep="verify" />
       </div>
       <CodeInput value={code} onChange={handleCodeChange} disabled={isExpired} />
       <p className="text-ink-2 text-body-sm mt-3 text-center tabular-nums" aria-live="polite">
         {isExpired
-          ? "인증번호가 만료되었습니다. 코드를 다시 받아주세요."
-          : `남은 시간 ${formatRemainingTime(remainingSeconds)}`}
+          ? t("expired")
+          : t("remainingTime", { time: formatRemainingTime(remainingSeconds) })}
       </p>
       <div className="mt-4 flex w-full gap-3">
         <Button
@@ -136,10 +135,10 @@ export default function FindPasswordVerifyPage() {
           className="flex-1"
         >
           {resendMutation.isPending
-            ? "전송 중..."
+            ? t("resending")
             : resendCooldownSeconds > 0
-              ? `코드 재전송 (${resendCooldownSeconds}초)`
-              : "코드 재전송"}
+              ? t("resendWithCooldown", { seconds: resendCooldownSeconds })
+              : t("resend")}
         </Button>
         <Button
           type="button"
@@ -148,7 +147,7 @@ export default function FindPasswordVerifyPage() {
           size="lg"
           className="flex-1"
         >
-          {confirmMutation.isPending ? "확인 중..." : "인증 확인"}
+          {confirmMutation.isPending ? t("confirming") : t("confirm")}
         </Button>
       </div>
       <p
@@ -166,7 +165,7 @@ export default function FindPasswordVerifyPage() {
         onClick={() => router.push("/find-password")}
         className="text-ink-2 text-body-sm hover:text-brand-ink mt-4 cursor-pointer text-center font-medium underline-offset-4 transition-colors duration-(--dur-1) hover:underline"
       >
-        이메일 주소를 잘못 입력했나요?
+        {t("wrongEmail")}
       </button>
     </AuthShell>
   );

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 /**
@@ -11,6 +12,7 @@ import { toast } from "sonner";
  * 렌더링되는 것이 없는 알림 전용 컴포넌트다.
  */
 export default function AuthRedirectNotice() {
+  const t = useTranslations("login");
   const searchParams = useSearchParams();
   const reason = searchParams.get("reason");
   const hasNotified = useRef(false);
@@ -19,10 +21,10 @@ export default function AuthRedirectNotice() {
     if (reason !== "auth" || hasNotified.current) return;
 
     hasNotified.current = true;
-    toast.info("로그인이 필요한 화면이에요", {
-      description: "로그인하면 이어서 이용할 수 있어요.",
+    toast.info(t("redirectNoticeTitle"), {
+      description: t("redirectNoticeDescription"),
     });
-  }, [reason]);
+  }, [reason, t]);
 
   return null;
 }

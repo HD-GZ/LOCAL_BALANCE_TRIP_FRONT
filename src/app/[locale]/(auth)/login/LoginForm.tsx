@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -12,23 +12,27 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { homeQueryKeys } from "@/features/home/queries";
 import { userQueryKeys } from "@/features/user/queries";
+import { useRouter } from "@/i18n/navigation";
 import { apiClient } from "@/lib/api/client";
 import { isApiError } from "@/lib/api/error";
 
-const schema = z.object({
-  email: z.email("올바른 이메일 형식을 입력해 주세요."),
-  password: z.string().min(1, "비밀번호를 입력해 주세요."),
-});
-
-type LoginFormValues = z.infer<typeof schema>;
+type LoginFormValues = {
+  email: string;
+  password: string;
+};
 
 function loginWithCookie(body: LoginFormValues) {
   return apiClient.post<null, LoginFormValues>("/api/auth/login", { body });
 }
 
 export default function LoginForm() {
+  const t = useTranslations();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const schema = z.object({
+    email: z.email(t("validation.emailInvalid")),
+    password: z.string().min(1, t("validation.passwordRequired")),
+  });
   const {
     register,
     handleSubmit,
@@ -52,7 +56,7 @@ export default function LoginForm() {
     },
     onError: (error) => {
       setError("root", {
-        message: isApiError(error) ? error.message : "로그인 중 오류가 발생했습니다.",
+        message: isApiError(error) ? error.message : t("login.errorGeneric"),
       });
     },
   });
@@ -67,11 +71,16 @@ export default function LoginForm() {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-      <FormField label="이메일" error={errors.email?.message}>
-        <Input {...register("email")} type="text" inputMode="email" placeholder="local@email.com" />
+      <FormField label={t("login.emailLabel")} error={errors.email?.message}>
+        <Input
+          {...register("email")}
+          type="text"
+          inputMode="email"
+          placeholder={t("login.emailPlaceholder")}
+        />
       </FormField>
-      <FormField label="비밀번호" error={errors.password?.message}>
-        <PasswordInput {...register("password")} placeholder="비밀번호 입력" />
+      <FormField label={t("login.passwordLabel")} error={errors.password?.message}>
+        <PasswordInput {...register("password")} placeholder={t("login.passwordPlaceholder")} />
       </FormField>
       {errors.root?.message && (
         <p role="alert" className="text-danger-ink text-cap font-medium">
@@ -79,7 +88,7 @@ export default function LoginForm() {
         </p>
       )}
       <Button type="submit" disabled={loginMutation.isPending} size="lg" className="mt-2 w-full">
-        {loginMutation.isPending ? "로그인 중..." : "로그인"}
+        {loginMutation.isPending ? t("login.submitting") : t("login.submit")}
       </Button>
     </form>
   );

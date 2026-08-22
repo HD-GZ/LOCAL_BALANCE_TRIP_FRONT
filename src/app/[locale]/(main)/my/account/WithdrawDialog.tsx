@@ -1,7 +1,8 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,10 +16,12 @@ import {
 import { withdrawMe } from "@/features/user/api";
 import { userQueryKeys } from "@/features/user/queries";
 import { useBooleanState } from "@/hooks/useBooleanState";
+import { useRouter } from "@/i18n/navigation";
 import { isApiError } from "@/lib/api/error";
 
 // 구글 플레이 콘솔 앱 심사(계정 삭제) 제출용: ?withdraw=open 접속 시 모달이 바로 열림
 export default function WithdrawDialog() {
+  const t = useTranslations("withdraw");
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
@@ -41,15 +44,12 @@ export default function WithdrawDialog() {
     <Dialog open={isOpen} onOpenChange={(next) => (next ? open() : close())}>
       <DialogTrigger asChild>
         <Button type="button" variant="destructive-outline" size="lg" className="flex-1">
-          회원탈퇴
+          {t("trigger")}
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogTitle>정말 탈퇴할까요?</DialogTitle>
-        <DialogDescription>
-          저장한 코스와 취향 진단 결과를 포함한 계정 정보가 삭제돼요. 삭제된 정보는 되돌릴 수
-          없습니다.
-        </DialogDescription>
+        <DialogTitle>{t("title")}</DialogTitle>
+        <DialogDescription>{t("description")}</DialogDescription>
         {withdrawMutation.isError && (
           <p
             role="alert"
@@ -58,13 +58,13 @@ export default function WithdrawDialog() {
           >
             {isApiError(withdrawMutation.error)
               ? withdrawMutation.error.message
-              : "회원탈퇴 중 오류가 발생했어요. 다시 시도해 주세요."}
+              : t("errorGeneric")}
           </p>
         )}
         <div className="mt-6 flex w-full gap-3">
           <DialogClose asChild>
             <Button variant="outline" size="lg" className="flex-1">
-              돌아가기
+              {t("cancel")}
             </Button>
           </DialogClose>
           <Button
@@ -74,7 +74,7 @@ export default function WithdrawDialog() {
             disabled={withdrawMutation.isPending}
             onClick={() => withdrawMutation.mutate()}
           >
-            {withdrawMutation.isPending ? "탈퇴하는 중..." : "회원탈퇴"}
+            {withdrawMutation.isPending ? t("confirming") : t("confirm")}
           </Button>
         </div>
       </DialogContent>

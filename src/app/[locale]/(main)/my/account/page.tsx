@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { useMeQuery } from "@/features/user/queries";
@@ -8,6 +10,8 @@ import { isApiError } from "@/lib/api/error";
 import AccountForm from "./AccountForm";
 
 export default function MyAccountPage() {
+  const t = useTranslations("page");
+  const tCommon = useTranslations();
   const meQuery = useMeQuery();
 
   return (
@@ -28,13 +32,11 @@ export default function MyAccountPage() {
         {meQuery.isError && (
           <SurfaceState
             tone="error"
-            title="회원 정보를 불러오지 못했어요"
+            title={t("errorTitle")}
             description={
-              isApiError(meQuery.error)
-                ? meQuery.error.message
-                : "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+              isApiError(meQuery.error) ? meQuery.error.message : t("errorDescriptionFallback")
             }
-            action={{ label: "다시 시도", onRetry: () => meQuery.refetch() }}
+            action={{ label: tCommon("retry"), onRetry: () => meQuery.refetch() }}
           />
         )}
 

@@ -1,20 +1,29 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
 import { cn } from "@/lib/utils";
 
-/** 비밀번호 찾기 진행 표시. 기존 디자인(develop)의 점 + 라벨 형태. */
-const PASSWORD_RESET_STEPS = [
-  { key: "email", label: "이메일 확인" },
-  { key: "verify", label: "인증번호 입력" },
-  { key: "reset", label: "비밀번호 재설정" },
-] as const;
+/**
+ * 비밀번호 찾기 진행 표시. 기존 디자인(develop)의 점 + 라벨 형태.
+ * 인증번호 입력/재설정 화면(Client Component)에서도 쓰이므로 Client Component로 둔다.
+ */
+const PASSWORD_RESET_STEPS = ["email", "verify", "reset"] as const;
 
-export type PasswordResetStep = (typeof PASSWORD_RESET_STEPS)[number]["key"];
+export type PasswordResetStep = (typeof PASSWORD_RESET_STEPS)[number];
 
-export default function PasswordResetStepper({ currentStep }: { currentStep: PasswordResetStep }) {
-  const currentIndex = PASSWORD_RESET_STEPS.findIndex((step) => step.key === currentStep);
+export default function PasswordResetStepper({
+  currentStep,
+}: {
+  currentStep: PasswordResetStep;
+}) {
+  const t = useTranslations("stepper.passwordReset");
+  const currentIndex = PASSWORD_RESET_STEPS.indexOf(currentStep);
 
   return (
-    <ol aria-label="비밀번호 찾기 진행 단계" className="flex items-start justify-center gap-1">
-      {PASSWORD_RESET_STEPS.map(({ key, label }, index) => {
+    <ol aria-label={t("ariaLabel")} className="flex items-start justify-center gap-1">
+      {PASSWORD_RESET_STEPS.map((key, index) => {
+        const label = t(key);
         const isCurrent = index === currentIndex;
         const isDone = index < currentIndex;
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -10,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { GENDER } from "@/features/auth/types";
 import type { MeResponse } from "@/features/user/types";
 import { cn } from "@/lib/utils";
 import AccountRow from "./AccountRow";
@@ -20,7 +23,14 @@ type AccountFormProps = {
   user: MeResponse;
 };
 
+const GENDER_LABEL_KEY: Record<(typeof GENDER_OPTIONS)[number], "male" | "female" | "notSpecified"> = {
+  [GENDER.MALE]: "male",
+  [GENDER.FEMALE]: "female",
+  [GENDER.NOT_SPECIFIED]: "notSpecified",
+};
+
 export default function AccountForm({ user }: AccountFormProps) {
+  const t = useTranslations();
   const accountForm = useAccountForm(user);
   const { errors, handleSubmit, register, setValue } = accountForm.form;
   const { selectedBirthMonth, selectedGender } = accountForm.fields;
@@ -30,38 +40,52 @@ export default function AccountForm({ user }: AccountFormProps) {
   return (
     <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 pb-6">
-        <h1 className="text-title-1 text-ink sm:text-display-2">정보 변경</h1>
+        <h1 className="text-title-1 text-ink sm:text-display-2">{t("account.title")}</h1>
         <p className="text-ink-3 text-cap font-normal">
-          <span className="text-danger-ink">*</span> 필수 입력사항
+          <span className="text-danger-ink">*</span> {t("account.requiredNote")}
         </p>
       </div>
 
-      <AccountRow label="이메일" required hint="계정 이메일은 변경하실 수 없어요.">
-        <Input value={user.email} readOnly disabled aria-label="이메일" />
+      <AccountRow label={t("account.emailLabel")} required hint={t("account.emailHint")}>
+        <Input value={user.email} readOnly disabled aria-label={t("account.emailLabel")} />
       </AccountRow>
 
-      <AccountRow label="이름" required error={errors.name?.message}>
-        <Input {...register("name")} type="text" placeholder="홍길동" />
-      </AccountRow>
-
-      <AccountRow label="비밀번호 변경" optional error={errors.password?.message}>
-        <PasswordInput
-          {...register("password")}
-          autoComplete="new-password"
-          placeholder="변경할 때만 입력해 주세요. 영문·숫자 포함 8자 이상"
-        />
-      </AccountRow>
-
-      <AccountRow label="비밀번호 확인" optional error={errors.confirmPassword?.message}>
-        <PasswordInput
-          {...register("confirmPassword")}
-          autoComplete="new-password"
-          placeholder="비밀번호를 한번 더 입력해 주세요."
+      <AccountRow label={t("account.nameLabel")} required error={errors.name?.message}>
+        <Input
+          {...register("name")}
+          type="text"
+          placeholder={t("account.namePlaceholder")}
         />
       </AccountRow>
 
       <AccountRow
-        label="생년월일"
+        label={t("account.passwordLabel")}
+        optional
+        optionalLabel={t("accountRow.optionalSuffix")}
+        error={errors.password?.message}
+      >
+        <PasswordInput
+          {...register("password")}
+          autoComplete="new-password"
+          placeholder={t("account.passwordPlaceholder")}
+        />
+      </AccountRow>
+
+      <AccountRow
+        label={t("account.confirmPasswordLabel")}
+        optional
+        optionalLabel={t("accountRow.optionalSuffix")}
+        error={errors.confirmPassword?.message}
+      >
+        <PasswordInput
+          {...register("confirmPassword")}
+          autoComplete="new-password"
+          placeholder={t("account.confirmPasswordPlaceholder")}
+        />
+      </AccountRow>
+
+      <AccountRow
+        label={t("account.birthDateLabel")}
         required
         error={errors.birthYear?.message ?? errors.birthMonth?.message ?? errors.birthDay?.message}
       >
@@ -71,8 +95,8 @@ export default function AccountForm({ user }: AccountFormProps) {
             type="text"
             inputMode="numeric"
             maxLength={4}
-            aria-label="생년"
-            placeholder="년 (4자리)"
+            aria-label={t("account.birthYearAriaLabel")}
+            placeholder={t("account.birthYearPlaceholder")}
           />
           <Select
             value={selectedBirthMonth || undefined}
@@ -80,13 +104,13 @@ export default function AccountForm({ user }: AccountFormProps) {
               setValue("birthMonth", value, { shouldValidate: true, shouldDirty: true })
             }
           >
-            <SelectTrigger aria-label="생월">
-              <SelectValue placeholder="월" />
+            <SelectTrigger aria-label={t("account.birthMonthAriaLabel")}>
+              <SelectValue placeholder={t("account.birthMonthPlaceholder")} />
             </SelectTrigger>
             <SelectContent position="popper" className="max-h-48 min-w-0">
               {MONTHS.map((month) => (
                 <SelectItem key={month} value={String(month)}>
-                  {month}월
+                  {t("signup.form.monthOption", { month })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -96,13 +120,18 @@ export default function AccountForm({ user }: AccountFormProps) {
             type="text"
             inputMode="numeric"
             maxLength={2}
-            aria-label="생일"
-            placeholder="일"
+            aria-label={t("account.birthDayAriaLabel")}
+            placeholder={t("account.birthDayPlaceholder")}
           />
         </div>
       </AccountRow>
 
-      <AccountRow label="성별" required error={errors.gender?.message} className="border-b">
+      <AccountRow
+        label={t("account.genderLabel")}
+        required
+        error={errors.gender?.message}
+        className="border-b"
+      >
         <div className="grid grid-cols-3 gap-2">
           {GENDER_OPTIONS.map((option) => (
             <button
@@ -119,7 +148,7 @@ export default function AccountForm({ user }: AccountFormProps) {
                   : "border-line-control text-ink-2 hover:border-ink-3 hover:text-ink",
               )}
             >
-              {option === "선택안함" ? "선택 안 함" : option}
+              {t(`gender.${GENDER_LABEL_KEY[option]}`)}
             </button>
           ))}
         </div>
@@ -133,7 +162,7 @@ export default function AccountForm({ user }: AccountFormProps) {
 
       <div className="flex gap-3 pt-8">
         <Button type="submit" size="lg" disabled={isSubmitting || !isDirty} className="flex-2">
-          {isSubmitting ? "저장 중..." : "정보수정"}
+          {isSubmitting ? t("account.saving") : t("account.submit")}
         </Button>
         <WithdrawDialog />
       </div>

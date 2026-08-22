@@ -1,17 +1,21 @@
+import { getTranslations } from "next-intl/server";
+
 import AuthShell, { AuthLink } from "@/app/[locale]/(auth)/_components/AuthShell";
 import SignupStepper from "@/app/[locale]/(auth)/_components/SignupStepper";
 
 import SignupForm from "./SignupForm";
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const t = await getTranslations("signup");
+
   return (
     <AuthShell
-      title="계정을 만들어 시작해요"
-      description="취향 진단과 저장 코스, 혜택 매칭을 위해 기본 정보를 입력해 주세요."
+      title={t("title")}
+      description={t("description")}
       footer={
         <>
-          <span>이미 계정이 있으신가요?</span>
-          <AuthLink href="/login">로그인</AuthLink>
+          <span>{t("hasAccount")}</span>
+          <AuthLink href="/login">{t("loginLink")}</AuthLink>
         </>
       }
     >
