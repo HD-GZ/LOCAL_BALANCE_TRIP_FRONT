@@ -1,1 +1,55 @@
-{}
+{
+  "page": {
+    "errorTitle": "Couldn't load your account info",
+    "errorDescriptionFallback": "Please check your connection and try again."
+  },
+  "account": {
+    "title": "Edit profile",
+    "requiredNote": "Required fields",
+    "emailLabel": "Email",
+    "emailHint": "You can't change your account email.",
+    "nameLabel": "Name",
+    "namePlaceholder": "John Doe",
+    "passwordLabel": "Change password",
+    "passwordPlaceholder": "Only fill in to change it. 8+ characters, letters and numbers",
+    "confirmPasswordLabel": "Confirm password",
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "birthDateLabel": "Date of birth",
+    "birthYearAriaLabel": "Birth year",
+    "birthYearPlaceholder": "Year (4 digits)",
+    "birthMonthAriaLabel": "Birth month",
+    "birthMonthPlaceholder": "Month",
+    "birthDayAriaLabel": "Birth day",
+    "birthDayPlaceholder": "Day",
+    "genderLabel": "Gender",
+    "saving": "Saving...",
+    "submit": "Save changes",
+    "saveSuccess": "Your changes have been saved.",
+    "validation": {
+      "nameRequired": "Please enter your name.",
+      "birthYearInvalid": "Please enter a 4-digit year.",
+      "birthMonthRequired": "Please select a month.",
+      "birthDayInvalid": "Please enter a valid day.",
+      "genderRequired": "Please select a gender.",
+      "passwordMinLength": "Password must be at least 8 characters.",
+      "passwordPattern": "Password must include letters and numbers.",
+      "confirmPasswordRequired": "Please re-enter your password.",
+      "passwordMismatch": "Passwords don't match."
+    },
+    "errors": {
+      "generic": "Something went wrong while updating your info."
+    }
+  },
+  "accountRow": {
+    "optionalSuffix": " (optional)"
+  },
+  "withdraw": {
+    "trigger": "Delete account",
+    "title": "Delete your account?",
+    "description": "Your account info, including saved courses and preference diagnosis results, will be deleted. This can't be undone.",
+    "errorGeneric": "Something went wrong while deleting your account. Please try again.",
+    "cancel": "Go back",
+    "confirm": "Delete account",
+    "confirming": "Deleting..."
+  }
+}

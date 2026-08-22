@@ -1,9 +1,9 @@
 "use client";
 
 import { type FocusEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
@@ -11,55 +11,71 @@ import { signup } from "@/features/auth/api";
 import { savePendingEmailVerification } from "@/features/auth/storage";
 import { GENDER, type Gender } from "@/features/auth/types";
 import { checkEmailAvailability } from "@/features/user/api";
+import { useRouter } from "@/i18n/navigation";
 import { getFieldErrors, isApiError } from "@/lib/api/error";
 
 export const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
-export const GENDER_OPTIONS = ["남성", "여성", "선택안함"] as const;
+export const GENDER_OPTIONS = [GENDER.MALE, GENDER.FEMALE, GENDER.NOT_SPECIFIED] as const;
 
-const emailSchema = z.email("올바른 이메일 형식을 입력해 주세요.");
 const DUPLICATE_EMAIL_ERROR_CODE = "DUPLICATE_EMAIL";
-const GENDER_MAP = {
-  남성: GENDER.MALE,
-  여성: GENDER.FEMALE,
-  선택안함: GENDER.NOT_SPECIFIED,
-} as const satisfies Record<(typeof GENDER_OPTIONS)[number], Gender>;
 
-const schema = z
-  .object({
-    name: z.string().min(1, "이름을 입력해 주세요."),
-    email: emailSchema,
-    password: z
-      .string()
-      .min(8, "비밀번호는 8자 이상이어야 해요.")
-      .regex(/^(?=.*[a-zA-Z])(?=.*\d)/, "영문·숫자를 포함해 주세요."),
-    confirmPassword: z.string().min(1, "비밀번호를 다시 입력해 주세요."),
-    birthYear: z.string().regex(/^\d{4}$/, "년도 4자리를 입력해 주세요."),
-    birthMonth: z.string().min(1, "월을 선택해 주세요."),
-    birthDay: z
-      .string()
-      .regex(/^\d{1,2}$/, "일을 입력해 주세요.")
-      .refine((v) => {
-        const n = Number(v);
-        return n >= 1 && n <= 31;
-      }, "올바른 일을 입력해 주세요."),
-    gender: z.enum(GENDER_OPTIONS, {
-      message: "성별을 선택해 주세요.",
-    }),
-    agreeService: z.boolean().refine((v) => v, "서비스 이용약관에 동의해 주세요."),
-    agreePrivacy: z.boolean().refine((v) => v, "개인정보 수집·이용에 동의해 주세요."),
-    agreeMarketing: z.boolean(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "비밀번호가 일치하지 않아요.",
-    path: ["confirmPassword"],
-  });
+function createSchema(t: ReturnType<typeof useTranslations>) {
+  const emailSchema = z.email(t("validation.emailInvalid"));
 
-type SignupFormValues = z.infer<typeof schema>;
+  return {
+    emailSchema,
+    schema: z
+      .object({
+        name: z.string().min(1, t("validation.nameRequired")),
+        email: emailSchema,
+        password: z
+          .string()
+          .min(8, t("validation.passwordMinLength"))
+          .regex(/^(?=.*[a-zA-Z])(?=.*\d)/, t("validation.passwordPattern")),
+        confirmPassword: z.string().min(1, t("validation.confirmPasswordRequired")),
+        birthYear: z.string().regex(/^\d{4}$/, t("validation.birthYearInvalid")),
+        birthMonth: z.string().min(1, t("validation.birthMonthRequired")),
+        birthDay: z
+          .string()
+          .regex(/^\d{1,2}$/, t("validation.birthDayInvalid"))
+          .refine((v) => {
+            const n = Number(v);
+            return n >= 1 && n <= 31;
+          }, t("validation.birthDayInvalid")),
+        gender: z.enum(GENDER_OPTIONS, {
+          message: t("validation.genderRequired"),
+        }),
+        agreeService: z.boolean().refine((v) => v, t("validation.agreeServiceRequired")),
+        agreePrivacy: z.boolean().refine((v) => v, t("validation.agreePrivacyRequired")),
+        agreeMarketing: z.boolean(),
+      })
+      .refine((data) => data.password === data.confirmPassword, {
+        message: t("validation.passwordMismatch"),
+        path: ["confirmPassword"],
+      }),
+  };
+}
+
+type SignupFormValues = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  birthYear: string;
+  birthMonth: string;
+  birthDay: string;
+  gender: Gender;
+  agreeService: boolean;
+  agreePrivacy: boolean;
+  agreeMarketing: boolean;
+};
 type AgreementField = "agreeService" | "agreePrivacy" | "agreeMarketing";
 
 export function useSignupForm() {
   const router = useRouter();
+  const t = useTranslations();
   const [agreeAll, setAgreeAll] = useState(false);
+  const { emailSchema, schema } = createSchema(t);
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(schema),
@@ -104,7 +120,7 @@ export function useSignupForm() {
     },
     onError: (error) => {
       if (!isApiError(error)) {
-        setError("root", { message: "회원가입 중 오류가 발생했습니다." });
+        setError("root", { message: t("signup.errors.generic") });
         return;
       }
 
@@ -149,7 +165,7 @@ export function useSignupForm() {
       }
 
       if (!available) {
-        setError("email", { message: "이미 사용 중인 이메일입니다." }, { shouldFocus });
+        setError("email", { message: t("signup.errors.emailTaken") }, { shouldFocus });
         return false;
       }
 
@@ -202,7 +218,7 @@ export function useSignupForm() {
       password: data.password,
       passwordConfirm: data.confirmPassword,
       birthDate: `${data.birthYear}-${data.birthMonth.padStart(2, "0")}-${data.birthDay.padStart(2, "0")}`,
-      gender: GENDER_MAP[data.gender],
+      gender: data.gender,
       termsAgreed: data.agreeService,
       privacyAgreed: data.agreePrivacy,
       marketingAgreed: data.agreeMarketing,

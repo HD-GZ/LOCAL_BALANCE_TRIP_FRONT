@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import AuthShell from "@/app/[locale]/(auth)/_components/AuthShell";
 import PasswordResetStepper from "@/app/[locale]/(auth)/_components/PasswordResetStepper";
@@ -11,10 +11,12 @@ import {
   hasUsableResetToken,
   usePasswordResetSession,
 } from "@/features/auth/passwordResetStorage";
+import { useRouter } from "@/i18n/navigation";
 
 import ResetPasswordForm from "./ResetPasswordForm";
 
 export default function ResetPasswordPage() {
+  const t = useTranslations("findPassword.reset");
   const router = useRouter();
   const session = usePasswordResetSession();
 
@@ -31,10 +33,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <AuthShell
-      title="새 비밀번호를 입력해 주세요"
-      description={`${session.email} 계정의 비밀번호를 새로 설정합니다.`}
-    >
+    <AuthShell title={t("title")} description={t("description", { email: session.email })}>
       <div className="pb-6">
         <PasswordResetStepper currentStep="reset" />
       </div>

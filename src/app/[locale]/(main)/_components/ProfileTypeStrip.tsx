@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import type { ProfileType } from "@/features/home/types";
+import { Link } from "@/i18n/navigation";
 
 const PROPENSITY_HREF = "/propensity?step=1";
 
@@ -40,13 +41,13 @@ type ProfileTypeStripProps = {
  * (DESIGN.md §11, 섹션 계열 반복 금지).
  */
 export default function ProfileTypeStrip({ types, isPending, isError }: ProfileTypeStripProps) {
+  const t = useTranslations("home.profileTypeStrip");
+
   return (
     <section className="flex w-full flex-col gap-5">
       <div className="flex flex-col gap-1.5">
-        <h2 className="text-title-1 text-ink">나는 어떤 여행자일까</h2>
-        <p className="text-ink-2 text-body-sm">
-          카드를 누르면 바로 취향 진단으로 이어져요. 10개 축에 답하면 내 유형이 나와요.
-        </p>
+        <h2 className="text-title-1 text-ink">{t("title")}</h2>
+        <p className="text-ink-2 text-body-sm">{t("description")}</p>
       </div>
 
       {isPending && (
@@ -64,18 +65,18 @@ export default function ProfileTypeStrip({ types, isPending, isError }: ProfileT
       {isError && (
         <SurfaceState
           tone="error"
-          title="여행자 유형을 불러오지 못했어요"
-          description="잠시 후 다시 시도해 주세요. 진단은 지금 바로 시작할 수 있어요."
-          action={{ label: "취향 진단 시작하기", href: PROPENSITY_HREF }}
+          title={t("error.title")}
+          description={t("error.description")}
+          action={{ label: t("error.cta"), href: PROPENSITY_HREF }}
         />
       )}
 
       {!isPending && !isError && types.length === 0 && (
         <SurfaceState
           variant="plain"
-          title="표시할 여행자 유형이 아직 없어요"
-          description="유형 목록은 준비 중이지만, 진단 자체는 지금 받을 수 있어요."
-          action={{ label: "취향 진단 시작하기", href: PROPENSITY_HREF }}
+          title={t("empty.title")}
+          description={t("empty.description")}
+          action={{ label: t("empty.cta"), href: PROPENSITY_HREF }}
         />
       )}
 

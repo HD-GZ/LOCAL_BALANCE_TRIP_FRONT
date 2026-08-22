@@ -1,4 +1,7 @@
+"use client";
+
 import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import type { SavedCourseDetailResponse } from "@/features/recommendation/types";
 import { cn } from "@/lib/utils";
@@ -8,20 +11,23 @@ import { cn } from "@/lib/utils";
  * (DESIGN.md §3 — 브릭은 의미 전용).
  */
 const STATUS_BADGE: Partial<
-  Record<SavedCourseDetailResponse["status"], { label: string; inline: string; onPhoto: string }>
+  Record<
+    SavedCourseDetailResponse["status"],
+    { labelKey: "beforeTrip" | "traveling" | "completed"; inline: string; onPhoto: string }
+  >
 > = {
   BEFORE_TRIP: {
-    label: "여행 전",
+    labelKey: "beforeTrip",
     inline: "border-line-control bg-surface text-ink-2",
     onPhoto: "border-line bg-surface/94 text-ink-2 backdrop-blur-[2px]",
   },
   TRAVELING: {
-    label: "여행 중",
+    labelKey: "traveling",
     inline: "border-danger/40 bg-danger-wash text-danger-ink",
     onPhoto: "bg-danger/92 text-danger-on border-transparent backdrop-blur-[2px]",
   },
   COMPLETED: {
-    label: "완주",
+    labelKey: "completed",
     inline: "border-brand/40 bg-brand-wash text-brand-ink",
     onPhoto: "bg-brand/92 text-brand-on border-transparent backdrop-blur-[2px]",
   },
@@ -35,6 +41,7 @@ export default function CourseStatusBadge({
   /** 사진 위에 얹을 때는 채움을 반투명으로 바꿔 사진과 섞이게 한다. */
   onPhoto?: boolean;
 }) {
+  const t = useTranslations("home.courseStatus");
   const badge = STATUS_BADGE[status];
 
   if (!badge) {
@@ -53,7 +60,7 @@ export default function CourseStatusBadge({
       ) : status === "TRAVELING" ? (
         <span aria-hidden className="size-1.75 rounded-full bg-current" />
       ) : null}
-      {badge.label}
+      {t(badge.labelKey)}
     </span>
   );
 }

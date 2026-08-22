@@ -1,3 +1,7 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
 import type { ProfileSlider } from "@/features/home/types";
 import { cn } from "@/lib/utils";
 
@@ -20,18 +24,21 @@ function toTrackPercent(score: number) {
   return ((clampScore(score) - MIN_SCORE) / (MAX_SCORE - MIN_SCORE)) * 100;
 }
 
-function toCaption({ minLabel, maxLabel, score }: ProfileSlider) {
+function toCaption(
+  t: ReturnType<typeof useTranslations>,
+  { minLabel, maxLabel, score }: ProfileSlider,
+) {
   switch (clampScore(score)) {
     case 1:
-      return `${minLabel} 쪽에 가까워요`;
+      return t("closeToMin", { label: minLabel });
     case 2:
-      return `${minLabel} 쪽을 조금 더 좋아해요`;
+      return t("leanMin", { label: minLabel });
     case 4:
-      return `${maxLabel} 쪽을 조금 더 좋아해요`;
+      return t("leanMax", { label: maxLabel });
     case 5:
-      return `${maxLabel} 쪽에 가까워요`;
+      return t("closeToMax", { label: maxLabel });
     default:
-      return "양쪽이 반반이에요";
+      return t("balanced");
   }
 }
 
@@ -40,8 +47,9 @@ const activeLabelClassName = "text-brand font-semibold";
 const inactiveLabelClassName = "text-ink-3 font-medium";
 
 export default function PreferenceSlider({ slider }: { slider: ProfileSlider }) {
+  const t = useTranslations("home.preferenceSlider");
   const score = clampScore(slider.score);
-  const caption = toCaption(slider);
+  const caption = toCaption(t, slider);
 
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-2">
@@ -61,7 +69,7 @@ export default function PreferenceSlider({ slider }: { slider: ProfileSlider }) 
       <div
         className="border-brand-line bg-surface/85 relative h-2 w-full rounded-full border"
         role="meter"
-        aria-label={`${slider.minLabel} 대 ${slider.maxLabel}`}
+        aria-label={t("ariaLabel", { minLabel: slider.minLabel, maxLabel: slider.maxLabel })}
         aria-valuemin={MIN_SCORE}
         aria-valuemax={MAX_SCORE}
         aria-valuenow={score}

@@ -1,6 +1,7 @@
 "use client";
 
 import { type ClipboardEvent, type KeyboardEvent, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 
 import { Input } from "@/components/ui/input";
 
@@ -17,6 +18,7 @@ type CodeInputProps = {
 };
 
 export default function CodeInput({ value, onChange, disabled }: CodeInputProps) {
+  const t = useTranslations("codeInput");
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const isEmpty = value.every((digit) => !digit);
 
@@ -72,7 +74,7 @@ export default function CodeInput({ value, onChange, disabled }: CodeInputProps)
       {value.map((digit, index) => (
         <Input
           key={index}
-          aria-label={`인증 코드 ${index + 1}번째 자리`}
+          aria-label={t("ariaLabel", { index: index + 1 })}
           ref={(element) => {
             inputRefs.current[index] = element;
           }}

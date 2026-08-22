@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import ThumbImage from "@/components/common/ThumbImage";
 import type { RecommendedCourse } from "@/features/recommendation/types";
+import { Link } from "@/i18n/navigation";
 
 type RegionCourseListProps = {
   courses: RecommendedCourse[];

@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import Reveal from "@/components/common/Reveal";
 import { SkeletonCard } from "@/components/common/Skeleton";
@@ -11,14 +12,16 @@ import HomeCourseCard from "./HomeCourseCard";
 import SectionHeader from "./SectionHeader";
 
 export default function PopularCourseSection() {
+  const t = useTranslations("home.popularCourse");
+  const tCommon = useTranslations();
   const popularCoursesQuery = useQuery(homeQueries.popularCourses());
   const courses = popularCoursesQuery.data?.courses ?? [];
 
   return (
     <section className="flex w-full flex-col gap-5">
       <SectionHeader
-        title="요즘 인기 있는 로컬 코스"
-        description="진단을 마치면 내 취향에 맞춘 코스와 저장 목록이 이 자리에 표시돼요."
+        title={t("title")}
+        description={t("description")}
         moreHref="/course-recommend?step=1"
       />
 
@@ -33,18 +36,18 @@ export default function PopularCourseSection() {
       {popularCoursesQuery.isError && (
         <SurfaceState
           tone="error"
-          title="인기 코스를 불러오지 못했어요"
-          description="네트워크 상태를 확인한 뒤 다시 시도해 주세요."
-          action={{ label: "다시 시도", onRetry: () => popularCoursesQuery.refetch() }}
+          title={t("error.title")}
+          description={t("error.description")}
+          action={{ label: tCommon("retry"), onRetry: () => popularCoursesQuery.refetch() }}
         />
       )}
 
       {popularCoursesQuery.isSuccess && courses.length === 0 && (
         <SurfaceState
           variant="plain"
-          title="지금 보여드릴 인기 코스가 없어요"
-          description="취향 진단을 마치면 내 기준에 맞는 코스를 바로 추천해 드려요."
-          action={{ label: "취향 진단 시작하기", href: "/propensity?step=1" }}
+          title={t("empty.title")}
+          description={t("empty.description")}
+          action={{ label: t("empty.cta"), href: "/propensity?step=1" }}
         />
       )}
 
@@ -56,7 +59,7 @@ export default function PopularCourseSection() {
                 href={`/home/popular-courses/${course.courseId}`}
                 title={course.title}
                 imageUrl={course.imageUrl}
-                badge={{ label: "인기 지역", tone: "outline" }}
+                badge={{ label: t("badgeLabel"), tone: "outline" }}
                 reason={course.reason}
                 meta={course.regionName}
               />

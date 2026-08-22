@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,10 +15,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { GENDER } from "@/features/auth/types";
 import { cn } from "@/lib/utils";
 import { GENDER_OPTIONS, MONTHS, useSignupForm } from "./useSignupForm";
 
+const GENDER_LABEL_KEY: Record<(typeof GENDER_OPTIONS)[number], "male" | "female" | "notSpecified"> = {
+  [GENDER.MALE]: "male",
+  [GENDER.FEMALE]: "female",
+  [GENDER.NOT_SPECIFIED]: "notSpecified",
+};
+
 export default function SignupForm() {
+  const t = useTranslations();
   const signupForm = useSignupForm();
   const { emailRegister, errors, handleSubmit, register, setValue } = signupForm.form;
   const { agreeAll, agreeMarketing, agreePrivacy, agreeService } = signupForm.agreements;
@@ -28,42 +37,52 @@ export default function SignupForm() {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-      <FormField label="이름" required error={errors.name?.message}>
-        <Input {...register("name")} type="text" placeholder="홍길동" />
+      <FormField label={t("signup.form.nameLabel")} required error={errors.name?.message}>
+        <Input {...register("name")} type="text" placeholder={t("signup.form.namePlaceholder")} />
       </FormField>
 
       <FormField
-        label="이메일"
+        label={t("signup.form.emailLabel")}
         required
         error={errors.email?.message}
-        hint={isCheckingEmail ? "이메일 중복 확인 중..." : undefined}
+        hint={isCheckingEmail ? t("signup.form.emailChecking") : undefined}
       >
         <Input
           {...emailRegister}
           type="text"
           inputMode="email"
-          placeholder="local@email.com"
+          placeholder={t("signup.form.emailPlaceholder")}
           onBlur={handleEmailBlur}
         />
       </FormField>
 
       <div className="grid grid-cols-2 gap-3">
         <FormField
-          label="비밀번호"
+          label={t("signup.form.passwordLabel")}
           required
           error={errors.password?.message}
-          hint="영문·숫자 포함 8자 이상"
+          hint={t("signup.form.passwordHint")}
         >
-          <PasswordInput {...register("password")} placeholder="영문·숫자 8자 이상" />
+          <PasswordInput
+            {...register("password")}
+            placeholder={t("signup.form.passwordPlaceholder")}
+          />
         </FormField>
 
-        <FormField label="비밀번호 확인" required error={errors.confirmPassword?.message}>
-          <PasswordInput {...register("confirmPassword")} placeholder="다시 입력" />
+        <FormField
+          label={t("signup.form.confirmPasswordLabel")}
+          required
+          error={errors.confirmPassword?.message}
+        >
+          <PasswordInput
+            {...register("confirmPassword")}
+            placeholder={t("signup.form.confirmPasswordPlaceholder")}
+          />
         </FormField>
       </div>
 
       <FormField
-        label="생년월일"
+        label={t("signup.form.birthDateLabel")}
         required
         error={errors.birthYear?.message ?? errors.birthMonth?.message ?? errors.birthDay?.message}
       >
@@ -73,19 +92,19 @@ export default function SignupForm() {
             type="text"
             inputMode="numeric"
             maxLength={4}
-            placeholder="년 (4자리)"
+            placeholder={t("signup.form.birthYearPlaceholder")}
           />
           <Select
             value={selectedBirthMonth || undefined}
             onValueChange={(v) => setValue("birthMonth", v, { shouldValidate: true })}
           >
             <SelectTrigger>
-              <SelectValue placeholder="월" />
+              <SelectValue placeholder={t("signup.form.birthMonthPlaceholder")} />
             </SelectTrigger>
             <SelectContent position="popper" className="max-h-48 min-w-0">
               {MONTHS.map((m) => (
                 <SelectItem key={m} value={String(m)}>
-                  {m}월
+                  {t("signup.form.monthOption", { month: m })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -95,12 +114,12 @@ export default function SignupForm() {
             type="text"
             inputMode="numeric"
             maxLength={2}
-            placeholder="일"
+            placeholder={t("signup.form.birthDayPlaceholder")}
           />
         </div>
       </FormField>
 
-      <FormField label="성별" required error={errors.gender?.message}>
+      <FormField label={t("signup.form.genderLabel")} required error={errors.gender?.message}>
         <div className="grid grid-cols-3 gap-2">
           {GENDER_OPTIONS.map((g) => (
             <button
@@ -115,7 +134,7 @@ export default function SignupForm() {
                   : "border-line-control text-ink-2 hover:border-ink-3 hover:text-ink",
               )}
             >
-              {g === "선택안함" ? "선택 안 함" : g}
+              {t(`gender.${GENDER_LABEL_KEY[g]}`)}
             </button>
           ))}
         </div>
@@ -135,7 +154,9 @@ export default function SignupForm() {
               handleAgreeAllChange(checked === true);
             }}
           />
-          <span className="text-ink text-body-sm font-semibold">약관에 모두 동의합니다</span>
+          <span className="text-ink text-body-sm font-semibold">
+            {t("signup.form.agreeAll")}
+          </span>
         </label>
 
         <div className="flex flex-col gap-2 px-3">
@@ -146,7 +167,7 @@ export default function SignupForm() {
                 handleIndividualChange("agreeService", checked === true)
               }
             />
-            <span className="text-ink-2 text-body-sm flex-1">[필수] 서비스 이용약관 동의</span>
+            <span className="text-ink-2 text-body-sm flex-1">{t("signup.form.agreeService")}</span>
             <ChevronRight
               size={16}
               strokeWidth={1.75}
@@ -162,7 +183,7 @@ export default function SignupForm() {
                 handleIndividualChange("agreePrivacy", checked === true)
               }
             />
-            <span className="text-ink-2 text-body-sm flex-1">[필수] 개인정보 수집·이용 동의</span>
+            <span className="text-ink-2 text-body-sm flex-1">{t("signup.form.agreePrivacy")}</span>
             <ChevronRight
               size={16}
               strokeWidth={1.75}
@@ -178,7 +199,9 @@ export default function SignupForm() {
                 handleIndividualChange("agreeMarketing", checked === true)
               }
             />
-            <span className="text-ink-2 text-body-sm flex-1">[선택] 혜택·여행 소식 알림 수신</span>
+            <span className="text-ink-2 text-body-sm flex-1">
+              {t("signup.form.agreeMarketing")}
+            </span>
           </label>
         </div>
       </div>
@@ -195,7 +218,7 @@ export default function SignupForm() {
       )}
 
       <Button type="submit" disabled={isSubmitting} size="lg" className="mt-2 w-full">
-        {isSubmitting ? "가입 처리 중..." : "가입하고 이메일 인증하기"}
+        {isSubmitting ? t("signup.form.submitting") : t("signup.form.submit")}
       </Button>
     </form>
   );

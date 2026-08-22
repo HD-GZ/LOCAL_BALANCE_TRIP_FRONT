@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import ThumbImage from "@/components/common/ThumbImage";
 import type { RecommendedRegion } from "@/features/recommendation/types";
+import { Link } from "@/i18n/navigation";
 
 /**
  * 추천 지역 목록. 카드 그리드가 아니라 괘선으로 나뉜 행이다 — 순위가 있는 목록이고,

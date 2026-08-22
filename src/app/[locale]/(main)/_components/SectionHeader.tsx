@@ -1,5 +1,7 @@
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
+
+import { Link } from "@/i18n/navigation";
 
 type SectionHeaderProps = {
   title: string;
@@ -13,8 +15,11 @@ export default function SectionHeader({
   title,
   description,
   moreHref,
-  moreLabel = "전체 보기",
+  moreLabel,
 }: SectionHeaderProps) {
+  const t = useTranslations("home.sectionHeader");
+  const resolvedMoreLabel = moreLabel ?? t("moreLabel");
+
   return (
     <div className="flex w-full flex-col gap-1.5">
       <div className="flex w-full flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
@@ -24,7 +29,7 @@ export default function SectionHeader({
             href={moreHref}
             className="text-brand-ink text-body-sm hover:decoration-brand-ink flex shrink-0 items-center gap-1 font-semibold decoration-transparent underline-offset-4 transition-colors duration-(--dur-1) hover:underline"
           >
-            {moreLabel}
+            {resolvedMoreLabel}
             <ArrowRight className="size-3.5" strokeWidth={1.75} />
           </Link>
         )}

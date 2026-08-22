@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 /**
  * 오디오 가이드. DESIGN.md §3 예외 — 재생 진행은 실제 "충전량"이므로
@@ -22,6 +23,7 @@ function formatTime(seconds: number) {
 }
 
 export default function AudioPlayer({ src }: { src: string }) {
+  const t = useTranslations("courseRecommend.audioPlayer");
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -68,7 +70,7 @@ export default function AudioPlayer({ src }: { src: string }) {
       <button
         type="button"
         onClick={togglePlay}
-        aria-label={isPlaying ? "일시정지" : "재생"}
+        aria-label={isPlaying ? t("pause") : t("play")}
         className="press bg-brand hover:bg-brand-hover text-brand-on flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full"
       >
         {isPlaying ? (
@@ -79,7 +81,7 @@ export default function AudioPlayer({ src }: { src: string }) {
       </button>
 
       <label className="relative flex flex-1 items-center">
-        <span className="sr-only">재생 위치</span>
+        <span className="sr-only">{t("seekPosition")}</span>
         <span
           aria-hidden
           className="bg-line-control/60 pointer-events-none absolute inset-x-0 h-1 rounded-full"

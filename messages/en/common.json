@@ -1,1 +1,8 @@
-{}
+{
+  "retry": "Try again",
+  "brand": {
+    "prefix": "Local ",
+    "emphasis": "Balance",
+    "suffix": " Trip"
+  }
+}

@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 import CourseStatusBadge from "@/app/[locale]/(main)/saved-courses/[courseId]/CourseStatusBadge";
 import RouteMarker from "@/assets/routeMarker.svg";
 import type { SavedCourseStatus } from "@/features/home/types";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 /**

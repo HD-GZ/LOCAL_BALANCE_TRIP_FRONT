@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
+import { useTranslations } from "next-intl";
 
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
@@ -21,15 +22,17 @@ type PropensityResultProps = {
 };
 
 export default function PropensityResult({ result, isError, onRetry }: PropensityResultProps) {
+  const t = useTranslations("propensity.result");
+  const tCommon = useTranslations();
   const reduce = useReducedMotion();
 
   if (isError && !result) {
     return (
       <SurfaceState
         tone="error"
-        title="결과를 불러오지 못했어요"
-        description="답변은 저장돼 있어요. 다시 시도하면 결과를 바로 받을 수 있어요."
-        action={{ label: "다시 시도", onRetry }}
+        title={t("errorTitle")}
+        description={t("errorDescription")}
+        action={{ label: tCommon("retry"), onRetry }}
       />
     );
   }
@@ -42,7 +45,7 @@ export default function PropensityResult({ result, isError, onRetry }: Propensit
         <Skeleton className="h-8 w-56" />
         <Skeleton className="h-3 w-full max-w-100" />
         <Skeleton className="h-3 w-3/4 max-w-80" />
-        <p className="text-ink-3 text-body-sm mt-2">결과를 만들고 있어요</p>
+        <p className="text-ink-3 text-body-sm mt-2">{t("generating")}</p>
       </div>
     );
   }
@@ -76,7 +79,8 @@ export default function PropensityResult({ result, isError, onRetry }: Propensit
       </motion.p>
 
       <motion.h2 {...step(2)} className="text-title-1 text-ink sm:text-display-2">
-        <span className="text-brand-ink">{result.type}</span> 여행자
+        <span className="text-brand-ink">{result.type}</span>
+        {t("travelerSuffix")}
       </motion.h2>
 
       <motion.p {...step(3)} className="text-ink-2 text-body max-w-[52ch] text-pretty">
