@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 import type { HeroItem } from "@/features/home/types";
 import { cn } from "@/lib/utils";
@@ -70,6 +71,7 @@ function HeroPhoto({
 }
 
 export default function HeroFigure({ items }: { items: HeroItem[] }) {
+  const t = useTranslations("home.hero.figure");
   /**
    * 사진과 캡션은 같은 배열에서 나와야 한다. 캡션이 5곳을 나열하는데 사진이 3장이면
    * 읽는 사람은 2장이 빠졌다고 느낀다. 보여주는 것만 이름 붙인다.
@@ -120,10 +122,12 @@ export default function HeroFigure({ items }: { items: HeroItem[] }) {
 
       {/* 추천 지역은 개인화의 결과물이므로 캡션이 아니라 정보로 다룬다. */}
       <figcaption className="flex flex-col gap-1">
-        <span className="text-ink-3 text-cap font-normal">이번 달 추천</span>
+        <span className="text-ink-3 text-cap font-normal">{t("recommendedThisMonth")}</span>
         <span className="text-title-3 text-ink">
           {lead.title}
-          {remaining > 0 && <span className="text-ink-2"> 외 {remaining}곳</span>}
+          {remaining > 0 && (
+            <span className="text-ink-2"> {t("andMore", { count: remaining })}</span>
+          )}
         </span>
       </figcaption>
     </figure>

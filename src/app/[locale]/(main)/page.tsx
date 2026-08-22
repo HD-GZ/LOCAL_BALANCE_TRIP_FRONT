@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
@@ -15,12 +16,6 @@ import PopularCourseSection from "./_components/PopularCourseSection";
 import ProfileSummary, { toProfileNickname } from "./_components/ProfileSummary";
 import ProfileTypeStrip from "./_components/ProfileTypeStrip";
 import SavedCourseFeedSection from "./_components/SavedCourseFeedSection";
-
-const UNDIAGNOSED_CTA = {
-  label: "취향 진단 시작하기",
-  href: "/propensity?step=1",
-  caption: "3단계 · 1분이면 충분해요",
-};
 
 type HomeState = "loading" | "error" | "diagnosed" | "undiagnosed";
 
@@ -70,6 +65,8 @@ function ProfileBandSkeleton() {
 }
 
 export default function Home() {
+  const t = useTranslations("home");
+  const tCommon = useTranslations();
   const meQuery = useQuery(userQueries.me());
   const isLoggedIn = meQuery.isSuccess;
   const profileSummaryQuery = useQuery(homeQueries.profileSummary(isLoggedIn));
@@ -96,11 +93,15 @@ export default function Home() {
   const cta =
     homeState === "diagnosed" && summary
       ? {
-          label: "추천 코스 보기",
+          label: t("cta.diagnosedLabel"),
           href: "/course-recommend?step=1",
-          caption: `${toProfileNickname(summary.type)}과 잘 맞는 코스를 추렸어요`,
+          caption: t("cta.diagnosedCaption", { nickname: toProfileNickname(summary.type) }),
         }
-      : UNDIAGNOSED_CTA;
+      : {
+          label: t("cta.undiagnosedLabel"),
+          href: "/propensity?step=1",
+          caption: t("cta.undiagnosedCaption"),
+        };
 
   return (
     <main className="w-full flex-1 pb-20">
@@ -116,9 +117,9 @@ export default function Home() {
           {homeState === "error" && (
             <SurfaceState
               tone="error"
-              title="여행 성향을 불러오지 못했어요"
-              description="네트워크 상태를 확인한 뒤 다시 시도해 주세요."
-              action={{ label: "다시 시도", onRetry: () => profileSummaryQuery.refetch() }}
+              title={t("profileError.title")}
+              description={t("profileError.description")}
+              action={{ label: tCommon("retry"), onRetry: () => profileSummaryQuery.refetch() }}
             />
           )}
           {homeState === "diagnosed" && summary && meQuery.data && (

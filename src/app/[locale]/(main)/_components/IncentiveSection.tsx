@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
@@ -18,8 +19,10 @@ import SectionHeader from "./SectionHeader";
  */
 
 function DeadlineMark({ dday }: { dday: number | null }) {
+  const t = useTranslations("home.incentive.deadline");
+
   if (dday === null) {
-    return <span className="text-ink-3 text-cap shrink-0 font-normal">상시 모집</span>;
+    return <span className="text-ink-3 text-cap shrink-0 font-normal">{t("ongoing")}</span>;
   }
 
   const isUrgent = dday <= 7;
@@ -32,12 +35,14 @@ function DeadlineMark({ dday }: { dday: number | null }) {
       )}
     >
       D-{dday}
-      <span className="sr-only">{isUrgent ? " 마감 임박" : " 남음"}</span>
+      <span className="sr-only">{isUrgent ? t("urgentSuffix") : t("remainingSuffix")}</span>
     </span>
   );
 }
 
 function IncentiveCard({ incentive, regionName }: { incentive: Incentive; regionName: string }) {
+  const t = useTranslations("home.incentive");
+
   return (
     <li className="flex">
       <a
@@ -61,7 +66,7 @@ function IncentiveCard({ incentive, regionName }: { incentive: Incentive; region
         )}
 
         <span className="border-line text-brand-ink text-body-sm mt-auto flex w-full items-center gap-0.5 border-t pt-3 font-semibold">
-          신청 페이지 바로가기
+          {t("applyCta")}
           <ArrowUpRight className="size-3.5" strokeWidth={1.75} aria-hidden />
         </span>
       </a>
@@ -70,6 +75,8 @@ function IncentiveCard({ incentive, regionName }: { incentive: Incentive; region
 }
 
 export default function IncentiveSection() {
+  const t = useTranslations("home.incentive");
+  const tCommon = useTranslations();
   const incentivesQuery = useQuery(homeQueries.incentives());
   const regions = incentivesQuery.data?.regions ?? [];
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -78,11 +85,8 @@ export default function IncentiveSection() {
   return (
     <section className="flex w-full flex-col gap-5">
       <SectionHeader
-        title="추천 지역에서 받을 수 있는 혜택"
-        description={[
-          "추천받은 지역의 정부·지자체 지원을 모았어요.",
-          "신청은 각 기관 공식 채널에서 진행돼요.",
-        ]}
+        title={t("title")}
+        description={[t("description1"), t("description2")]}
       />
 
       {incentivesQuery.isPending && (
@@ -111,24 +115,24 @@ export default function IncentiveSection() {
       {incentivesQuery.isError && (
         <SurfaceState
           tone="error"
-          title="혜택을 불러오지 못했어요"
-          description="네트워크 상태를 확인한 뒤 다시 시도해 주세요."
-          action={{ label: "다시 시도", onRetry: () => incentivesQuery.refetch() }}
+          title={t("error.title")}
+          description={t("error.description")}
+          action={{ label: tCommon("retry"), onRetry: () => incentivesQuery.refetch() }}
         />
       )}
 
       {incentivesQuery.isSuccess && regions.length === 0 && (
         <SurfaceState
           variant="plain"
-          title="진행 중인 혜택이 아직 없어요"
-          description="지역을 추천받으면 그 지역의 지원 사업이 여기에 모여요."
-          action={{ label: "코스 추천 보기", href: "/course-recommend?step=1" }}
+          title={t("empty.title")}
+          description={t("empty.description")}
+          action={{ label: t("empty.cta"), href: "/course-recommend?step=1" }}
         />
       )}
 
       {selectedRegion && (
         <>
-          <div className="flex flex-wrap gap-2" role="tablist" aria-label="지역별 혜택">
+          <div className="flex flex-wrap gap-2" role="tablist" aria-label={t("tabsAriaLabel")}>
             {regions.map((region, index) => {
               const isSelected = region === selectedRegion;
 
@@ -163,8 +167,8 @@ export default function IncentiveSection() {
             {selectedRegion.incentives.length === 0 ? (
               <SurfaceState
                 variant="plain"
-                title={`${selectedRegion.regionName}에 진행 중인 혜택이 없어요`}
-                description="다른 지역 탭을 눌러 확인해 보세요."
+                title={t("regionEmpty.title", { regionName: selectedRegion.regionName })}
+                description={t("regionEmpty.description")}
               />
             ) : (
               <ul className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -1,10 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { Leaf } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import Skeleton from "@/components/common/Skeleton";
 import type { HeroItem } from "@/features/home/types";
+import { Link } from "@/i18n/navigation";
 
 import HeroCollage from "./HeroCollage";
 
@@ -34,25 +35,24 @@ export default function HomeHero({
   isHeroPending,
   children,
 }: HomeHeroProps) {
+  const t = useTranslations("home.hero");
+
   return (
     <section className="border-brand-line flex w-full flex-col gap-9 overflow-hidden rounded-md border bg-[image:var(--hero-gradient)] px-6 pt-10 sm:px-12 sm:pt-13">
       <div className="grid w-full items-center gap-9 lg:grid-cols-[minmax(0,1fr)_auto]">
         <div className="flex flex-col items-start gap-4">
           <span className="border-brand-line bg-surface/85 text-brand-ink text-cap flex h-8 items-center gap-2 rounded-full border px-3.5">
             <Leaf className="text-brand size-3.5" strokeWidth={1.75} aria-hidden />
-            지역과 여행자를 더 가깝게
+            {t("eyebrow")}
           </span>
 
           <h1 className="text-display-2 text-brand-ink sm:text-display-1 text-balance">
-            내 취향에 맞는
+            {t("titleLine1")}
             <br />
-            로컬 여행을 찾아보세요
+            {t("titleLine2")}
           </h1>
 
-          <p className="text-ink-2 text-body max-w-[46ch]">
-            여행 성향과 가치소비 기준을 진단해 나에게 맞는 지역과 코스를 추천하고, 받을 수 있는
-            정부·지자체 지원 혜택까지 연결해 드려요.
-          </p>
+          <p className="text-ink-2 text-body max-w-[46ch]">{t("description")}</p>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3 pt-3">
             <Link

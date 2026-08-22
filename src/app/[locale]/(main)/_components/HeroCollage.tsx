@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 import type { HeroItem } from "@/features/home/types";
 
@@ -44,6 +45,8 @@ type HeroCollageProps = {
 };
 
 export default function HeroCollage({ items, recommendedRegionName }: HeroCollageProps) {
+  const t = useTranslations("home.hero.collage");
+
   return (
     <div className="flex h-98 w-full justify-end" aria-hidden={!recommendedRegionName}>
       <div className="relative h-full w-119 shrink-0">
@@ -60,8 +63,10 @@ export default function HeroCollage({ items, recommendedRegionName }: HeroCollag
 
         {recommendedRegionName && (
           <div className="border-line bg-surface shadow-card absolute right-0 bottom-[3%] w-56 rounded-md border px-4 py-3">
-            <p className="text-title-3 text-ink">이번 달 추천 · {recommendedRegionName}</p>
-            <p className="text-ink-3 text-cap mt-0.5 font-normal">취향에 맞춰 골라봤어요</p>
+            <p className="text-title-3 text-ink">
+              {t("recommendedThisMonth", { regionName: recommendedRegionName })}
+            </p>
+            <p className="text-ink-3 text-cap mt-0.5 font-normal">{t("matchedToTaste")}</p>
           </div>
         )}
       </div>
