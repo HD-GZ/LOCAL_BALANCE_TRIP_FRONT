@@ -1,0 +1,117 @@
+{
+  "home": {
+    "cta": {
+      "undiagnosedLabel": "Start preference diagnosis",
+      "undiagnosedCaption": "3 steps · takes about a minute",
+      "diagnosedLabel": "See recommended courses",
+      "diagnosedCaption": "We've picked courses that suit your {nickname} type"
+    },
+    "profileError": {
+      "title": "Couldn't load your travel profile",
+      "description": "Please check your connection and try again."
+    },
+    "hero": {
+      "eyebrow": "Bringing regions and travelers closer",
+      "titleLine1": "Find local trips",
+      "titleLine2": "that match your taste",
+      "description": "Diagnose your travel preferences and spending values to get matched regions and courses, plus government and local benefits you can claim.",
+      "collage": {
+        "recommendedThisMonth": "Recommended this month · {regionName}",
+        "matchedToTaste": "Picked to match your taste"
+      },
+      "figure": {
+        "recommendedThisMonth": "Recommended this month",
+        "andMore": "and {count} more"
+      }
+    },
+    "profileSummary": {
+      "heading": "{name}'s travel profile",
+      "description": "Based on your diagnosis, here are courses and benefits picked for you",
+      "retryDiagnosis": "Redo diagnosis",
+      "diagnosedOn": "Diagnosed ·"
+    },
+    "preferenceSlider": {
+      "closeToMin": "Close to {label}",
+      "leanMin": "Leans a bit toward {label}",
+      "leanMax": "Leans a bit toward {label}",
+      "closeToMax": "Close to {label}",
+      "balanced": "Right in the middle",
+      "ariaLabel": "{minLabel} vs {maxLabel}"
+    },
+    "profileTypeStrip": {
+      "title": "What kind of traveler are you?",
+      "description": "Tap a card to jump straight into the diagnosis. Answer 10 questions to get your type.",
+      "error": {
+        "title": "Couldn't load traveler types",
+        "description": "Please try again shortly. You can still start the diagnosis right now.",
+        "cta": "Start preference diagnosis"
+      },
+      "empty": {
+        "title": "No traveler types to show yet",
+        "description": "The type list is still in progress, but you can take the diagnosis now.",
+        "cta": "Start preference diagnosis"
+      }
+    },
+    "incentive": {
+      "title": "Benefits available in recommended regions",
+      "description1": "We've gathered government and local support for your recommended regions.",
+      "description2": "Apply through each organization's official channel.",
+      "error": {
+        "title": "Couldn't load benefits",
+        "description": "Please check your connection and try again."
+      },
+      "empty": {
+        "title": "No benefits available yet",
+        "description": "Once you get a region recommendation, its support programs will show up here.",
+        "cta": "See recommended courses"
+      },
+      "tabsAriaLabel": "Benefits by region",
+      "applyCta": "Go to application page",
+      "deadline": {
+        "ongoing": "Open year-round",
+        "urgentSuffix": " Closing soon",
+        "remainingSuffix": " left"
+      },
+      "regionEmpty": {
+        "title": "No benefits available for {regionName}",
+        "description": "Try another region tab."
+      }
+    },
+    "popularCourse": {
+      "title": "Popular local courses right now",
+      "description": "Once you finish the diagnosis, courses and saved lists matched to your taste will show up here.",
+      "badgeLabel": "Popular region",
+      "error": {
+        "title": "Couldn't load popular courses",
+        "description": "Please check your connection and try again."
+      },
+      "empty": {
+        "title": "No popular courses to show right now",
+        "description": "Finish the diagnosis to get courses matched to your criteria right away.",
+        "cta": "Start preference diagnosis"
+      }
+    },
+    "savedCourseFeed": {
+      "title": "My saved courses",
+      "description": "Alongside your saved courses, we'll show destinations recommended based on your taste.",
+      "badgeLabel": "Matched to your taste",
+      "error": {
+        "title": "Couldn't load saved courses",
+        "description": "Please check your connection and try again."
+      },
+      "empty": {
+        "title": "No saved courses yet",
+        "description": "Save a course you like from course recommendations and it'll show up here.",
+        "cta": "See recommended courses"
+      }
+    },
+    "sectionHeader": {
+      "moreLabel": "See all"
+    },
+    "courseStatus": {
+      "beforeTrip": "Before trip",
+      "traveling": "Traveling",
+      "completed": "Completed"
+    }
+  }
+}

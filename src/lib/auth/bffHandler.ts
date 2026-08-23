@@ -1,5 +1,8 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { hasLocale } from "next-intl";
 
+import { routing } from "@/i18n/routing";
 import { API_CLIENT_ERROR_CODE } from "@/lib/api/errorCodes";
 import { isApiResponse } from "@/lib/api/guards";
 import type { ApiResponse } from "@/lib/api/types";
@@ -14,6 +17,13 @@ import { requestTokenRefresh } from "@/lib/auth/refresh";
 import { API_BASE_URL } from "@/lib/config/server";
 
 const DEFAULT_BACKEND_FETCH_TIMEOUT = 10_000;
+
+async function resolveAcceptLanguage() {
+  const cookieStore = await cookies();
+  const localeCookie = cookieStore.get("NEXT_LOCALE")?.value;
+
+  return hasLocale(routing.locales, localeCookie) ? localeCookie : routing.defaultLocale;
+}
 
 export type CookieStore = CookieWriter & {
   get(name: string): { value: string } | undefined;
@@ -62,6 +72,7 @@ async function fetchBackendOnce(
       method: init.method,
       headers: {
         Accept: "application/json",
+        "Accept-Language": await resolveAcceptLanguage(),
         ...(init.body !== undefined ? { "Content-Type": "application/json" } : {}),
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       },

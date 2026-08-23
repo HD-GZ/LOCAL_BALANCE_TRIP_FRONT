@@ -1,0 +1,88 @@
+{
+  "propensity": {
+    "steps": {
+      "preference": "Preference",
+      "valueConsumption": "Spending",
+      "result": "Result"
+    },
+    "stepMent": {
+      "1": {
+        "title": "What kind of trip do you like?",
+        "description": "For each axis, pick the side that feels closer to you."
+      },
+      "2": {
+        "title": "Where do you save, and where do you splurge?",
+        "description": "Adjust each item between saving and splurging."
+      },
+      "3": {
+        "title": "Your travel profile is ready",
+        "description": "This is your preference diagnosis and spending style combined. We'll match courses and benefits to this profile."
+      }
+    },
+    "saveSpendOptions": {
+      "save": "Save",
+      "spend": "Splurge"
+    },
+    "questions": {
+      "locality": {
+        "title": "Destination type",
+        "options": {
+          "hotplace": { "label": "Hotspot", "description": "Famous, popular spots" },
+          "local": { "label": "Local", "description": "Back alleys, local life" }
+        }
+      },
+      "frugality": {
+        "title": "Spending style",
+        "options": {
+          "luxury": { "label": "Luxury", "description": "Premium, high-end" },
+          "practical": { "label": "Practical", "description": "Good value for money" }
+        }
+      },
+      "experientiality": {
+        "title": "Activity style",
+        "options": {
+          "spectator": { "label": "Sightseeing", "description": "Watch and enjoy" },
+          "experience": { "label": "Hands-on", "description": "Try it yourself" }
+        }
+      },
+      "vitality": {
+        "title": "Trip intensity",
+        "options": {
+          "relax": { "label": "Relaxed", "description": "Slow and easy" },
+          "active": { "label": "Active", "description": "Packed schedule" }
+        }
+      },
+      "sociality": {
+        "title": "Travel companions",
+        "options": {
+          "solo": { "label": "Solo", "description": "Just me" },
+          "family": { "label": "Multi-generation", "description": "Family, generations" }
+        }
+      },
+      "accommodation": { "title": "Lodging" },
+      "food": { "title": "Food" },
+      "experience": { "title": "Experiences" },
+      "transportation": { "title": "Transportation" },
+      "cafeExhibition": { "title": "Cafes & exhibitions" }
+    },
+    "buttons": {
+      "setValueConsumption": "Set spending style",
+      "previousStep": "Previous step",
+      "seeResult": "See result",
+      "generatingResult": "Generating result...",
+      "startOver": "Start over",
+      "getCourseRecommendation": "Get course recommendations",
+      "generatingRecommendation": "Generating recommendations..."
+    },
+    "errors": {
+      "submitGeneric": "Something went wrong while submitting your diagnosis.",
+      "recommendGeneric": "Something went wrong while generating course recommendations."
+    },
+    "result": {
+      "errorTitle": "Couldn't load your result",
+      "errorDescription": "Your answers are saved. Try again to get your result right away.",
+      "generating": "Generating your result",
+      "travelerSuffix": " traveler"
+    }
+  }
+}

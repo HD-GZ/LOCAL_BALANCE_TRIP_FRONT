@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import createMiddleware from "next-intl/middleware";
 
+import { routing } from "@/i18n/routing";
 import {
   ACCESS_TOKEN_COOKIE_NAME,
   REFRESH_TOKEN_COOKIE_NAME,
@@ -10,12 +12,26 @@ import {
 import { requestTokenRefresh } from "@/lib/auth/refresh";
 
 const PROXY_REFRESH_TIMEOUT = 5_000;
+const PROTECTED_PATHS = [/^\/propensity$/, /^\/my(\/|$)/];
+const LOCALE_PREFIX = new RegExp(`^/(${routing.locales.join("|")})(?=/|$)`);
+
+const handleI18nRouting = createMiddleware(routing);
+
+function isProtectedPath(pathname: string) {
+  const withoutLocale = pathname.replace(LOCALE_PREFIX, "") || "/";
+
+  return PROTECTED_PATHS.some((pattern) => pattern.test(withoutLocale));
+}
 
 export async function proxy(request: NextRequest) {
+  if (!isProtectedPath(request.nextUrl.pathname)) {
+    return handleI18nRouting(request);
+  }
+
   const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
 
   if (accessToken) {
-    return NextResponse.next();
+    return handleI18nRouting(request);
   }
 
   const refreshTokenValue = request.cookies.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
@@ -26,7 +42,7 @@ export async function proxy(request: NextRequest) {
     if (tokens) {
       request.cookies.set(ACCESS_TOKEN_COOKIE_NAME, tokens.accessToken);
 
-      const response = NextResponse.next({ request });
+      const response = handleI18nRouting(request);
 
       setAuthCookies(response.cookies, tokens);
 
@@ -50,5 +66,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/propensity", "/my/:path*"],
+  matcher: ["/((?!api|_next|_vercel|shared-courses|.*\\..*).*)"],
 };

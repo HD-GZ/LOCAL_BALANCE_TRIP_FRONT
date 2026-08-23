@@ -1,0 +1,77 @@
+{
+  "courseRecommend": {
+    "steps": {
+      "recommend": "Recommend",
+      "select": "Select",
+      "course": "Course"
+    },
+    "page": {
+      "title": "Destinations matched to your taste",
+      "description": "Tap a region to see its recommended courses.",
+      "needsPropensity": {
+        "title": "Take the preference diagnosis first",
+        "description": "Once you finish the diagnosis, we'll recommend destinations that match your taste.",
+        "cta": "Go to preference diagnosis"
+      },
+      "error": {
+        "title": "Couldn't load recommended destinations",
+        "description": "Please check your connection and try again."
+      },
+      "empty": {
+        "title": "No destinations recommended yet",
+        "description": "Get course recommendations from your diagnosis result screen and regions will show up here.",
+        "cta": "Go to preference diagnosis"
+      }
+    },
+    "region": {
+      "fallbackTitle": "Recommended courses",
+      "description": "These are your best-matched courses. Tap a course to see its route, audio, and benefits.",
+      "invalidPath": {
+        "title": "Invalid path",
+        "description": "This address isn't valid. Please pick again from the recommended destination list.",
+        "cta": "Back to destination list"
+      },
+      "error": {
+        "title": "Couldn't load recommended courses",
+        "description": "Please check your connection and try again."
+      },
+      "empty": {
+        "title": "No courses recommended for this region",
+        "description": "Other recommended regions may have courses ready.",
+        "cta": "See other regions"
+      }
+    },
+    "courseDetail": {
+      "fallbackTitle": "Course details",
+      "description": "Explore {regionName} in this order.",
+      "invalidPath": {
+        "title": "Invalid path",
+        "description": "This address isn't valid. Please pick again from the recommended course list.",
+        "cta": "Back to destination list"
+      },
+      "error": {
+        "title": "Couldn't load course details",
+        "description": "Please check your connection and try again."
+      },
+      "sectionRoute": "Course route",
+      "sectionBenefits": "Benefits available on this course",
+      "saved": "Course saved",
+      "viewSaved": "View saved courses",
+      "save": "Save this course",
+      "saving": "Saving...",
+      "saveError": "Something went wrong while saving the course."
+    },
+    "benefitList": {
+      "empty": "No benefits are available for this course yet."
+    },
+    "timeline": {
+      "walkMinutes": "{minutes} min walk",
+      "audioGuide": "Audio guide"
+    },
+    "audioPlayer": {
+      "pause": "Pause",
+      "play": "Play",
+      "seekPosition": "Playback position"
+    }
+  }
+}

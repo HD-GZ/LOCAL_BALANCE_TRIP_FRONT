@@ -1,0 +1,77 @@
+{
+  "courseRecommend": {
+    "steps": {
+      "recommend": "추천",
+      "select": "선택",
+      "course": "코스"
+    },
+    "page": {
+      "title": "성향에 맞는 추천 여행지",
+      "description": "지역을 누르면 맞춤 추천 코스를 볼 수 있어요.",
+      "needsPropensity": {
+        "title": "취향 진단을 먼저 받아야 해요",
+        "description": "진단을 마치면 성향에 맞는 여행지를 추천해 드려요.",
+        "cta": "취향 진단 하러 가기"
+      },
+      "error": {
+        "title": "추천 여행지를 불러오지 못했어요",
+        "description": "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+      },
+      "empty": {
+        "title": "아직 추천된 여행지가 없어요",
+        "description": "취향 진단 결과 화면에서 코스 추천을 받으면 여기에 지역이 채워져요.",
+        "cta": "취향 진단으로 가기"
+      }
+    },
+    "region": {
+      "fallbackTitle": "추천 코스",
+      "description": "가장 잘 맞는 추천 코스예요. 코스를 누르면 동선과 오디오, 혜택을 볼 수 있어요.",
+      "invalidPath": {
+        "title": "잘못된 경로예요",
+        "description": "주소가 올바르지 않아요. 추천 지역 목록에서 다시 선택해 주세요.",
+        "cta": "추천 지역 목록으로"
+      },
+      "error": {
+        "title": "추천 코스를 불러오지 못했어요",
+        "description": "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+      },
+      "empty": {
+        "title": "이 지역에 추천된 코스가 없어요",
+        "description": "다른 추천 지역에는 코스가 준비돼 있을 수 있어요.",
+        "cta": "다른 지역 보기"
+      }
+    },
+    "courseDetail": {
+      "fallbackTitle": "코스 상세",
+      "description": "{regionName}에서 이 순서로 돌아보세요.",
+      "invalidPath": {
+        "title": "잘못된 경로예요",
+        "description": "주소가 올바르지 않아요. 추천 코스 목록에서 다시 선택해 주세요.",
+        "cta": "추천 지역 목록으로"
+      },
+      "error": {
+        "title": "코스 정보를 불러오지 못했어요",
+        "description": "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+      },
+      "sectionRoute": "코스 순서",
+      "sectionBenefits": "이 코스 적용 가능 혜택",
+      "saved": "코스를 저장했어요",
+      "viewSaved": "저장한 코스 보기",
+      "save": "이 코스 저장하기",
+      "saving": "저장 중...",
+      "saveError": "코스 저장 중 오류가 발생했습니다."
+    },
+    "benefitList": {
+      "empty": "이 코스에 적용할 수 있는 혜택이 아직 없어요."
+    },
+    "timeline": {
+      "walkMinutes": "도보 {minutes}분",
+      "audioGuide": "오디오 가이드"
+    },
+    "audioPlayer": {
+      "pause": "일시정지",
+      "play": "재생",
+      "seekPosition": "재생 위치"
+    }
+  }
+}

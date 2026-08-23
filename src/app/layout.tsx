@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 
+import { getLocale } from "next-intl/server";
 import Footer from "@/components/layout/Footer";
 import { Providers } from "@/components/Providers";
 import { Toaster } from "@/components/ui/sonner";
@@ -30,14 +31,16 @@ export const metadata: Metadata = {
     "여행 성향과 가치소비 기준을 진단해 나에게 맞는 지역과 코스를 추천하고, 받을 수 있는 정부·지자체 지원 혜택까지 연결해 드려요.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const lang = await getLocale();
+
   return (
     <html
-      lang="ko"
+      lang={lang}
       className={cn("bg-paper h-full antialiased", pretendard.variable)}
       suppressHydrationWarning
     >
