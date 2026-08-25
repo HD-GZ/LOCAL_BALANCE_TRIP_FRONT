@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { CalendarDays } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { formatPaidDate } from "@/features/receipts/utils";
@@ -41,12 +42,13 @@ export default function ReceiptFields({
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
   const baseId = useId();
   const isMerchantNameEmpty = merchantName.trim().length === 0;
+  const t = useTranslations("receipts");
 
   return (
     <div className="border-line divide-line bg-surface flex w-full flex-col divide-y rounded-md border">
       <div className={rowClassName}>
         <label className={labelClassName} htmlFor={`${baseId}-merchant`}>
-          가맹점명
+          {t("fields.merchantLabel")}
         </label>
         <input
           id={`${baseId}-merchant`}
@@ -61,7 +63,7 @@ export default function ReceiptFields({
 
       <div className={rowClassName}>
         <label className={labelClassName} htmlFor={`${baseId}-amount`}>
-          금액
+          {t("fields.amountLabel")}
         </label>
         <div className="flex min-w-0 flex-1 items-center gap-1">
           <input
@@ -73,13 +75,13 @@ export default function ReceiptFields({
             onChange={(event) => onAmountChange(Number(event.target.value.replace(/\D/g, "")) || 0)}
             className={`${inputClassName} text-right tabular-nums`}
           />
-          <span className="text-ink-2 text-body-sm shrink-0">원</span>
+          <span className="text-ink-2 text-body-sm shrink-0">{t("fields.currencyUnit")}</span>
         </div>
       </div>
 
       <div className={rowClassName}>
         <span className={labelClassName} id={`${baseId}-date-label`}>
-          날짜
+          {t("fields.dateLabel")}
         </span>
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <span className="text-title-3 text-ink flex-1 px-2 tabular-nums">
@@ -90,11 +92,11 @@ export default function ReceiptFields({
               <button
                 type="button"
                 aria-labelledby={`${baseId}-date-label`}
-                aria-label="날짜 수정"
+                aria-label={t("fields.dateEditAria")}
                 className="press border-line-control text-ink-2 text-cap hover:bg-surface-2 flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-sm border px-2.5"
               >
                 <CalendarDays className="size-3.5" strokeWidth={1.75} aria-hidden />
-                변경
+                {t("fields.dateChange")}
               </button>
             </PopoverTrigger>
             <PopoverContent align="end">

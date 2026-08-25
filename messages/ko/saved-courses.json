@@ -1,1 +1,53 @@
-{}
+{
+  "savedCourses": {
+    "page": {
+      "title": "저장한 코스",
+      "description": {
+        "firstLine": "코스 추천에서 저장한 코스를 모아봤어요.",
+        "secondLine": "GPS 슬로우 투어 시작은 앱에서 할 수 있어요."
+      }
+    },
+    "error": {
+      "title": "저장한 코스를 불러오지 못했어요",
+      "network": "네트워크 상태를 확인한 뒤 다시 시도해 주세요.",
+      "action": "다시 시도"
+    },
+    "status": {
+      "all": "전체",
+      "progress": "여행 중",
+      "completed": "완주",
+      "before": "여행 전"
+    },
+    "main": {
+      "empty": {
+        "fullEmpty": {
+          "title": "아직 저장한 코스가 없어요",
+          "description": "코스 추천에서 마음에 드는 코스를 저장하면 여기에 모여요.",
+          "action": "코스 추천 보러 가기"
+        },
+        "filtered": {
+          "title": "이 상태의 저장한 코스가 없어요",
+          "description": "다른 상태 필터를 눌러 확인해 보세요.",
+          "action": "전체 보기"
+        }
+      }
+    },
+    "card": {
+      "bookmarkAria": "저장 취소",
+      "dialog": {
+        "title": "저장을 취소할까요?",
+        "description": "이 코스가 저장한 코스 목록에서 사라져요. 코스 추천에서 언제든 다시 저장할 수 있어요.",
+        "error": "삭제 중 오류가 발생했어요. 다시 시도해 주세요.",
+        "cancel": "돌아가기",
+        "confirm": "저장 취소",
+        "confirmPending": "취소하는 중..."
+      }
+    },
+    "pager": {
+      "nav": "페이지",
+      "previous": "이전 페이지",
+      "next": "다음 페이지",
+      "pageAria": "{page}페이지"
+    }
+  }
+}

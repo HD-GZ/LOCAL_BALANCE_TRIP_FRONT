@@ -1,0 +1,111 @@
+{
+  "receipts": {
+    "list": {
+      "invalidRoute": {
+        "title": "Invalid route",
+        "description": "This address isn't valid. Please choose again from your saved courses.",
+        "action": "Go to saved courses"
+      },
+      "courseError": {
+        "title": "Failed to load the course info",
+        "network": "Please check your network status and try again.",
+        "retry": "Retry"
+      },
+      "heading": "Saved Receipts",
+      "listError": {
+        "title": "Failed to load the receipts",
+        "network": "Please check your network status and try again.",
+        "retry": "Retry"
+      },
+      "empty": {
+        "title": "No saved receipts yet",
+        "description": "Keep a receipt while traveling, and it'll show up here."
+      },
+      "itemAmount": "₩{amount}",
+      "summary": {
+        "count": "{count} receipts",
+        "total": "Total ₩{total}"
+      },
+      "note": {
+        "line1": "Receipt scanning and OCR are available in the app.",
+        "line2": "The web only supports viewing and managing saved receipts."
+      }
+    },
+    "detail": {
+      "invalidRoute": {
+        "title": "Invalid route",
+        "description": "This address isn't valid. Please choose again from the receipts list.",
+        "action": "Go to saved courses"
+      },
+      "error": {
+        "title": "Failed to load the receipt",
+        "network": "Please check your network status and try again.",
+        "retry": "Retry"
+      },
+      "breadcrumb": {
+        "nav": "Breadcrumb",
+        "savedCourses": "Saved Courses",
+        "current": "Receipt Details"
+      },
+      "heading": "Receipt Details",
+      "ocrNote": "These values were extracted automatically with OCR. You can edit anything that wasn't recognized correctly.",
+      "merchantRequired": "Please enter a merchant name.",
+      "updateError": "Something went wrong while saving. Please try again.",
+      "save": {
+        "pending": "Saving...",
+        "dirty": "Save",
+        "clean": "No changes"
+      },
+      "leaveDialog": {
+        "title": "Save your changes?",
+        "description": "If you leave without saving, the merchant name, amount, and date you edited will be lost.",
+        "discard": "Don't Save",
+        "saveAndLeave": "Save & Leave",
+        "saveAndLeavePending": "Saving...",
+        "merchantRequired": "Enter a merchant name to save."
+      }
+    },
+    "deleteDialog": {
+      "trigger": "Delete",
+      "title": "Delete this receipt?",
+      "description": "It'll be removed from this trip's refund request list.",
+      "error": "Something went wrong while deleting. Please try again.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "confirmPending": "Deleting..."
+    },
+    "photo": {
+      "noImageAlt": "No receipt photo available",
+      "imageAlt": "Receipt photo",
+      "zoomHint": "Receipt photo · Click to zoom",
+      "dialogTitle": "Receipt photo",
+      "closeAria": "Close"
+    },
+    "download": {
+      "pending": "Preparing download...",
+      "action": "Download Original",
+      "error": "Couldn't get the download link. Please try again."
+    },
+    "fields": {
+      "merchantLabel": "Merchant",
+      "amountLabel": "Amount",
+      "currencyUnit": "KRW",
+      "dateLabel": "Date",
+      "dateEditAria": "Edit date",
+      "dateChange": "Change"
+    },
+    "calendar": {
+      "weekdays": {
+        "sun": "Su",
+        "mon": "Mo",
+        "tue": "Tu",
+        "wed": "We",
+        "thu": "Th",
+        "fri": "Fr",
+        "sat": "Sa"
+      },
+      "prevMonthAria": "Previous month",
+      "nextMonthAria": "Next month"
+    }
+  }
+}

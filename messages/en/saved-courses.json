@@ -1,1 +1,53 @@
-{}
+{
+  "savedCourses": {
+    "page": {
+      "title": "Saved Courses",
+      "description": {
+        "firstLine": "Here are the courses you saved from the recommendations.",
+        "secondLine": "You can start the GPS Slow Tour in the app."
+      }
+    },
+    "error": {
+      "title": "Failed to load the saved courses",
+      "network": "Please check your network status and try again.",
+      "action": "Retry"
+    },
+    "status": {
+      "all": "All",
+      "progress": "Traveling",
+      "completed": "Completed",
+      "before": "Before Trip"
+    },
+    "main": {
+      "empty": {
+        "fullEmpty": {
+          "title": "You don't have any saved courses yet",
+          "description": "Save a course you like from the recommendations, and it'll show up here.",
+          "action": "Browse Course Recommendations"
+        },
+        "filtered": {
+          "title": "No saved courses with this status",
+          "description": "Try a different status filter.",
+          "action": "View All"
+        }
+      }
+    },
+    "card": {
+      "bookmarkAria": "Remove from saved courses",
+      "dialog": {
+        "title": "Remove from saved courses?",
+        "description": "This course will be removed from your saved courses list. You can save it again anytime from the recommendations.",
+        "error": "Something went wrong while removing it. Please try again.",
+        "cancel": "Go Back",
+        "confirm": "Remove",
+        "confirmPending": "Removing..."
+      }
+    },
+    "pager": {
+      "nav": "Pagination",
+      "previous": "Previous page",
+      "next": "Next page",
+      "pageAria": "Page {page}"
+    }
+  }
+}

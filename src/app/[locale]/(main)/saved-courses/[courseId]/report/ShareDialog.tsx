@@ -2,6 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import Kakao from "@/assets/kakao.svg";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ export default function ShareDialog({
 }) {
   const { isReady: isKakaoReady, kakaoScript, uploadImage, shareFeed } = useKakaoShare();
   const shareTokenMutation = useMutation({ mutationFn: createShareToken });
+  const t = useTranslations("report");
 
   async function handleShareKakao() {
     if (!isKakaoReady) {
@@ -46,7 +48,7 @@ export default function ShareDialog({
       shareUrl = `${window.location.origin}/shared-courses/${token}`;
     } catch (error) {
       console.error("공유 토큰 발급 실패", error);
-      toast.error("공유 링크를 만들지 못했어요. 다시 시도해 주세요.");
+      toast.error(t("share.tokenError"));
       return;
     }
 
@@ -55,13 +57,16 @@ export default function ShareDialog({
 
       shareFeed({
         title: report.courseName,
-        description: `${report.courseName} ${report.visitedPlaceCount}곳을 방문하고 완주한 여행 리포트예요.`,
+        description: t("share.feedDescription", {
+          courseName: report.courseName,
+          count: report.visitedPlaceCount,
+        }),
         imageUrl,
         link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
       });
     } catch (error) {
       console.error("카카오톡 공유 실패", error);
-      toast.error("카카오톡 공유에 실패했어요. 다시 시도해 주세요.");
+      toast.error(t("share.kakaoError"));
     }
   }
 
@@ -69,11 +74,11 @@ export default function ShareDialog({
     <Dialog>
       {kakaoScript}
       <DialogTrigger asChild>
-        <Button size="lg">공유하기</Button>
+        <Button size="lg">{t("share.trigger")}</Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogTitle>어디에 공유할까요?</DialogTitle>
-        <DialogDescription>지역 소비 금액은 공유되지 않아요.</DialogDescription>
+        <DialogTitle>{t("share.dialogTitle")}</DialogTitle>
+        <DialogDescription>{t("share.dialogDescription")}</DialogDescription>
         <div className="flex w-full items-start gap-2.5 pt-3.75">
           <button
             type="button"
@@ -82,13 +87,13 @@ export default function ShareDialog({
             className="press border-brand-line bg-surface hover:bg-brand-wash-soft flex flex-1 cursor-pointer flex-col items-center justify-center gap-2.25 rounded-sm border py-5 disabled:cursor-default disabled:opacity-45"
           >
             <Kakao className="size-6" />
-            <span className="text-brand-ink text-body-sm font-semibold">카카오톡</span>
+            <span className="text-brand-ink text-body-sm font-semibold">{t("share.kakao")}</span>
           </button>
         </div>
         <DialogClose asChild>
           <button
             type="button"
-            aria-label="닫기"
+            aria-label={t("share.closeAria")}
             className="press text-ink-3 hover:text-ink absolute top-4 right-4 flex size-9 cursor-pointer items-center justify-center rounded-full"
           >
             <X className="size-4.5" strokeWidth={1.75} />

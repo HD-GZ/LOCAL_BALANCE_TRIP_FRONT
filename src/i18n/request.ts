@@ -11,6 +11,9 @@ const MESSAGE_DOMAINS = [
   "propensity",
   "shared-courses",
   "my",
+  "policy",
+  "receipts",
+  "report",
 ] as const;
 
 export default getRequestConfig(async ({ requestLocale }) => {
