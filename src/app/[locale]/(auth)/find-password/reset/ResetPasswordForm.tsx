@@ -2,9 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -15,10 +14,6 @@ import { isResetTokenInvalidCode } from "@/features/auth/passwordReset";
 import { clearPasswordResetSession } from "@/features/auth/passwordResetStorage";
 import { useRouter } from "@/i18n/navigation";
 import { getFieldErrors, isApiError } from "@/lib/api/error";
-import { cn } from "@/lib/utils";
-
-const hasLetterAndDigit = (value: string) => /(?=.*[a-zA-Z])(?=.*\d)/.test(value);
-const hasMinLength = (value: string) => value.length >= 8;
 
 type ResetPasswordFormValues = {
   newPassword: string;
@@ -32,11 +27,6 @@ type ResetPasswordFormProps = {
 export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps) {
   const t = useTranslations();
   const router = useRouter();
-
-  const PASSWORD_RULES = [
-    { label: t("findPassword.reset.ruleLetterDigit"), test: hasLetterAndDigit },
-    { label: t("findPassword.reset.ruleMinLength"), test: hasMinLength },
-  ];
 
   const schema = z
     .object({
@@ -52,7 +42,6 @@ export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps
     });
 
   const {
-    control,
     register,
     handleSubmit,
     setError,
@@ -65,8 +54,6 @@ export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps
       confirmPassword: "",
     },
   });
-
-  const newPassword = useWatch({ control, name: "newPassword" });
 
   const resetPasswordMutation = useMutation({
     mutationFn: resetPassword,
@@ -106,6 +93,7 @@ export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps
         label={t("findPassword.reset.newPasswordLabel")}
         required
         error={errors.newPassword?.message}
+        hint={t("findPassword.reset.passwordHint")}
       >
         <PasswordInput
           {...register("newPassword")}
@@ -113,39 +101,6 @@ export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps
           placeholder={t("findPassword.reset.newPasswordPlaceholder")}
         />
       </FormField>
-
-      <ul className="-mt-2 flex flex-wrap gap-x-4 gap-y-1.5">
-        {PASSWORD_RULES.map(({ label, test }) => {
-          const isSatisfied = test(newPassword ?? "");
-
-          return (
-            <li key={label} className="flex items-center gap-1.5">
-              <span
-                aria-hidden="true"
-                className={cn(
-                  "flex size-3 items-center justify-center rounded-full",
-                  isSatisfied ? "bg-brand text-brand-on" : "bg-surface-2 text-transparent",
-                )}
-              >
-                <Check className="size-2" strokeWidth={4} />
-              </span>
-              <span
-                className={cn(
-                  "text-cap font-normal",
-                  isSatisfied ? "text-brand-ink" : "text-ink-3",
-                )}
-              >
-                {label}
-                <span className="sr-only">
-                  {isSatisfied
-                    ? t("findPassword.reset.ruleSatisfied")
-                    : t("findPassword.reset.ruleUnsatisfied")}
-                </span>
-              </span>
-            </li>
-          );
-        })}
-      </ul>
 
       <FormField
         label={t("findPassword.reset.confirmPasswordLabel")}
