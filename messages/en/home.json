@@ -2,7 +2,7 @@
   "home": {
     "cta": {
       "undiagnosedLabel": "Start preference diagnosis",
-      "undiagnosedCaption": "3 steps · takes about a minute",
+      "undiagnosedCaption": "Takes about a minute",
       "diagnosedLabel": "See recommended courses",
       "diagnosedCaption": "We've picked courses that suit your {nickname} type"
     },
@@ -26,9 +26,8 @@
     },
     "profileSummary": {
       "heading": "{name}'s travel profile",
-      "description": "Based on your diagnosis, here are courses and benefits picked for you",
       "retryDiagnosis": "Redo diagnosis",
-      "diagnosedOn": "Diagnosed ·"
+      "diagnosedOn": "Diagnosed on ·"
     },
     "preferenceSlider": {
       "closeToMin": "Close to {label}",

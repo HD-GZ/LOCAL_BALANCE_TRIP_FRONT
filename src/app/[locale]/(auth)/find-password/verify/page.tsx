@@ -115,10 +115,11 @@ export default function FindPasswordVerifyPage() {
   const isResendDisabled = resendMutation.isPending || resendCooldownSeconds > 0;
 
   return (
-    <AuthShell title={t("title")} description={t("description", { email })}>
-      <div className="pb-6">
-        <PasswordResetStepper currentStep="verify" />
-      </div>
+    <AuthShell
+      title={t("title")}
+      description={t("description", { email })}
+      stepper={<PasswordResetStepper currentStep="verify" />}
+    >
       <CodeInput value={code} onChange={handleCodeChange} disabled={isExpired} />
       <p className="text-ink-2 text-body-sm mt-3 text-center tabular-nums" aria-live="polite">
         {isExpired

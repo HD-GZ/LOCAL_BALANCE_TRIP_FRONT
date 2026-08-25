@@ -12,6 +12,7 @@ export default async function SignupPage() {
     <AuthShell
       title={t("title")}
       description={t("description")}
+      stepper={<SignupStepper currentStep="signup" />}
       footer={
         <>
           <span>{t("hasAccount")}</span>
@@ -19,9 +20,6 @@ export default async function SignupPage() {
         </>
       }
     >
-      <div className="pb-6">
-        <SignupStepper currentStep="signup" />
-      </div>
       <SignupForm />
     </AuthShell>
   );
