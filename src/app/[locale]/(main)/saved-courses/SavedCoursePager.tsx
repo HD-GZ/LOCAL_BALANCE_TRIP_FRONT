@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 
@@ -37,15 +38,16 @@ export default function SavedCoursePager({
   totalPages,
   onPageChange,
 }: SavedCoursePagerProps) {
+  const t = useTranslations("savedCourses");
   if (totalPages <= 1) {
     return null;
   }
 
   return (
-    <nav className="flex w-full items-center justify-center gap-1.5" aria-label="페이지">
+    <nav className="flex w-full items-center justify-center gap-1.5" aria-label={t("pager.nav")}>
       <button
         type="button"
-        aria-label="이전 페이지"
+        aria-label={t("pager.previous")}
         className={cn(buttonBase, "border-line-control text-ink-2 hover:bg-surface-2")}
         disabled={page <= 1}
         onClick={() => onPageChange(page - 1)}
@@ -63,7 +65,7 @@ export default function SavedCoursePager({
             key={item}
             type="button"
             aria-current={item === page ? "page" : undefined}
-            aria-label={`${item}페이지`}
+            aria-label={t("pager.pageAria", { page: item })}
             className={cn(
               buttonBase,
               "tabular-nums",
@@ -80,7 +82,7 @@ export default function SavedCoursePager({
 
       <button
         type="button"
-        aria-label="다음 페이지"
+        aria-label={t("pager.next")}
         className={cn(buttonBase, "border-line-control text-ink-2 hover:bg-surface-2")}
         disabled={page >= totalPages}
         onClick={() => onPageChange(page + 1)}

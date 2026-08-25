@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import SavedCourseDetailHeader from "@/app/[locale]/(main)/saved-courses/[courseId]/SavedCourseDetailHeader";
 import Skeleton from "@/components/common/Skeleton";
@@ -14,6 +15,7 @@ import { parsePositiveIntParam } from "@/lib/utils";
 import ReportSummary from "./ReportSummary";
 
 export default function SavedCourseReport() {
+  const t = useTranslations("report");
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
   const courseId = parsePositiveIntParam(courseIdParam);
   const courseDetailQuery = useQuery(
@@ -34,9 +36,9 @@ export default function SavedCourseReport() {
         {courseId === null && (
           <SurfaceState
             tone="error"
-            title="잘못된 경로예요"
-            description="주소가 올바르지 않아요. 저장한 코스 목록에서 다시 선택해 주세요."
-            action={{ label: "저장한 코스로", href: "/saved-courses" }}
+            title={t("page.invalidRoute.title")}
+            description={t("page.invalidRoute.description")}
+            action={{ label: t("page.invalidRoute.action"), href: "/saved-courses" }}
           />
         )}
 
@@ -51,13 +53,13 @@ export default function SavedCourseReport() {
         {courseDetailQuery.isError && (
           <SurfaceState
             tone="error"
-            title="코스 정보를 불러오지 못했어요"
+            title={t("page.courseError.title")}
             description={
               isApiError(courseDetailQuery.error)
                 ? courseDetailQuery.error.message
-                : "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+                : t("page.courseError.network")
             }
-            action={{ label: "다시 시도", onRetry: () => courseDetailQuery.refetch() }}
+            action={{ label: t("page.courseError.retry"), onRetry: () => courseDetailQuery.refetch() }}
           />
         )}
 
@@ -71,7 +73,7 @@ export default function SavedCourseReport() {
             />
 
             <div className="border-line bg-surface shadow-card flex w-full flex-col gap-4 rounded-md border px-5 py-6 sm:px-8 sm:py-8">
-              <h2 className="text-title-2 text-ink">완주 리포트</h2>
+              <h2 className="text-title-2 text-ink">{t("page.heading")}</h2>
 
               {reportQuery.isPending && (
                 <div className="flex flex-col gap-4">
@@ -86,19 +88,19 @@ export default function SavedCourseReport() {
                 (isReportPending ? (
                   <SurfaceState
                     variant="plain"
-                    title="아직 리포트가 없어요"
-                    description="코스를 완주하면 걸은 거리와 지역 소비를 정리해 드려요."
+                    title={t("page.notYet.title")}
+                    description={t("page.notYet.description")}
                   />
                 ) : (
                   <SurfaceState
                     tone="error"
-                    title="리포트를 불러오지 못했어요"
+                    title={t("page.error.title")}
                     description={
                       isApiError(reportQuery.error)
                         ? reportQuery.error.message
-                        : "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+                        : t("page.error.network")
                     }
-                    action={{ label: "다시 시도", onRetry: () => reportQuery.refetch() }}
+                    action={{ label: t("page.error.retry"), onRetry: () => reportQuery.refetch() }}
                   />
                 ))}
 

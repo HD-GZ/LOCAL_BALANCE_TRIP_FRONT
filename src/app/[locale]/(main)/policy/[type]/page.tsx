@@ -3,6 +3,7 @@
 import { notFound, useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
+import { useTranslations } from "next-intl";
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { policyQueries } from "@/features/policy/queries";
@@ -19,6 +20,7 @@ const ROUTE_TYPE_TO_API_TYPE: Record<string, PolicyDocumentType> = {
 export default function PolicyDocumentPage() {
   const { type: routeType } = useParams<{ type: string }>();
   const apiType = ROUTE_TYPE_TO_API_TYPE[routeType];
+  const t = useTranslations("policy");
 
   if (!apiType) {
     notFound();
@@ -45,13 +47,11 @@ export default function PolicyDocumentPage() {
           {documentQuery.isError && (
             <SurfaceState
               tone="error"
-              title="약관을 불러오지 못했어요"
+              title={t("error.title")}
               description={
-                isApiError(documentQuery.error)
-                  ? documentQuery.error.message
-                  : "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+                isApiError(documentQuery.error) ? documentQuery.error.message : t("error.network")
               }
-              action={{ label: "다시 시도", onRetry: () => documentQuery.refetch() }}
+              action={{ label: t("error.retry"), onRetry: () => documentQuery.refetch() }}
             />
           )}
 
@@ -60,7 +60,10 @@ export default function PolicyDocumentPage() {
               <div className="flex flex-col gap-1">
                 <h1 className="text-title-1 text-ink">{document.title}</h1>
                 <p className="text-ink-3 text-cap">
-                  버전 {document.version} · 시행일 {document.effectiveDate}
+                  {t("main.version", {
+                    version: document.version,
+                    effectiveDate: document.effectiveDate,
+                  })}
                 </p>
               </div>
 

@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import SavedCourseDetailHeader from "@/app/[locale]/(main)/saved-courses/[courseId]/SavedCourseDetailHeader";
 import Skeleton from "@/components/common/Skeleton";
@@ -14,6 +15,7 @@ import { parsePositiveIntParam } from "@/lib/utils";
 import ReceiptsList from "./ReceiptsList";
 
 export default function SavedCourseReceipts() {
+  const t = useTranslations("receipts");
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
   const courseId = parsePositiveIntParam(courseIdParam);
   const courseDetailQuery = useQuery(
@@ -28,9 +30,9 @@ export default function SavedCourseReceipts() {
         {courseId === null && (
           <SurfaceState
             tone="error"
-            title="잘못된 경로예요"
-            description="주소가 올바르지 않아요. 저장한 코스 목록에서 다시 선택해 주세요."
-            action={{ label: "저장한 코스로", href: "/saved-courses" }}
+            title={t("list.invalidRoute.title")}
+            description={t("list.invalidRoute.description")}
+            action={{ label: t("list.invalidRoute.action"), href: "/saved-courses" }}
           />
         )}
 
@@ -45,13 +47,13 @@ export default function SavedCourseReceipts() {
         {courseDetailQuery.isError && (
           <SurfaceState
             tone="error"
-            title="코스 정보를 불러오지 못했어요"
+            title={t("list.courseError.title")}
             description={
               isApiError(courseDetailQuery.error)
                 ? courseDetailQuery.error.message
-                : "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+                : t("list.courseError.network")
             }
-            action={{ label: "다시 시도", onRetry: () => courseDetailQuery.refetch() }}
+            action={{ label: t("list.courseError.retry"), onRetry: () => courseDetailQuery.refetch() }}
           />
         )}
 
@@ -65,7 +67,7 @@ export default function SavedCourseReceipts() {
             />
 
             <div className="border-line bg-surface shadow-card flex w-full flex-col gap-4 rounded-md border px-5 py-6 sm:px-8 sm:py-8">
-              <h2 className="text-title-2 text-ink">저장된 영수증</h2>
+              <h2 className="text-title-2 text-ink">{t("list.heading")}</h2>
 
               {receiptsQuery.isPending && (
                 <div className="border-line divide-line flex flex-col divide-y border-y">
@@ -85,13 +87,13 @@ export default function SavedCourseReceipts() {
               {receiptsQuery.isError && (
                 <SurfaceState
                   tone="error"
-                  title="영수증 정보를 불러오지 못했어요"
+                  title={t("list.listError.title")}
                   description={
                     isApiError(receiptsQuery.error)
                       ? receiptsQuery.error.message
-                      : "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+                      : t("list.listError.network")
                   }
-                  action={{ label: "다시 시도", onRetry: () => receiptsQuery.refetch() }}
+                  action={{ label: t("list.listError.retry"), onRetry: () => receiptsQuery.refetch() }}
                 />
               )}
 
@@ -103,8 +105,8 @@ export default function SavedCourseReceipts() {
               )}
 
               <div className="text-ink-3 text-cap flex flex-col font-normal">
-                <p>영수증 촬영과 OCR 인식은 앱에서 이용할 수 있어요.</p>
-                <p>웹에서는 저장된 증빙 확인과 관리만 지원해요.</p>
+                <p>{t("list.note.line1")}</p>
+                <p>{t("list.note.line2")}</p>
               </div>
             </div>
           </>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronRight, Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -32,6 +33,7 @@ export default function ReceiptDetailContent({
   receiptId: number;
 }) {
   const router = useRouter();
+  const t = useTranslations("receipts");
   const [merchantName, setMerchantName] = useState(receipt.merchantName);
   const [amount, setAmount] = useState(receipt.amount);
   const [paidDate, setPaidDate] = useState(receipt.paidDate);
@@ -82,19 +84,20 @@ export default function ReceiptDetailContent({
     if (href) router.push(href);
   };
 
-  const updateError = updateMutation.isError
-    ? "저장 중 오류가 발생했어요. 다시 시도해 주세요."
-    : null;
+  const updateError = updateMutation.isError ? t("detail.updateError") : null;
 
   return (
     <>
-      <nav aria-label="현재 위치" className="text-body-sm flex flex-wrap items-center gap-1.5">
+      <nav
+        aria-label={t("detail.breadcrumb.nav")}
+        className="text-body-sm flex flex-wrap items-center gap-1.5"
+      >
         <Link
           href="/saved-courses"
           onNavigate={(event) => guardedNavigate(event, "/saved-courses")}
           className={breadcrumbLinkClassName}
         >
-          저장한 코스
+          {t("detail.breadcrumb.savedCourses")}
         </Link>
         <ChevronRight className="text-ink-3 size-3.5 shrink-0" strokeWidth={1.75} aria-hidden />
         <Link
@@ -106,11 +109,11 @@ export default function ReceiptDetailContent({
         </Link>
         <ChevronRight className="text-ink-3 size-3.5 shrink-0" strokeWidth={1.75} aria-hidden />
         <span className="text-ink font-semibold" aria-current="page">
-          증빙 상세
+          {t("detail.breadcrumb.current")}
         </span>
       </nav>
 
-      <h1 className="text-title-1 text-ink sm:text-display-2 mt-5">증빙 상세</h1>
+      <h1 className="text-title-1 text-ink sm:text-display-2 mt-5">{t("detail.heading")}</h1>
 
       <div className="mt-8 grid w-full gap-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
         <div className="flex flex-col gap-3">
@@ -130,12 +133,12 @@ export default function ReceiptDetailContent({
 
           <p className="text-ink-3 text-cap flex items-start gap-1.5 font-normal">
             <Info className="mt-0.5 size-3.5 shrink-0" strokeWidth={1.75} aria-hidden />
-            <span>OCR로 자동 추출된 값이에요. 잘못 인식된 항목은 직접 수정할 수 있어요.</span>
+            <span>{t("detail.ocrNote")}</span>
           </p>
 
           {isMerchantNameEmpty && (
             <p role="alert" className="text-danger-ink text-cap font-medium">
-              가맹점명을 입력해 주세요.
+              {t("detail.merchantRequired")}
             </p>
           )}
           {updateError && (
@@ -152,10 +155,10 @@ export default function ReceiptDetailContent({
               onClick={() => updateMutation.mutate({ merchantName, amount, paidDate })}
             >
               {updateMutation.isPending
-                ? "저장하는 중..."
+                ? t("detail.save.pending")
                 : isDirty
-                  ? "저장하기"
-                  : "변경된 내용 없음"}
+                  ? t("detail.save.dirty")
+                  : t("detail.save.clean")}
             </Button>
             <ReceiptDeleteDialog savedCourseId={courseId} receiptId={receiptId} />
           </div>
@@ -164,10 +167,8 @@ export default function ReceiptDetailContent({
 
       <Dialog open={pendingHref !== null} onOpenChange={(open) => !open && setPendingHref(null)}>
         <DialogContent>
-          <DialogTitle>수정한 내용을 저장할까요?</DialogTitle>
-          <DialogDescription>
-            저장하지 않고 이동하면 수정한 가맹점명, 금액, 날짜가 사라져요.
-          </DialogDescription>
+          <DialogTitle>{t("detail.leaveDialog.title")}</DialogTitle>
+          <DialogDescription>{t("detail.leaveDialog.description")}</DialogDescription>
           <div className="mt-6 flex w-full gap-3">
             <Button
               variant="outline"
@@ -175,7 +176,7 @@ export default function ReceiptDetailContent({
               className="flex-1"
               onClick={handleLeaveWithoutSaving}
             >
-              저장 안 함
+              {t("detail.leaveDialog.discard")}
             </Button>
             <Button
               size="lg"
@@ -183,12 +184,14 @@ export default function ReceiptDetailContent({
               disabled={updateMutation.isPending || isMerchantNameEmpty}
               onClick={handleSaveAndLeave}
             >
-              {updateMutation.isPending ? "저장하는 중..." : "저장하고 이동"}
+              {updateMutation.isPending
+                ? t("detail.leaveDialog.saveAndLeavePending")
+                : t("detail.leaveDialog.saveAndLeave")}
             </Button>
           </div>
           {isMerchantNameEmpty && (
             <p role="alert" className="text-danger-ink text-cap mt-3 font-medium">
-              가맹점명을 입력해야 저장할 수 있어요.
+              {t("detail.leaveDialog.merchantRequired")}
             </p>
           )}
           {updateError && (
