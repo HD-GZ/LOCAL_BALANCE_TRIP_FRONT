@@ -8,6 +8,7 @@
     "page": {
       "title": "성향에 맞는 추천 여행지",
       "description": "지역을 누르면 맞춤 추천 코스를 볼 수 있어요.",
+      "loading": "추천 코스를 준비하고 있어요",
       "needsPropensity": {
         "title": "취향 진단을 먼저 받아야 해요",
         "description": "진단을 마치면 성향에 맞는 여행지를 추천해 드려요.",
