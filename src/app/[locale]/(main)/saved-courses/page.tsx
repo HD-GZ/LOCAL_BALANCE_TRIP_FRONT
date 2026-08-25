@@ -10,7 +10,7 @@ import { SkeletonCard } from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { recommendationQueries } from "@/features/recommendation/queries";
 import { useRouter } from "@/i18n/navigation";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 import { cn } from "@/lib/utils";
 
 import SavedCourseList from "./SavedCourseList";
@@ -34,6 +34,7 @@ export default function SavedCourses() {
   const page = getPageParam(searchParams);
   const selectedStatus = getStatusParam(searchParams);
   const t = useTranslations("savedCourses");
+  const tApiError = useTranslations("apiError");
   const statusParam = selectedStatus === "all" ? undefined : STATUS_FILTER_MAP[selectedStatus];
   const savedCoursesQuery = useQuery(
     recommendationQueries.savedCourses(page, PAGE_SIZE, statusParam),
@@ -80,7 +81,7 @@ export default function SavedCourses() {
           title={t("error.title")}
           description={
             isApiError(savedCoursesQuery.error)
-              ? savedCoursesQuery.error.message
+              ? getApiErrorMessage(savedCoursesQuery.error, tApiError)
               : t("error.network")
           }
           action={{ label: t("error.action"), onRetry: () => savedCoursesQuery.refetch() }}

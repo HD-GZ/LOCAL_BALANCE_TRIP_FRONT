@@ -14,7 +14,7 @@ import { resetPassword } from "@/features/auth/api";
 import { isResetTokenInvalidCode } from "@/features/auth/passwordReset";
 import { clearPasswordResetSession } from "@/features/auth/passwordResetStorage";
 import { useRouter } from "@/i18n/navigation";
-import { getFieldErrors, isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, getFieldErrors, isApiError } from "@/lib/api/error";
 import { cn } from "@/lib/utils";
 
 const hasLetterAndDigit = (value: string) => /(?=.*[a-zA-Z])(?=.*\d)/.test(value);
@@ -31,6 +31,7 @@ type ResetPasswordFormProps = {
 
 export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps) {
   const t = useTranslations();
+  const tApiError = useTranslations("apiError");
   const router = useRouter();
 
   const PASSWORD_RULES = [
@@ -90,7 +91,7 @@ export default function ResetPasswordForm({ resetToken }: ResetPasswordFormProps
       const fieldError = getFieldErrors(error).find(({ field }) => field === "newPassword");
 
       setError(fieldError ? "newPassword" : "root", {
-        message: fieldError ? fieldError.message : error.message,
+        message: fieldError ? fieldError.message : getApiErrorMessage(error, tApiError),
       });
     },
   });

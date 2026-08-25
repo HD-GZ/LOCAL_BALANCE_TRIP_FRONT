@@ -9,13 +9,14 @@ import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { receiptsQueries } from "@/features/receipts/queries";
 import { recommendationQueries } from "@/features/recommendation/queries";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 import { parsePositiveIntParam } from "@/lib/utils";
 
 import ReceiptsList from "./ReceiptsList";
 
 export default function SavedCourseReceipts() {
   const t = useTranslations("receipts");
+  const tApiError = useTranslations("apiError");
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
   const courseId = parsePositiveIntParam(courseIdParam);
   const courseDetailQuery = useQuery(
@@ -50,7 +51,7 @@ export default function SavedCourseReceipts() {
             title={t("list.courseError.title")}
             description={
               isApiError(courseDetailQuery.error)
-                ? courseDetailQuery.error.message
+                ? getApiErrorMessage(courseDetailQuery.error, tApiError)
                 : t("list.courseError.network")
             }
             action={{ label: t("list.courseError.retry"), onRetry: () => courseDetailQuery.refetch() }}
@@ -90,7 +91,7 @@ export default function SavedCourseReceipts() {
                   title={t("list.listError.title")}
                   description={
                     isApiError(receiptsQuery.error)
-                      ? receiptsQuery.error.message
+                      ? getApiErrorMessage(receiptsQuery.error, tApiError)
                       : t("list.listError.network")
                   }
                   action={{ label: t("list.listError.retry"), onRetry: () => receiptsQuery.refetch() }}

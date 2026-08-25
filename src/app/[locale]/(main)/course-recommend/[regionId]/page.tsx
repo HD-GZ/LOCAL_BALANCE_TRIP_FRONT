@@ -9,7 +9,7 @@ import FlowShell from "@/components/common/FlowShell";
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { recommendationQueries } from "@/features/recommendation/queries";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 import { parsePositiveIntParam } from "@/lib/utils";
 
 import RegionCourseList from "./RegionCourseList";
@@ -34,6 +34,7 @@ function CourseListSkeleton() {
 export default function RegionCourses() {
   const t = useTranslations("courseRecommend.region");
   const tCommon = useTranslations();
+  const tApiError = useTranslations("apiError");
   const courseSteps = useCourseSteps();
   const { regionId: regionIdParam } = useParams<{ regionId: string }>();
   const searchParams = useSearchParams();
@@ -79,7 +80,9 @@ export default function RegionCourses() {
           tone="error"
           title={t("error.title")}
           description={
-            isApiError(coursesQuery.error) ? coursesQuery.error.message : t("error.description")
+            isApiError(coursesQuery.error)
+              ? getApiErrorMessage(coursesQuery.error, tApiError)
+              : t("error.description")
           }
           action={{ label: tCommon("retry"), onRetry: () => coursesQuery.refetch() }}
         />

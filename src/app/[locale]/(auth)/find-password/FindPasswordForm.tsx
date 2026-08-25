@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { requestPasswordResetCode } from "@/features/auth/api";
 import { savePasswordResetCodeRequest } from "@/features/auth/passwordResetStorage";
 import { useRouter } from "@/i18n/navigation";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 
 type FindPasswordFormValues = {
   email: string;
@@ -20,6 +20,7 @@ type FindPasswordFormValues = {
 
 export default function FindPasswordForm() {
   const t = useTranslations();
+  const tApiError = useTranslations("apiError");
   const router = useRouter();
   const schema = z.object({ email: z.email(t("validation.emailInvalid")) });
   const {
@@ -42,7 +43,9 @@ export default function FindPasswordForm() {
     },
     onError: (error) => {
       setError("root", {
-        message: isApiError(error) ? error.message : t("findPassword.errors.generic"),
+        message: isApiError(error)
+          ? getApiErrorMessage(error, tApiError)
+          : t("findPassword.errors.generic"),
       });
     },
   });
