@@ -1,8 +1,29 @@
 {
+  "meta": {
+    "title": "로컬 밸런스 트립",
+    "description": "여행 성향과 가치소비 기준을 진단해 나에게 맞는 지역과 코스를 추천하고, 받을 수 있는 정부·지자체 지원 혜택까지 연결해 드려요."
+  },
   "retry": "다시 시도",
   "brand": {
     "prefix": "로컬",
     "emphasis": "밸런스",
     "suffix": " 트립"
+  },
+  "nav": {
+    "ariaLabel": "주요 메뉴",
+    "home": "홈",
+    "propensity": "취향 진단",
+    "courseRecommend": "코스 추천",
+    "login": "로그인",
+    "greeting": "{name}님",
+    "myPage": "마이페이지",
+    "logout": "로그아웃",
+    "logoutPending": "로그아웃 중..."
+  },
+  "footer": {
+    "copyright": "© 2026 로컬밸런스 트립",
+    "terms": "이용약관",
+    "privacy": "개인정보처리방침",
+    "customerService": "고객센터"
   }
 }

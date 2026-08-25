@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 /**
@@ -16,6 +17,7 @@ const tabClassName =
   "text-body-sm flex h-9.5 items-center justify-center rounded-full px-5.5 font-semibold transition-colors duration-(--dur-1)";
 
 export default function SavedCourseDetailTabs({ courseId }: { courseId: number }) {
+  const t = useTranslations("savedCourses.courseDetail.tabs");
   const pathname = usePathname();
   const orderHref = `/saved-courses/${courseId}`;
   const receiptsHref = `/saved-courses/${courseId}/receipts`;
@@ -26,12 +28,12 @@ export default function SavedCourseDetailTabs({ courseId }: { courseId: number }
   return (
     <nav
       className="bg-paper-sunk flex w-fit items-center gap-0.5 rounded-full p-1"
-      aria-label="코스 상세"
+      aria-label={t("ariaLabel")}
     >
       {[
-        { href: orderHref, label: "코스 순서", active: !isReceiptsActive && !isReportActive },
-        { href: receiptsHref, label: "환급 증빙", active: isReceiptsActive },
-        { href: reportHref, label: "리포트", active: isReportActive },
+        { href: orderHref, label: t("order"), active: !isReceiptsActive && !isReportActive },
+        { href: receiptsHref, label: t("receipts"), active: isReceiptsActive },
+        { href: reportHref, label: t("report"), active: isReportActive },
       ].map((tab) => (
         <Link
           key={tab.href}

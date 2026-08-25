@@ -2,18 +2,22 @@
 
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import CourseBenefitList from "@/app/[locale]/(main)/course-recommend/courses/[courseId]/CourseBenefitList";
 import CourseRoute from "@/app/[locale]/(main)/course-recommend/courses/[courseId]/CourseRoute";
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { recommendationQueries } from "@/features/recommendation/queries";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 import { parsePositiveIntParam } from "@/lib/utils";
 
 import SavedCourseDetailHeader from "./SavedCourseDetailHeader";
 
 export default function SavedCourseDetail() {
+  const t = useTranslations("savedCourses.courseDetail");
+  const tApiError = useTranslations("apiError");
+  const tCommon = useTranslations();
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
   const courseId = parsePositiveIntParam(courseIdParam);
   const courseDetailQuery = useQuery(
@@ -27,9 +31,9 @@ export default function SavedCourseDetail() {
         {courseId === null && (
           <SurfaceState
             tone="error"
-            title="잘못된 경로예요"
-            description="주소가 올바르지 않아요. 저장한 코스 목록에서 다시 선택해 주세요."
-            action={{ label: "저장한 코스로", href: "/saved-courses" }}
+            title={t("invalidPath.title")}
+            description={t("invalidPath.description")}
+            action={{ label: t("invalidPath.cta"), href: "/saved-courses" }}
           />
         )}
 
@@ -50,13 +54,13 @@ export default function SavedCourseDetail() {
         {courseDetailQuery.isError && (
           <SurfaceState
             tone="error"
-            title="코스 정보를 불러오지 못했어요"
+            title={t("error.title")}
             description={
               isApiError(courseDetailQuery.error)
-                ? courseDetailQuery.error.message
-                : "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+                ? getApiErrorMessage(courseDetailQuery.error, tApiError)
+                : t("error.description")
             }
-            action={{ label: "다시 시도", onRetry: () => courseDetailQuery.refetch() }}
+            action={{ label: tCommon("retry"), onRetry: () => courseDetailQuery.refetch() }}
           />
         )}
 
@@ -69,11 +73,11 @@ export default function SavedCourseDetail() {
               status={course.status}
             />
             <div className="border-line bg-surface shadow-card flex w-full flex-col rounded-md border px-5 py-6 sm:px-8 sm:py-8">
-              <h2 className="text-title-2 text-ink pb-4">코스 순서</h2>
+              <h2 className="text-title-2 text-ink pb-4">{t("sectionRoute")}</h2>
               <CourseRoute places={course.places} />
 
               <h2 className="text-title-2 text-ink border-line mt-8 border-t pt-8 pb-4">
-                이 코스 적용 가능 혜택
+                {t("sectionBenefits")}
               </h2>
               <CourseBenefitList benefits={course.benefits} />
             </div>

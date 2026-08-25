@@ -112,6 +112,20 @@
       "beforeTrip": "Before trip",
       "traveling": "Traveling",
       "completed": "Completed"
+    },
+    "popularCourseDetail": {
+      "invalidPath": {
+        "title": "Invalid route",
+        "description": "This address isn't valid. Please choose again from the home screen.",
+        "cta": "Go Home"
+      },
+      "error": {
+        "title": "Couldn't load the course info",
+        "description": "Please check your connection and try again."
+      },
+      "sectionRoute": "Course Route",
+      "sectionBenefits": "Benefits Available for This Course",
+      "backLink": "Go Home"
     }
   }
 }

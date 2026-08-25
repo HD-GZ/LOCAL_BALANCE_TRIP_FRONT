@@ -1,1 +1,28 @@
-{}
+{
+  "sharedCourses": {
+    "meta": {
+      "defaultTitle": "로컬 밸런스 트립",
+      "titleWithCourse": "{courseName} | 로컬 밸런스 트립",
+      "description": "{sharedByName}님이 공유한 여행 코스예요."
+    },
+    "expired": {
+      "title": "공유 링크가 만료됐어요",
+      "description": "공유한 사람에게 링크를 다시 받아 주세요.",
+      "action": "홈으로"
+    },
+    "sharedBySuffix": "님이 공유한 코스예요",
+    "stats": {
+      "visitedPlaces": "방문 장소",
+      "visitedPlaceValue": "{count}곳",
+      "totalWalk": "총 도보",
+      "walkHoursMinutes": "{hours}시간 {minutes}분",
+      "walkMinutesOnly": "{minutes}분",
+      "audioGuide": "오디오 가이드",
+      "audioGuideValue": "{count}개"
+    },
+    "sections": {
+      "route": "코스 순서",
+      "benefits": "이 코스 적용 가능 혜택"
+    }
+  }
+}

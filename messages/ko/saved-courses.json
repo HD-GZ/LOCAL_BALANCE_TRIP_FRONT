@@ -48,6 +48,26 @@
       "previous": "이전 페이지",
       "next": "다음 페이지",
       "pageAria": "{page}페이지"
+    },
+    "courseDetail": {
+      "invalidPath": {
+        "title": "잘못된 경로예요",
+        "description": "주소가 올바르지 않아요. 저장한 코스 목록에서 다시 선택해 주세요.",
+        "cta": "저장한 코스로"
+      },
+      "error": {
+        "title": "코스 정보를 불러오지 못했어요",
+        "description": "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+      },
+      "sectionRoute": "코스 순서",
+      "sectionBenefits": "이 코스 적용 가능 혜택",
+      "backLink": "저장한 코스",
+      "tabs": {
+        "ariaLabel": "코스 상세",
+        "order": "코스 순서",
+        "receipts": "환급 증빙",
+        "report": "리포트"
+      }
     }
   }
 }
