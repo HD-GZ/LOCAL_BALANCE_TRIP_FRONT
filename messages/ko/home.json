@@ -112,6 +112,20 @@
       "beforeTrip": "여행 전",
       "traveling": "여행 중",
       "completed": "완주"
+    },
+    "popularCourseDetail": {
+      "invalidPath": {
+        "title": "잘못된 경로예요",
+        "description": "주소가 올바르지 않아요. 홈에서 다시 선택해 주세요.",
+        "cta": "홈으로"
+      },
+      "error": {
+        "title": "코스 정보를 불러오지 못했어요",
+        "description": "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+      },
+      "sectionRoute": "코스 순서",
+      "sectionBenefits": "이 코스 적용 가능 혜택",
+      "backLink": "홈으로"
     }
   }
 }

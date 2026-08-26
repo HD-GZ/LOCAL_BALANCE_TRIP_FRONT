@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 
-import { getLocale } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import Footer from "@/components/layout/Footer";
 import { Providers } from "@/components/Providers";
 import { Toaster } from "@/components/ui/sonner";
@@ -25,11 +26,14 @@ export const viewport: Viewport = {
   ],
 };
 
-export const metadata: Metadata = {
-  title: "로컬 밸런스 트립",
-  description:
-    "여행 성향과 가치소비 기준을 진단해 나에게 맞는 지역과 코스를 추천하고, 받을 수 있는 정부·지자체 지원 혜택까지 연결해 드려요.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("meta");
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -37,6 +41,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const lang = await getLocale();
+  const messages = await getMessages();
 
   return (
     <html
@@ -45,9 +50,11 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
-        <Providers>{children}</Providers>
-        <Footer />
-        <Toaster position="top-center" />
+        <NextIntlClientProvider locale={lang} messages={messages}>
+          <Providers>{children}</Providers>
+          <Footer />
+          <Toaster position="top-center" />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

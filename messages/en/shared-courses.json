@@ -1,1 +1,28 @@
-{}
+{
+  "sharedCourses": {
+    "meta": {
+      "defaultTitle": "Local Balance Trip",
+      "titleWithCourse": "{courseName} | Local Balance Trip",
+      "description": "A travel course shared by {sharedByName}."
+    },
+    "expired": {
+      "title": "This share link has expired",
+      "description": "Please ask the sender for a new link.",
+      "action": "Go Home"
+    },
+    "sharedBySuffix": " shared this course",
+    "stats": {
+      "visitedPlaces": "Visited Places",
+      "visitedPlaceValue": "{count}",
+      "totalWalk": "Total Walk",
+      "walkHoursMinutes": "{hours}h {minutes}m",
+      "walkMinutesOnly": "{minutes}m",
+      "audioGuide": "Audio Guides",
+      "audioGuideValue": "{count}"
+    },
+    "sections": {
+      "route": "Course Route",
+      "benefits": "Benefits Available for This Course"
+    }
+  }
+}

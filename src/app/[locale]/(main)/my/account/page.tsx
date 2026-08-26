@@ -5,13 +5,14 @@ import { useTranslations } from "next-intl";
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { useMeQuery } from "@/features/user/queries";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 
 import AccountForm from "./AccountForm";
 
 export default function MyAccountPage() {
   const t = useTranslations("page");
   const tCommon = useTranslations();
+  const tApiError = useTranslations("apiError");
   const meQuery = useMeQuery();
 
   return (
@@ -34,7 +35,9 @@ export default function MyAccountPage() {
             tone="error"
             title={t("errorTitle")}
             description={
-              isApiError(meQuery.error) ? meQuery.error.message : t("errorDescriptionFallback")
+              isApiError(meQuery.error)
+                ? getApiErrorMessage(meQuery.error, tApiError)
+                : t("errorDescriptionFallback")
             }
             action={{ label: tCommon("retry"), onRetry: () => meQuery.refetch() }}
           />

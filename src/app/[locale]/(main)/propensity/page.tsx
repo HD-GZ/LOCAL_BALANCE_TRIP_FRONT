@@ -25,7 +25,7 @@ import type { PropensityResult } from "@/features/propensity/types";
 import { postRecommendations } from "@/features/recommendation/api";
 import { useMeQuery } from "@/features/user/queries";
 import { useRouter } from "@/i18n/navigation";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 
 import PropensityQuestionList from "./PropensityQuestionList";
 import PropensityResultView from "./PropensityResult";
@@ -182,6 +182,7 @@ function getHydratedServerSnapshot() {
 
 function PropensityContent({ userId }: { userId: number | undefined }) {
   const t = useTranslations("propensity");
+  const tApiError = useTranslations("apiError");
   const router = useRouter();
   const queryClient = useQueryClient();
   const reduce = useReducedMotion();
@@ -295,12 +296,12 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
   const ment = STEP_MENT[currentStep] ?? STEP_MENT[1]!;
   const submitError = postPropensityMutation.isError
     ? isApiError(postPropensityMutation.error)
-      ? postPropensityMutation.error.message
+      ? getApiErrorMessage(postPropensityMutation.error, tApiError)
       : t("errors.submitGeneric")
     : null;
   const recommendError = postRecommendationsMutation.isError
     ? isApiError(postRecommendationsMutation.error)
-      ? postRecommendationsMutation.error.message
+      ? getApiErrorMessage(postRecommendationsMutation.error, tApiError)
       : t("errors.recommendGeneric")
     : null;
 

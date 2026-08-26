@@ -8,7 +8,7 @@ import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { policyQueries } from "@/features/policy/queries";
 import type { PolicyDocumentType } from "@/features/policy/types";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 
 import PolicyContent from "./PolicyContent";
 
@@ -21,6 +21,7 @@ export default function PolicyDocumentPage() {
   const { type: routeType } = useParams<{ type: string }>();
   const apiType = ROUTE_TYPE_TO_API_TYPE[routeType];
   const t = useTranslations("policy");
+  const tApiError = useTranslations("apiError");
 
   if (!apiType) {
     notFound();
@@ -49,7 +50,9 @@ export default function PolicyDocumentPage() {
               tone="error"
               title={t("error.title")}
               description={
-                isApiError(documentQuery.error) ? documentQuery.error.message : t("error.network")
+                isApiError(documentQuery.error)
+                  ? getApiErrorMessage(documentQuery.error, tApiError)
+                  : t("error.network")
               }
               action={{ label: t("error.retry"), onRetry: () => documentQuery.refetch() }}
             />

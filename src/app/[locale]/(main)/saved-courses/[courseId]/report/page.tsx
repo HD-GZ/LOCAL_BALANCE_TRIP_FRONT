@@ -9,13 +9,14 @@ import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { recommendationQueries } from "@/features/recommendation/queries";
 import { ReportQueries } from "@/features/reports/queries";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 import { parsePositiveIntParam } from "@/lib/utils";
 
 import ReportSummary from "./ReportSummary";
 
 export default function SavedCourseReport() {
   const t = useTranslations("report");
+  const tApiError = useTranslations("apiError");
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
   const courseId = parsePositiveIntParam(courseIdParam);
   const courseDetailQuery = useQuery(
@@ -56,7 +57,7 @@ export default function SavedCourseReport() {
             title={t("page.courseError.title")}
             description={
               isApiError(courseDetailQuery.error)
-                ? courseDetailQuery.error.message
+                ? getApiErrorMessage(courseDetailQuery.error, tApiError)
                 : t("page.courseError.network")
             }
             action={{ label: t("page.courseError.retry"), onRetry: () => courseDetailQuery.refetch() }}
@@ -97,7 +98,7 @@ export default function SavedCourseReport() {
                     title={t("page.error.title")}
                     description={
                       isApiError(reportQuery.error)
-                        ? reportQuery.error.message
+                        ? getApiErrorMessage(reportQuery.error, tApiError)
                         : t("page.error.network")
                     }
                     action={{ label: t("page.error.retry"), onRetry: () => reportQuery.refetch() }}

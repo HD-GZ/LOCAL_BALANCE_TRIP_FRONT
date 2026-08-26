@@ -8,13 +8,14 @@ import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { receiptsQueries } from "@/features/receipts/queries";
 import { recommendationQueries } from "@/features/recommendation/queries";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 import { parsePositiveIntParam } from "@/lib/utils";
 
 import ReceiptDetailContent from "./ReceiptDetailContent";
 
 export default function ReceiptDetail() {
   const t = useTranslations("receipts");
+  const tApiError = useTranslations("apiError");
   const { courseId: courseIdParam, receiptId: receiptIdParam } = useParams<{
     courseId: string;
     receiptId: string;
@@ -67,9 +68,9 @@ export default function ReceiptDetail() {
             title={t("detail.error.title")}
             description={
               isApiError(courseDetailQuery.error)
-                ? courseDetailQuery.error.message
+                ? getApiErrorMessage(courseDetailQuery.error, tApiError)
                 : isApiError(receiptDetailQuery.error)
-                  ? receiptDetailQuery.error.message
+                  ? getApiErrorMessage(receiptDetailQuery.error, tApiError)
                   : t("detail.error.network")
             }
             action={{

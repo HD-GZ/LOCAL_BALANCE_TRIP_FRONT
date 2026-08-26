@@ -48,6 +48,26 @@
       "previous": "Previous page",
       "next": "Next page",
       "pageAria": "Page {page}"
+    },
+    "courseDetail": {
+      "invalidPath": {
+        "title": "Invalid route",
+        "description": "This address isn't valid. Please choose again from your saved courses.",
+        "cta": "Go to saved courses"
+      },
+      "error": {
+        "title": "Couldn't load the course info",
+        "description": "Please check your connection and try again."
+      },
+      "sectionRoute": "Course Route",
+      "sectionBenefits": "Benefits Available for This Course",
+      "backLink": "Saved Courses",
+      "tabs": {
+        "ariaLabel": "Course details",
+        "order": "Course Route",
+        "receipts": "Receipts",
+        "report": "Report"
+      }
     }
   }
 }
