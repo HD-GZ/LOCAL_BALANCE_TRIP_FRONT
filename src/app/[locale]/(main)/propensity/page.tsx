@@ -193,11 +193,16 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
     2: { title: t("stepMent.2.title"), description: t("stepMent.2.description") },
     3: { title: t("stepMent.3.title"), description: t("stepMent.3.description") },
   };
-  const [draftAnswers, setDraftAnswers] = useState<typeof INITIAL_ANSWERS | null>(null);
-  const [resultOverride, setResultOverride] = useState<PropensityResult | null | undefined>(
-    undefined,
+  const searchParams = useSearchParams();
+  /** 홈의 "다시 진단하기"처럼 다른 화면에서 곧장 문항 1번으로 보내야 할 때 쓰는 신호다. */
+  const isForcedRetake = searchParams.get("retake") === "1";
+  const [draftAnswers, setDraftAnswers] = useState<typeof INITIAL_ANSWERS | null>(
+    isForcedRetake ? INITIAL_ANSWERS : null,
   );
-  const [isRetaking, setIsRetaking] = useState(false);
+  const [resultOverride, setResultOverride] = useState<PropensityResult | null | undefined>(
+    isForcedRetake ? null : undefined,
+  );
+  const [isRetaking, setIsRetaking] = useState(isForcedRetake);
   const isHydrated = useSyncExternalStore(
     subscribeToStorage,
     getHydratedSnapshot,
@@ -215,9 +220,19 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
   );
   const answers = draftAnswers ?? storedAnswers ?? INITIAL_ANSWERS;
   const localResult = resultOverride !== undefined ? resultOverride : storedResult;
-  const searchParams = useSearchParams();
   const postPropensityMutation = usePostPropensityMutation();
   const postRecommendationsMutation = useMutation({ mutationFn: postRecommendations });
+
+  useEffect(() => {
+    if (!isForcedRetake) return;
+
+    clearPropensityAnswers();
+    clearPropensityResult();
+    postPropensityMutation.reset();
+    queryClient.removeQueries({ queryKey: propensityQueryKeys.result() });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const propensityResultQuery = useGetPropensityResultQuery(
     isHydrated &&
       !localResult &&

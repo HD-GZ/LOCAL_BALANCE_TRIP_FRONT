@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import Skeleton from "@/components/common/Skeleton";
 import type { HeroItem } from "@/features/home/types";
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 
 import HeroCollage from "./HeroCollage";
 
@@ -24,7 +25,8 @@ type HomeHeroProps = {
   ctaCaption: string;
   heroItems: HeroItem[];
   isHeroPending: boolean;
-  children: React.ReactNode;
+  hasTaste: boolean;
+  children?: React.ReactNode;
 };
 
 export default function HomeHero({
@@ -33,12 +35,18 @@ export default function HomeHero({
   ctaCaption,
   heroItems,
   isHeroPending,
+  hasTaste,
   children,
 }: HomeHeroProps) {
   const t = useTranslations("home.hero");
 
   return (
-    <section className="border-brand-line flex w-full flex-col gap-9 overflow-hidden rounded-md border bg-[image:var(--hero-gradient)] px-6 pt-10 sm:px-12 sm:pt-13">
+    <section
+      className={cn(
+        "border-brand-line flex w-full flex-col gap-9 overflow-hidden rounded-md border bg-[image:var(--hero-gradient)] px-6 pt-10 sm:px-12 sm:pt-13",
+        !children && "pb-10 sm:pb-13",
+      )}
+    >
       <div className="grid w-full items-center gap-9 lg:grid-cols-[minmax(0,1fr)_auto]">
         <div className="flex flex-col items-start gap-4">
           <span className="border-brand-line bg-surface/85 text-brand-ink text-cap flex h-8 items-center gap-2 rounded-full border px-3.5">
@@ -69,13 +77,19 @@ export default function HomeHero({
           {isHeroPending ? (
             <Skeleton className="h-98 w-full lg:w-119" rounded="md" />
           ) : (
-            <HeroCollage items={heroItems} recommendedRegionName={heroItems[0]?.title} />
+            <HeroCollage
+              items={heroItems}
+              recommendedRegionName={heroItems[0]?.title}
+              hasTaste={hasTaste}
+            />
           )}
         </div>
       </div>
 
       {/* 여행 프로필·유형 목록이 히어로 하단에 들어간다. 기존 구성이다. */}
-      <div className="border-brand-line w-full border-t pt-6 pb-8">{children}</div>
+      {children && (
+        <div className="border-brand-line w-full border-t pt-6 pb-8">{children}</div>
+      )}
     </section>
   );
 }

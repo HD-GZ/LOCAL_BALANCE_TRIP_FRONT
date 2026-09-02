@@ -77,7 +77,7 @@
     "photo": {
       "noImageAlt": "영수증 원본 이미지가 없어요",
       "imageAlt": "영수증 원본",
-      "zoomHint": "영수증 원본 · 클릭하여 확대",
+      "zoomHint": "클릭하여 확대",
       "dialogTitle": "영수증 원본",
       "closeAria": "닫기"
     },

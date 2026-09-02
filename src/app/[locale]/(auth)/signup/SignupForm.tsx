@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { GENDER } from "@/features/auth/types";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { GENDER_OPTIONS, MONTHS, useSignupForm } from "./useSignupForm";
 
@@ -168,12 +169,16 @@ export default function SignupForm() {
               }
             />
             <span className="text-ink-2 text-body-sm flex-1">{t("signup.form.agreeService")}</span>
-            <ChevronRight
-              size={16}
-              strokeWidth={1.75}
+            <Link
+              href="/policy/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t("signup.form.agreeService")}
               className="text-ink-3 shrink-0"
-              aria-hidden
-            />
+              onClick={(event) => event.stopPropagation()}
+            >
+              <ChevronRight size={16} strokeWidth={1.75} aria-hidden />
+            </Link>
           </label>
 
           <label className="flex cursor-pointer items-center gap-3">
@@ -184,12 +189,16 @@ export default function SignupForm() {
               }
             />
             <span className="text-ink-2 text-body-sm flex-1">{t("signup.form.agreePrivacy")}</span>
-            <ChevronRight
-              size={16}
-              strokeWidth={1.75}
+            <Link
+              href="/policy/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t("signup.form.agreePrivacy")}
               className="text-ink-3 shrink-0"
-              aria-hidden
-            />
+              onClick={(event) => event.stopPropagation()}
+            >
+              <ChevronRight size={16} strokeWidth={1.75} aria-hidden />
+            </Link>
           </label>
 
           <label className="flex cursor-pointer items-center gap-3">

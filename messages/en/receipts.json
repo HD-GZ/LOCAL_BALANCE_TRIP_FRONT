@@ -77,7 +77,7 @@
     "photo": {
       "noImageAlt": "No receipt photo available",
       "imageAlt": "Receipt photo",
-      "zoomHint": "Receipt photo · Click to zoom",
+      "zoomHint": "Click to zoom",
       "dialogTitle": "Receipt photo",
       "closeAria": "Close"
     },

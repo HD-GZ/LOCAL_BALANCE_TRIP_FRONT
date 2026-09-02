@@ -10,9 +10,9 @@ import ChevronDown from "@/assets/chevronDown.svg";
 import Logo from "@/assets/logo.svg";
 import { useNavigationGuard } from "@/contexts/NavigationGuardContext";
 import { logout } from "@/features/auth/api";
-import { homeQueryKeys } from "@/features/home/queries";
-import { userQueries, userQueryKeys } from "@/features/user/queries";
-import { Link } from "@/i18n/navigation";
+import { clearPropensityAnswers, clearPropensityResult } from "@/features/propensity/storage";
+import { userQueries } from "@/features/user/queries";
+import { Link, usePathname as useLocalePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 const NAV_LIST = [
@@ -28,6 +28,7 @@ function isActive(pathname: string, path: string) {
 export default function Header() {
   const t = useTranslations();
   const pathname = usePathname();
+  const localePathname = useLocalePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
   const meQuery = useQuery(userQueries.me());
@@ -45,9 +46,16 @@ export default function Header() {
     mutationFn: logout,
     onSuccess: () => {
       setIsMenuOpen(false);
-      queryClient.removeQueries({ queryKey: userQueryKeys.me() });
-      queryClient.removeQueries({ queryKey: homeQueryKeys.all });
-      router.push("/");
+      queryClient.clear();
+      clearPropensityAnswers();
+      clearPropensityResult();
+      // 캐시를 비워도 이미 렌더된 화면(예: 홈의 진단 결과 카드)은 그 자체로는
+      // 다시 렌더되지 않아 로그아웃 이전 데이터가 남을 수 있다. router.refresh()로
+      // 현재 라우트를 다시 렌더해 확실히 반영한다.
+      router.refresh();
+      if (localePathname !== "/") {
+        router.push("/");
+      }
     },
   });
 

@@ -1,10 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import FlowShell from "@/components/common/FlowShell";
-import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { recommendationQueries } from "@/features/recommendation/queries";
 import { getApiErrorMessage, isApiError } from "@/lib/api/error";
@@ -12,19 +12,11 @@ import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 import CourseDestinationList from "./CourseDestinationList";
 import { useCourseSteps } from "./steps";
 
-function DestinationListSkeleton() {
+function DestinationListLoading({ label }: { label: string }) {
   return (
-    <div className="border-line divide-line flex w-full flex-col divide-y border-y">
-      {Array.from({ length: 4 }, (_, index) => (
-        <div key={index} className="flex items-center gap-4 py-4">
-          <Skeleton className="h-3 w-6" />
-          <Skeleton className="size-16" rounded="md" />
-          <span className="flex flex-1 flex-col gap-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-3 w-3/4" />
-          </span>
-        </div>
-      ))}
+    <div className="flex w-full flex-col items-center gap-3 py-16">
+      <Loader2 className="text-brand size-6 animate-spin" strokeWidth={1.75} aria-hidden />
+      <p className="text-ink-2 text-body-sm">{label}</p>
     </div>
   );
 }
@@ -51,7 +43,7 @@ export default function CourseRecommend() {
       title={t("title")}
       description={t("description")}
     >
-      {regionsQuery.isPending && <DestinationListSkeleton />}
+      {regionsQuery.isPending && <DestinationListLoading label={t("loading")} />}
 
       {regionsQuery.isError &&
         (needsPropensity ? (

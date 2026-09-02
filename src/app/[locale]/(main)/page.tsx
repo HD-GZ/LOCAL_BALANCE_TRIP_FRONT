@@ -14,7 +14,6 @@ import HomeHero from "./_components/HomeHero";
 import IncentiveSection from "./_components/IncentiveSection";
 import PopularCourseSection from "./_components/PopularCourseSection";
 import ProfileSummary, { toProfileNickname } from "./_components/ProfileSummary";
-import ProfileTypeStrip from "./_components/ProfileTypeStrip";
 import SavedCourseFeedSection from "./_components/SavedCourseFeedSection";
 
 type HomeState = "loading" | "error" | "diagnosed" | "undiagnosed";
@@ -85,7 +84,20 @@ export default function Home() {
   });
 
   const heroQuery = useQuery(homeQueries.hero());
-  const profileTypesQuery = useQuery(homeQueries.profileTypes(homeState === "undiagnosed"));
+
+  const profileBand =
+    homeState === "loading" ? (
+      <ProfileBandSkeleton />
+    ) : homeState === "error" ? (
+      <SurfaceState
+        tone="error"
+        title={t("profileError.title")}
+        description={t("profileError.description")}
+        action={{ label: tCommon("retry"), onRetry: () => profileSummaryQuery.refetch() }}
+      />
+    ) : homeState === "diagnosed" && summary && meQuery.data ? (
+      <ProfileSummary userName={meQuery.data.name} summary={summary} />
+    ) : null;
 
   const heroItems = heroQuery.data?.items ?? [];
   // 히어로가 사진으로 실제 노출하는 지역만 피드에서 제외 대상이다.
@@ -112,26 +124,9 @@ export default function Home() {
           ctaCaption={cta.caption}
           heroItems={heroItems}
           isHeroPending={heroQuery.isPending}
+          hasTaste={homeState === "diagnosed"}
         >
-          {homeState === "loading" && <ProfileBandSkeleton />}
-          {homeState === "error" && (
-            <SurfaceState
-              tone="error"
-              title={t("profileError.title")}
-              description={t("profileError.description")}
-              action={{ label: tCommon("retry"), onRetry: () => profileSummaryQuery.refetch() }}
-            />
-          )}
-          {homeState === "diagnosed" && summary && meQuery.data && (
-            <ProfileSummary userName={meQuery.data.name} summary={summary} />
-          )}
-          {homeState === "undiagnosed" && (
-            <ProfileTypeStrip
-              types={profileTypesQuery.data?.types ?? []}
-              isPending={profileTypesQuery.isPending}
-              isError={profileTypesQuery.isError}
-            />
-          )}
+          {profileBand}
         </HomeHero>
 
         {homeState === "diagnosed" && (

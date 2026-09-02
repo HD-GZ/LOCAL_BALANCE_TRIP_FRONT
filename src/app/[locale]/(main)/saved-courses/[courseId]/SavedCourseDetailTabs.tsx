@@ -22,8 +22,10 @@ export default function SavedCourseDetailTabs({ courseId }: { courseId: number }
   const orderHref = `/saved-courses/${courseId}`;
   const receiptsHref = `/saved-courses/${courseId}/receipts`;
   const reportHref = `/saved-courses/${courseId}/report`;
-  const isReceiptsActive = pathname.startsWith(receiptsHref);
-  const isReportActive = pathname.startsWith(reportHref);
+  // 활성 탭은 현재 경로의 마지막 세그먼트로 판별한다. `courseId`는 쿼리 응답값이라
+  // route param과 어긋날 수 있고, 그러면 href 비교로는 항상 "코스 순서"만 활성으로 잡힌다.
+  const isReceiptsActive = pathname.endsWith("/receipts");
+  const isReportActive = pathname.endsWith("/report");
 
   return (
     <nav

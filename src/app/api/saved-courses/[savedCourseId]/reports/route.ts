@@ -18,6 +18,6 @@ export async function GET(
 
   return callBackendWithAuthRetry(cookieStore, {
     method: "GET",
-    path: `/saved-courses/${parsedSavedCourseId.data}/report`,
+    path: `/saved-courses/${parsedSavedCourseId.data}/reports`,
   });
 }

@@ -2,7 +2,7 @@
   "home": {
     "cta": {
       "undiagnosedLabel": "취향 진단 시작하기",
-      "undiagnosedCaption": "3단계 · 1분이면 충분해요",
+      "undiagnosedCaption": "1분이면 충분해요",
       "diagnosedLabel": "추천 코스 보기",
       "diagnosedCaption": "{nickname} 유형과 잘 맞는 코스를 추렸어요"
     },
@@ -26,9 +26,8 @@
     },
     "profileSummary": {
       "heading": "{name}님의 여행 성향",
-      "description": "진단 결과를 바탕으로 아래 코스와 혜택을 추천해 드려요",
       "retryDiagnosis": "다시 진단하기",
-      "diagnosedOn": "진단 완료 ·"
+      "diagnosedOn": "진단 일자 ·"
     },
     "preferenceSlider": {
       "closeToMin": "{label} 쪽에 가까워요",

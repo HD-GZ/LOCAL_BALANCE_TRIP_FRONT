@@ -6,12 +6,11 @@ import { Link } from "@/i18n/navigation";
 
 /**
  * 기존 디자인(develop)의 가운데 한 줄 형태로 되돌렸다 — 팀 합의 사항.
- * 고객센터는 해당 라우트가 아직 없으므로 링크가 아닌 텍스트로 둔다.
  */
 const ITEMS: { key: "terms" | "privacy" | "customerService"; href?: string }[] = [
   { key: "terms", href: "/policy/terms" },
   { key: "privacy", href: "/policy/privacy" },
-  { key: "customerService" },
+  { key: "customerService", href: "mailto:hdgz@lb-trip.live" },
 ];
 
 export default function Footer() {

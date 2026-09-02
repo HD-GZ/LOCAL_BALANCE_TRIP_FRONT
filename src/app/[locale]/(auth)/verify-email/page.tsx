@@ -105,10 +105,11 @@ export default function VerifyEmailPage() {
   };
 
   return (
-    <AuthShell title={t("title")} description={t("description", { email })}>
-      <div className="pb-6">
-        <SignupStepper currentStep="verify-email" />
-      </div>
+    <AuthShell
+      title={t("title")}
+      description={t("description", { email })}
+      stepper={<SignupStepper currentStep="verify-email" />}
+    >
       <CodeInput value={code} onChange={handleCodeChange} />
       <p className="text-ink-2 text-body-sm mt-3 text-center tabular-nums" aria-live="polite">
         {isExpired
