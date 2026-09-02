@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useTranslations } from "next-intl";
 
 import ChevronDown from "@/assets/chevronDown.svg";
 import Logo from "@/assets/logo.svg";
@@ -12,20 +12,21 @@ import { useNavigationGuard } from "@/contexts/NavigationGuardContext";
 import { logout } from "@/features/auth/api";
 import { clearPropensityAnswers, clearPropensityResult } from "@/features/propensity/storage";
 import { userQueries } from "@/features/user/queries";
-import { usePathname as useLocalePathname } from "@/i18n/navigation";
+import { Link, usePathname as useLocalePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 const NAV_LIST = [
-  { name: "홈", path: "/", href: "/" },
-  { name: "취향 진단", path: "/propensity", href: "/propensity?step=1" },
-  { name: "코스 추천", path: "/course-recommend", href: "/course-recommend?step=1" },
-];
+  { key: "home", path: "/", href: "/" },
+  { key: "propensity", path: "/propensity", href: "/propensity?step=1" },
+  { key: "courseRecommend", path: "/course-recommend", href: "/course-recommend?step=1" },
+] as const;
 
 function isActive(pathname: string, path: string) {
   return path === "/" ? pathname === "/" : pathname.startsWith(path);
 }
 
 export default function Header() {
+  const t = useTranslations();
   const pathname = usePathname();
   const localePathname = useLocalePathname();
   const router = useRouter();
@@ -84,7 +85,7 @@ export default function Header() {
   return (
     <header className="border-line bg-surface sticky top-0 z-40 w-full border-b">
       <div className="mx-auto flex h-16 w-full max-w-[1280px] items-center justify-between gap-4 px-4 md:px-8">
-        <nav className="flex min-w-0 items-center gap-6 md:gap-8" aria-label="주요 메뉴">
+        <nav className="flex min-w-0 items-center gap-6 md:gap-8" aria-label={t("nav.ariaLabel")}>
           <Link
             className="text-ink flex shrink-0 items-center gap-2"
             href="/"
@@ -92,9 +93,9 @@ export default function Header() {
           >
             <Logo className="size-6 shrink-0" />
             <span className="text-title-3 font-display hidden whitespace-nowrap sm:inline">
-              <span>로컬</span>
-              <span className="text-brand-ink">밸런스</span>
-              <span> 트립</span>
+              <span>{t("brand.prefix")}</span>
+              <span className="text-brand-ink">{t("brand.emphasis")}</span>
+              <span>{t("brand.suffix")}</span>
             </span>
           </Link>
           <ul className="flex items-center gap-4 md:gap-6">
@@ -112,7 +113,7 @@ export default function Header() {
                       active ? "text-ink font-semibold" : "text-ink-2 hover:text-ink font-normal",
                     )}
                   >
-                    {item.name}
+                    {t(`nav.${item.key}`)}
                   </Link>
                 </li>
               );
@@ -127,7 +128,7 @@ export default function Header() {
               className="press border-line-control text-ink text-body-sm hover:bg-surface-2 flex h-9 items-center rounded-sm border px-3.5 font-semibold"
               onNavigate={handleNavigate("/login")}
             >
-              로그인
+              {t("nav.login")}
             </Link>
           )}
           <div className={cn("relative", !user && "hidden")} ref={menuRef}>
@@ -157,7 +158,9 @@ export default function Header() {
                   className="bg-surface shadow-overlay absolute top-[calc(100%+0.5rem)] right-0 flex w-56 flex-col rounded-md p-1.5"
                 >
                   <div className="flex flex-col gap-0.5 px-2.5 pt-2 pb-3">
-                    <span className="text-body-sm text-ink font-semibold">{user?.name}님</span>
+                    <span className="text-body-sm text-ink font-semibold">
+                      {t("nav.greeting", { name: user?.name ?? "" })}
+                    </span>
                     <span className="text-cap text-ink-3 font-normal break-all">{user?.email}</span>
                   </div>
                   <span aria-hidden className="bg-line -mx-1.5 h-px" />
@@ -168,7 +171,7 @@ export default function Header() {
                     onClick={() => setIsMenuOpen(false)}
                     onNavigate={handleNavigate("/my/account")}
                   >
-                    마이페이지
+                    {t("nav.myPage")}
                   </Link>
                   <button
                     role="menuitem"
@@ -177,7 +180,7 @@ export default function Header() {
                     disabled={logoutMutation.isPending}
                     onClick={() => logoutMutation.mutate()}
                   >
-                    {logoutMutation.isPending ? "로그아웃 중..." : "로그아웃"}
+                    {logoutMutation.isPending ? t("nav.logoutPending") : t("nav.logout")}
                   </button>
                 </motion.div>
               )}

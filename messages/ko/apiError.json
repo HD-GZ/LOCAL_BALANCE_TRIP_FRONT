@@ -1,0 +1,11 @@
+{
+  "apiError": {
+    "invalidRequestBody": "요청 본문이 올바르지 않습니다.",
+    "timeout": "요청 시간이 초과되었습니다.",
+    "networkError": "네트워크 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+    "invalidResponse": "API 응답 형식이 올바르지 않습니다.",
+    "unauthorized": "로그인이 필요합니다.",
+    "canceled": "요청이 취소되었습니다.",
+    "httpError": "API 요청에 실패했습니다."
+  }
+}

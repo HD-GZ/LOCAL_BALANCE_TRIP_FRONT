@@ -1,8 +1,7 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { hasLocale } from "next-intl";
+import { createTranslator } from "next-intl";
 
-import { routing } from "@/i18n/routing";
+import { resolveLocaleFromCookie } from "@/i18n/resolveLocaleFromCookie";
 import { API_CLIENT_ERROR_CODE } from "@/lib/api/errorCodes";
 import { isApiResponse } from "@/lib/api/guards";
 import type { ApiResponse } from "@/lib/api/types";
@@ -18,11 +17,21 @@ import { API_BASE_URL } from "@/lib/config/server";
 
 const DEFAULT_BACKEND_FETCH_TIMEOUT = 10_000;
 
-async function resolveAcceptLanguage() {
-  const cookieStore = await cookies();
-  const localeCookie = cookieStore.get("NEXT_LOCALE")?.value;
+/**
+ * BFF 라우트는 proxy.ts의 matcher에서 제외돼 있어 next-intl 미들웨어를 안 거친다.
+ * getTranslations()의 자동 로케일 감지에 기댈 수 없으므로 쿠키를 직접 읽는다.
+ */
+async function getBffTranslations() {
+  const locale = await resolveLocaleFromCookie();
+  const { default: messages } = await import(`../../../messages/${locale}/apiError.json`);
 
-  return hasLocale(routing.locales, localeCookie) ? localeCookie : routing.defaultLocale;
+  return createTranslator({ locale, messages, namespace: "apiError" });
+}
+
+async function unauthorizedResponse() {
+  const t = await getBffTranslations();
+
+  return errorResponse(401, "UNAUTHORIZED", t("unauthorized"));
 }
 
 export type CookieStore = CookieWriter & {
@@ -72,7 +81,7 @@ async function fetchBackendOnce(
       method: init.method,
       headers: {
         Accept: "application/json",
-        "Accept-Language": await resolveAcceptLanguage(),
+        "Accept-Language": await resolveLocaleFromCookie(),
         ...(init.body !== undefined ? { "Content-Type": "application/json" } : {}),
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       },
@@ -105,31 +114,31 @@ export async function callBackendWithJsonBody(request: Request, path: string) {
   const body: unknown = await request.json().catch(() => null);
 
   if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return errorResponse(400, "INVALID_REQUEST_BODY", "요청 본문이 올바르지 않습니다.");
+    const t = await getBffTranslations();
+
+    return errorResponse(400, "INVALID_REQUEST_BODY", t("invalidRequestBody"));
   }
 
   return callBackend({ method: "POST", path, body });
 }
 
-function finalizeBackendResult(result: BackendCallResult) {
+async function finalizeBackendResult(result: BackendCallResult) {
   if (result.kind === "timeout") {
-    return errorResponse(504, API_CLIENT_ERROR_CODE.TIMEOUT, "요청 시간이 초과되었습니다.");
+    const t = await getBffTranslations();
+
+    return errorResponse(504, API_CLIENT_ERROR_CODE.TIMEOUT, t("timeout"));
   }
 
   if (result.kind === "network-error") {
-    return errorResponse(
-      502,
-      API_CLIENT_ERROR_CODE.NETWORK_ERROR,
-      "네트워크 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.",
-    );
+    const t = await getBffTranslations();
+
+    return errorResponse(502, API_CLIENT_ERROR_CODE.NETWORK_ERROR, t("networkError"));
   }
 
   if (result.kind === "invalid-response") {
-    return errorResponse(
-      502,
-      API_CLIENT_ERROR_CODE.INVALID_API_RESPONSE,
-      "API 응답 형식이 올바르지 않습니다.",
-    );
+    const t = await getBffTranslations();
+
+    return errorResponse(502, API_CLIENT_ERROR_CODE.INVALID_API_RESPONSE, t("invalidResponse"));
   }
 
   return NextResponse.json(result.payload, { status: result.status });
@@ -182,14 +191,14 @@ export async function callBackendWithAuthRetry(cookieStore: CookieStore, init: B
 
   if (!refreshTokenValue) {
     clearAuthCookies(cookieStore);
-    return errorResponse(401, "UNAUTHORIZED", "로그인이 필요합니다.");
+    return unauthorizedResponse();
   }
 
   const tokens = await requestTokenRefresh(refreshTokenValue);
 
   if (!tokens) {
     clearAuthCookies(cookieStore);
-    return errorResponse(401, "UNAUTHORIZED", "로그인이 필요합니다.");
+    return unauthorizedResponse();
   }
 
   setAuthCookies(cookieStore, tokens);

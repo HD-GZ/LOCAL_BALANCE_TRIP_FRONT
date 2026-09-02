@@ -1,8 +1,29 @@
 {
+  "meta": {
+    "title": "Local Balance Trip",
+    "description": "Diagnose your travel preferences and spending values to get matched regions and courses, plus government and local benefits you can claim."
+  },
   "retry": "Try again",
   "brand": {
     "prefix": "Local ",
     "emphasis": "Balance",
     "suffix": " Trip"
+  },
+  "nav": {
+    "ariaLabel": "Main menu",
+    "home": "Home",
+    "propensity": "Propensity Test",
+    "courseRecommend": "Course Recommendations",
+    "login": "Log In",
+    "greeting": "{name}",
+    "myPage": "My Page",
+    "logout": "Log Out",
+    "logoutPending": "Logging out..."
+  },
+  "footer": {
+    "copyright": "© 2026 Local Balance Trip",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "customerService": "Customer Service"
   }
 }

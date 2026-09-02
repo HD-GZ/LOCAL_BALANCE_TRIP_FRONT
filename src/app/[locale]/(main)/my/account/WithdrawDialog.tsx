@@ -17,11 +17,12 @@ import { withdrawMe } from "@/features/user/api";
 import { userQueryKeys } from "@/features/user/queries";
 import { useBooleanState } from "@/hooks/useBooleanState";
 import { useRouter } from "@/i18n/navigation";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 
 // 구글 플레이 콘솔 앱 심사(계정 삭제) 제출용: ?withdraw=open 접속 시 모달이 바로 열림
 export default function WithdrawDialog() {
   const t = useTranslations("withdraw");
+  const tApiError = useTranslations("apiError");
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
@@ -57,7 +58,7 @@ export default function WithdrawDialog() {
             style={{ marginTop: "0.75rem" }}
           >
             {isApiError(withdrawMutation.error)
-              ? withdrawMutation.error.message
+              ? getApiErrorMessage(withdrawMutation.error, tApiError)
               : t("errorGeneric")}
           </p>
         )}
