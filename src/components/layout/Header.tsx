@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useTranslations } from "next-intl";
@@ -13,7 +12,7 @@ import { useNavigationGuard } from "@/contexts/NavigationGuardContext";
 import { logout } from "@/features/auth/api";
 import { clearPropensityAnswers, clearPropensityResult } from "@/features/propensity/storage";
 import { userQueries } from "@/features/user/queries";
-import { Link, usePathname as useLocalePathname } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 const NAV_LIST = [
@@ -29,7 +28,6 @@ function isActive(pathname: string, path: string) {
 export default function Header() {
   const t = useTranslations();
   const pathname = usePathname();
-  const localePathname = useLocalePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
   const meQuery = useQuery(userQueries.me());
@@ -54,7 +52,7 @@ export default function Header() {
       // 다시 렌더되지 않아 로그아웃 이전 데이터가 남을 수 있다. router.refresh()로
       // 현재 라우트를 다시 렌더해 확실히 반영한다.
       router.refresh();
-      if (localePathname !== "/") {
+      if (pathname !== "/") {
         router.push("/");
       }
     },
