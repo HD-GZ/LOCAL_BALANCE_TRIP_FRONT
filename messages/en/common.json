@@ -18,7 +18,10 @@
     "greeting": "{name}",
     "myPage": "My Page",
     "logout": "Log Out",
-    "logoutPending": "Logging out..."
+    "logoutPending": "Logging out...",
+    "languageToggle": {
+      "ariaLabel": "Language selection"
+    }
   },
   "footer": {
     "copyright": "© 2026 Local Balance Trip",

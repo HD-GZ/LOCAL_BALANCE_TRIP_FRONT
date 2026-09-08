@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 
 import ChevronDown from "@/assets/chevronDown.svg";
 import Logo from "@/assets/logo.svg";
+import LanguageToggle from "@/components/layout/LanguageToggle";
 import { useNavigationGuard } from "@/contexts/NavigationGuardContext";
 import { logout } from "@/features/auth/api";
 import { clearPropensityAnswers, clearPropensityResult } from "@/features/propensity/storage";
@@ -121,7 +122,8 @@ export default function Header() {
           </ul>
         </nav>
 
-        <div className="flex shrink-0 items-center">
+        <div className="flex shrink-0 items-center gap-3">
+          <LanguageToggle />
           {!meQuery.isPending && !user && (
             <Link
               href="/login"
