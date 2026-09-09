@@ -18,7 +18,10 @@
     "greeting": "{name}님",
     "myPage": "마이페이지",
     "logout": "로그아웃",
-    "logoutPending": "로그아웃 중..."
+    "logoutPending": "로그아웃 중...",
+    "languageToggle": {
+      "ariaLabel": "언어 선택"
+    }
   },
   "footer": {
     "copyright": "© 2026 로컬밸런스 트립",
