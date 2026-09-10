@@ -42,9 +42,10 @@ function CollagePhoto({ item, sizes, priority }: CollagePhotoProps) {
 type HeroCollageProps = {
   items: HeroItem[];
   recommendedRegionName?: string;
+  hasTaste: boolean;
 };
 
-export default function HeroCollage({ items, recommendedRegionName }: HeroCollageProps) {
+export default function HeroCollage({ items, recommendedRegionName, hasTaste }: HeroCollageProps) {
   const t = useTranslations("home.hero.collage");
 
   return (
@@ -66,7 +67,9 @@ export default function HeroCollage({ items, recommendedRegionName }: HeroCollag
             <p className="text-title-3 text-ink">
               {t("recommendedThisMonth", { regionName: recommendedRegionName })}
             </p>
-            <p className="text-ink-3 text-cap mt-0.5 font-normal">{t("matchedToTaste")}</p>
+            {hasTaste && (
+              <p className="text-ink-3 text-cap mt-0.5 font-normal">{t("matchedToTaste")}</p>
+            )}
           </div>
         )}
       </div>

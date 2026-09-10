@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 
 /** 날짜 선택. 달력 숫자는 전부 고정폭이어야 격자가 흔들리지 않는다 (DESIGN.md §6 규칙 2). */
-
-const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
 type CalendarCell = { day: number; isCurrentMonth: boolean };
 
@@ -50,6 +49,16 @@ export default function ReceiptDateCalendar({
   ];
   const [viewYear, setViewYear] = useState(selectedYear);
   const [viewMonth, setViewMonth] = useState(selectedMonth - 1);
+  const t = useTranslations("receipts");
+  const weekdayLabels = [
+    t("calendar.weekdays.sun"),
+    t("calendar.weekdays.mon"),
+    t("calendar.weekdays.tue"),
+    t("calendar.weekdays.wed"),
+    t("calendar.weekdays.thu"),
+    t("calendar.weekdays.fri"),
+    t("calendar.weekdays.sat"),
+  ];
 
   const changeMonth = (delta: number) => {
     const next = new Date(viewYear, viewMonth + delta, 1);
@@ -70,7 +79,7 @@ export default function ReceiptDateCalendar({
       <div className="flex w-full items-center justify-between">
         <button
           type="button"
-          aria-label="이전 달"
+          aria-label={t("calendar.prevMonthAria")}
           onClick={() => changeMonth(-1)}
           className="press text-ink-2 hover:bg-surface-2 flex size-8 cursor-pointer items-center justify-center rounded-sm"
         >
@@ -81,7 +90,7 @@ export default function ReceiptDateCalendar({
         </p>
         <button
           type="button"
-          aria-label="다음 달"
+          aria-label={t("calendar.nextMonthAria")}
           onClick={() => changeMonth(1)}
           className="press text-ink-2 hover:bg-surface-2 flex size-8 cursor-pointer items-center justify-center rounded-sm"
         >
@@ -90,7 +99,7 @@ export default function ReceiptDateCalendar({
       </div>
 
       <div className="border-line flex w-full border-b pb-1.5">
-        {WEEKDAY_LABELS.map((label) => (
+        {weekdayLabels.map((label) => (
           <span key={label} className="text-ink-3 text-cap flex flex-1 items-center justify-center">
             {label}
           </span>

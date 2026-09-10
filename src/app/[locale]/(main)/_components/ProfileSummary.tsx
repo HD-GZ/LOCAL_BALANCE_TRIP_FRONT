@@ -46,9 +46,8 @@ export default function ProfileSummary({ userName, summary }: ProfileSummaryProp
     <div className="flex w-full flex-col gap-4">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <h2 className="text-title-3 text-brand-ink">{t("heading", { name: userName })}</h2>
-        <p className="text-ink-2 text-body-sm">{t("description")}</p>
         <Link
-          href="/propensity?step=1"
+          href="/propensity?step=1&retake=1"
           className="text-brand-ink text-body-sm ml-auto flex shrink-0 items-center gap-0.5 font-semibold"
         >
           {t("retryDiagnosis")}
@@ -58,10 +57,6 @@ export default function ProfileSummary({ userName, summary }: ProfileSummaryProp
 
       <div className="grid w-full items-center gap-6 lg:grid-cols-[0.6fr_1.4fr] lg:gap-8">
         <div className="flex flex-col items-start gap-2">
-          <span className="border-brand-line bg-surface/85 text-brand-ink text-cap flex h-6.5 items-center gap-1 rounded-full border px-3">
-            {t("diagnosedOn")}
-            <span className="tabular-nums">{toDiagnosedDate(summary.diagnosedAt, locale)}</span>
-          </span>
           <p className="text-title-1 text-brand-ink">{toProfileNickname(summary.type)}</p>
           <p className="text-ink-2 text-body-sm">{summary.description}</p>
         </div>
@@ -74,6 +69,10 @@ export default function ProfileSummary({ userName, summary }: ProfileSummaryProp
           </div>
         )}
       </div>
+
+      <p className="text-ink-3 text-cap self-end">
+        {t("diagnosedOn")} <span className="tabular-nums">{toDiagnosedDate(summary.diagnosedAt, locale)}</span>
+      </p>
     </div>
   );
 }

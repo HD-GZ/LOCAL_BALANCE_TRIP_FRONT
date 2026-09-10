@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import RouteMarker from "@/assets/routeMarker.svg";
@@ -29,6 +30,7 @@ function ReportStat({ value, label }: { value: string; label: string }) {
 }
 
 function ReportCardBody({ report }: { report: CourseReportResponse }) {
+  const t = useTranslations("report");
   const isDistanceInKm = report.walkedDistanceMeters >= 1000;
   const distanceValue = isDistanceInKm
     ? (report.walkedDistanceMeters / 1000).toFixed(1)
@@ -41,19 +43,28 @@ function ReportCardBody({ report }: { report: CourseReportResponse }) {
       </div>
 
       <p className="text-ink-3 text-cap w-full pt-4.75 font-normal">
-        {formatTourEndDate(report.tourEndedAt)} · 여행 완료
+        {t("summary.dateCompleted", { date: formatTourEndDate(report.tourEndedAt) })}
       </p>
 
       <p className="text-display-1 text-brand-ink w-full tabular-nums">
         {distanceValue}
         <span className="text-title-1 text-brand-ink"> {isDistanceInKm ? "km" : "m"}</span>
       </p>
-      <p className="text-ink-2 text-body-sm w-full pb-5.75">걸은 거리</p>
+      <p className="text-ink-2 text-body-sm w-full pb-5.75">{t("summary.walkedDistance")}</p>
 
       <div className="border-line flex w-full items-start justify-center gap-5 border-t pt-5.5">
-        <ReportStat value={`${report.visitedPlaceCount}곳`} label="방문 장소" />
-        <ReportStat value={`${report.totalSpentAmount.toLocaleString()}원`} label="지역 소비" />
-        <ReportStat value={`약 ${report.carbonReductionKg.toFixed(1)}kg`} label="탄소 절감량" />
+        <ReportStat
+          value={t("summary.visitedPlaceValue", { count: report.visitedPlaceCount })}
+          label={t("summary.visitedPlaces")}
+        />
+        <ReportStat
+          value={t("summary.totalSpentValue", { amount: report.totalSpentAmount.toLocaleString() })}
+          label={t("summary.localSpending")}
+        />
+        <ReportStat
+          value={t("summary.carbonValue", { amount: report.carbonReductionKg.toFixed(1) })}
+          label={t("summary.carbonReduction")}
+        />
       </div>
     </>
   );
@@ -68,6 +79,7 @@ export default function ReportSummary({
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const t = useTranslations("report");
 
   async function handleSaveImage() {
     if (!cardRef.current) {
@@ -80,10 +92,10 @@ export default function ReportSummary({
       const dataUrl = await toPng(cardRef.current, { pixelRatio: 2 });
       const link = document.createElement("a");
       link.href = dataUrl;
-      link.download = `${report.courseName}_리포트.png`;
+      link.download = t("summary.downloadFileName", { courseName: report.courseName });
       link.click();
     } catch {
-      toast.error("이미지를 저장하지 못했어요. 다시 시도해 주세요.");
+      toast.error(t("summary.saveImageError"));
     } finally {
       setIsSaving(false);
     }
@@ -106,13 +118,13 @@ export default function ReportSummary({
 
       <div className="flex w-full items-start justify-center gap-2.5 pt-6.75">
         <Button variant="outline" size="lg" disabled={isSaving} onClick={handleSaveImage}>
-          {isSaving ? "저장 중..." : "이미지 저장"}
+          {isSaving ? t("summary.saveImagePending") : t("summary.saveImage")}
         </Button>
         <ShareDialog report={report} savedCourseId={savedCourseId} />
       </div>
 
       <p className="text-ink-3 text-cap w-full pt-2.25 text-center font-normal">
-        탄소 절감량 = 걸은 거리(m) ÷ 1,000 × 승용차 배출계수 0.21(kg/km)
+        {t("summary.carbonFormula")}
       </p>
     </div>
   );

@@ -31,7 +31,7 @@ export default function PropensityQuestionList({
   return (
     // 1열로 되돌렸다. 축이 5개(홀수)라 2열에서는 마지막 칸이 비어 어색했다.
     <ol className="divide-line flex w-full flex-col divide-y">
-      {questions.map((question, index) => {
+      {questions.map((question) => {
         const [minOption, maxOption] = question.options;
         const score = answers[question.id] ?? 0;
 
@@ -41,8 +41,7 @@ export default function PropensityQuestionList({
 
         return (
           <li key={question.id} className="flex min-w-0 flex-col gap-3 py-6 first:pt-0 last:pb-0">
-            <p className="text-ink-3 text-cap flex items-center gap-2 font-normal">
-              <span className="tabular-nums">{String(index + 1).padStart(2, "0")}</span>
+            <p className="text-ink-3 text-cap font-normal">
               <span className="text-ink text-title-3">{question.title}</span>
             </p>
             <AxisInput

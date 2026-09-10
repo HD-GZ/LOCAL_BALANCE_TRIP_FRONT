@@ -11,7 +11,7 @@ import { GENDER, type Gender } from "@/features/auth/types";
 import { updateMe } from "@/features/user/api";
 import { userQueryKeys } from "@/features/user/queries";
 import type { MeResponse } from "@/features/user/types";
-import { getFieldErrors, isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, getFieldErrors, isApiError } from "@/lib/api/error";
 
 export const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
 export const GENDER_OPTIONS = [GENDER.MALE, GENDER.FEMALE, GENDER.NOT_SPECIFIED] as const;
@@ -89,6 +89,7 @@ function toFormValues(user: MeResponse): AccountFormValues {
 export function useAccountForm(user: MeResponse) {
   const queryClient = useQueryClient();
   const t = useTranslations();
+  const tApiError = useTranslations("apiError");
   const schema = createSchema(t);
 
   const form = useForm<AccountFormValues>({
@@ -142,7 +143,7 @@ export function useAccountForm(user: MeResponse) {
       });
 
       if (!hasMappedFieldError) {
-        setError("root", { message: error.message });
+        setError("root", { message: getApiErrorMessage(error, tApiError) });
       }
     },
   });

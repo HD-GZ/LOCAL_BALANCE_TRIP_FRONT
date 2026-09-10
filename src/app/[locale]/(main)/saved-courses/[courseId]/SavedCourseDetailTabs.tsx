@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 /**
@@ -16,22 +17,25 @@ const tabClassName =
   "text-body-sm flex h-9.5 items-center justify-center rounded-full px-5.5 font-semibold transition-colors duration-(--dur-1)";
 
 export default function SavedCourseDetailTabs({ courseId }: { courseId: number }) {
+  const t = useTranslations("savedCourses.courseDetail.tabs");
   const pathname = usePathname();
   const orderHref = `/saved-courses/${courseId}`;
   const receiptsHref = `/saved-courses/${courseId}/receipts`;
   const reportHref = `/saved-courses/${courseId}/report`;
-  const isReceiptsActive = pathname.startsWith(receiptsHref);
-  const isReportActive = pathname.startsWith(reportHref);
+  // 활성 탭은 현재 경로의 마지막 세그먼트로 판별한다. `courseId`는 쿼리 응답값이라
+  // route param과 어긋날 수 있고, 그러면 href 비교로는 항상 "코스 순서"만 활성으로 잡힌다.
+  const isReceiptsActive = pathname.endsWith("/receipts");
+  const isReportActive = pathname.endsWith("/report");
 
   return (
     <nav
       className="bg-paper-sunk flex w-fit items-center gap-0.5 rounded-full p-1"
-      aria-label="코스 상세"
+      aria-label={t("ariaLabel")}
     >
       {[
-        { href: orderHref, label: "코스 순서", active: !isReceiptsActive && !isReportActive },
-        { href: receiptsHref, label: "환급 증빙", active: isReceiptsActive },
-        { href: reportHref, label: "리포트", active: isReportActive },
+        { href: orderHref, label: t("order"), active: !isReceiptsActive && !isReportActive },
+        { href: receiptsHref, label: t("receipts"), active: isReceiptsActive },
+        { href: reportHref, label: t("report"), active: isReportActive },
       ].map((tab) => (
         <Link
           key={tab.href}

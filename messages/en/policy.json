@@ -1,0 +1,12 @@
+{
+  "policy": {
+    "main": {
+      "version": "Version {version} · Effective Date {effectiveDate}"
+    },
+    "error": {
+      "title": "Failed to load the terms and conditions",
+      "network": "Please check your network status and try again",
+      "retry": "Retry"
+    }
+  }
+}

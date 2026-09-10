@@ -21,7 +21,7 @@ export default function PasswordResetStepper({
   const currentIndex = PASSWORD_RESET_STEPS.indexOf(currentStep);
 
   return (
-    <ol aria-label={t("ariaLabel")} className="flex items-start justify-center gap-1">
+    <ol aria-label={t("ariaLabel")} className="flex items-center justify-center gap-1">
       {PASSWORD_RESET_STEPS.map((key, index) => {
         const label = t(key);
         const isCurrent = index === currentIndex;
@@ -29,32 +29,21 @@ export default function PasswordResetStepper({
 
         return (
           <li key={key} className="contents">
-            <div
+            <span
               aria-current={isCurrent ? "step" : undefined}
-              className="flex w-16 flex-col items-center gap-1.5"
+              className={cn(
+                "rounded-full",
+                isCurrent && "bg-brand size-2.5",
+                isDone && "bg-brand-line size-2",
+                !isCurrent && !isDone && "bg-line-control size-2",
+              )}
             >
-              <span
-                aria-hidden
-                className={cn(
-                  "rounded-full",
-                  isCurrent && "bg-brand size-2.5",
-                  isDone && "bg-brand-line size-2",
-                  !isCurrent && !isDone && "bg-line-control size-2",
-                )}
-              />
-              <span
-                className={cn(
-                  "text-cap whitespace-nowrap",
-                  isCurrent ? "text-ink font-semibold" : "text-ink-3 font-normal",
-                )}
-              >
-                {label}
-              </span>
-            </div>
+              <span className="sr-only">{label}</span>
+            </span>
             {index < PASSWORD_RESET_STEPS.length - 1 && (
               <span
                 aria-hidden
-                className={cn("mt-1 h-0.5 w-6", isDone ? "bg-brand-line" : "bg-line-strong")}
+                className={cn("h-0.5 w-2", isDone ? "bg-brand-line" : "bg-line-strong")}
               />
             )}
           </li>

@@ -11,6 +11,7 @@ export default async function FindPasswordPage() {
   return (
     <AuthShell
       title={t("title")}
+      stepper={<PasswordResetStepper currentStep="email" />}
       footer={
         <>
           <AuthLink href="/login">{t("backToLogin")}</AuthLink>
@@ -19,13 +20,7 @@ export default async function FindPasswordPage() {
         </>
       }
     >
-      <div className="pb-6">
-        <PasswordResetStepper currentStep="email" />
-      </div>
       <FindPasswordForm />
-      <p className="bg-surface-2 text-ink-2 text-cap mt-5 rounded-sm px-3 py-2.5 font-normal">
-        {t("disclaimer")}
-      </p>
     </AuthShell>
   );
 }

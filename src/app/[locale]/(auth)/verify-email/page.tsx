@@ -16,7 +16,7 @@ import {
   usePendingEmailVerification,
 } from "@/features/auth/storage";
 import { useRouter } from "@/i18n/navigation";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 import { cn } from "@/lib/utils";
 
 type VerificationFeedback = {
@@ -26,6 +26,7 @@ type VerificationFeedback = {
 
 export default function VerifyEmailPage() {
   const t = useTranslations("verifyEmail");
+  const tApiError = useTranslations("apiError");
   const router = useRouter();
 
   const [now, setNow] = useState(() => Date.now());
@@ -56,7 +57,7 @@ export default function VerifyEmailPage() {
     onError: (error) => {
       setFeedback({
         type: "error",
-        message: isApiError(error) ? error.message : t("confirmError"),
+        message: isApiError(error) ? getApiErrorMessage(error, tApiError) : t("confirmError"),
       });
     },
   });
@@ -71,7 +72,7 @@ export default function VerifyEmailPage() {
     onError: (error) => {
       setFeedback({
         type: "error",
-        message: isApiError(error) ? error.message : t("resendError"),
+        message: isApiError(error) ? getApiErrorMessage(error, tApiError) : t("resendError"),
       });
     },
   });
@@ -104,10 +105,11 @@ export default function VerifyEmailPage() {
   };
 
   return (
-    <AuthShell title={t("title")} description={t("description", { email })}>
-      <div className="pb-6">
-        <SignupStepper currentStep="verify-email" />
-      </div>
+    <AuthShell
+      title={t("title")}
+      description={t("description", { email })}
+      stepper={<SignupStepper currentStep="verify-email" />}
+    >
       <CodeInput value={code} onChange={handleCodeChange} />
       <p className="text-ink-2 text-body-sm mt-3 text-center tabular-nums" aria-live="polite">
         {isExpired

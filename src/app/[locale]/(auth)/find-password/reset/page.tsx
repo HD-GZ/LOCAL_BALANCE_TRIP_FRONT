@@ -33,10 +33,11 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <AuthShell title={t("title")} description={t("description", { email: session.email })}>
-      <div className="pb-6">
-        <PasswordResetStepper currentStep="reset" />
-      </div>
+    <AuthShell
+      title={t("title")}
+      description={t("description", { email: session.email })}
+      stepper={<PasswordResetStepper currentStep="reset" />}
+    >
       <ResetPasswordForm resetToken={session.resetToken} />
     </AuthShell>
   );

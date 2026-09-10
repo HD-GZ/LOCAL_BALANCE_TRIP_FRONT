@@ -2,7 +2,7 @@
   "home": {
     "cta": {
       "undiagnosedLabel": "Start preference diagnosis",
-      "undiagnosedCaption": "3 steps · takes about a minute",
+      "undiagnosedCaption": "Takes about a minute",
       "diagnosedLabel": "See recommended courses",
       "diagnosedCaption": "We've picked courses that suit your {nickname} type"
     },
@@ -26,9 +26,8 @@
     },
     "profileSummary": {
       "heading": "{name}'s travel profile",
-      "description": "Based on your diagnosis, here are courses and benefits picked for you",
       "retryDiagnosis": "Redo diagnosis",
-      "diagnosedOn": "Diagnosed ·"
+      "diagnosedOn": "Diagnosed on ·"
     },
     "preferenceSlider": {
       "closeToMin": "Close to {label}",
@@ -112,6 +111,20 @@
       "beforeTrip": "Before trip",
       "traveling": "Traveling",
       "completed": "Completed"
+    },
+    "popularCourseDetail": {
+      "invalidPath": {
+        "title": "Invalid route",
+        "description": "This address isn't valid. Please choose again from the home screen.",
+        "cta": "Go Home"
+      },
+      "error": {
+        "title": "Couldn't load the course info",
+        "description": "Please check your connection and try again."
+      },
+      "sectionRoute": "Course Route",
+      "sectionBenefits": "Benefits Available for This Course",
+      "backLink": "Go Home"
     }
   }
 }

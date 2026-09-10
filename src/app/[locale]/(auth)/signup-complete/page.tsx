@@ -9,10 +9,11 @@ export default async function SignupCompletePage() {
   const t = await getTranslations("signupComplete");
 
   return (
-    <AuthShell title={t("title")} description={t("description")}>
-      <div className="pb-6">
-        <SignupStepper currentStep="complete" />
-      </div>
+    <AuthShell
+      title={t("title")}
+      description={t("description")}
+      stepper={<SignupStepper currentStep="complete" />}
+    >
       <SuccessMark />
       <Link
         href="/"

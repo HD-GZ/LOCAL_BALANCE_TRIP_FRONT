@@ -1,0 +1,11 @@
+{
+  "apiError": {
+    "invalidRequestBody": "The request body isn't valid.",
+    "timeout": "The request timed out.",
+    "networkError": "Couldn't connect to the network. Please try again shortly.",
+    "invalidResponse": "The API response format isn't valid.",
+    "unauthorized": "Please log in to continue.",
+    "canceled": "The request was canceled.",
+    "httpError": "The API request failed."
+  }
+}

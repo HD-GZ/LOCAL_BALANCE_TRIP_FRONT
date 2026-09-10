@@ -1,0 +1,51 @@
+{
+  "report": {
+    "page": {
+      "invalidRoute": {
+        "title": "Invalid route",
+        "description": "This address isn't valid. Please choose again from your saved courses.",
+        "action": "Go to saved courses"
+      },
+      "courseError": {
+        "title": "Failed to load the course info",
+        "network": "Please check your network status and try again.",
+        "retry": "Retry"
+      },
+      "heading": "Completion Report",
+      "notYet": {
+        "title": "No report yet",
+        "description": "Complete the course to see a summary of the distance you walked and local spending."
+      },
+      "error": {
+        "title": "Failed to load the report",
+        "network": "Please check your network status and try again.",
+        "retry": "Retry"
+      }
+    },
+    "summary": {
+      "dateCompleted": "{date} · Trip Completed",
+      "walkedDistance": "Distance Walked",
+      "visitedPlaces": "Visited Places",
+      "visitedPlaceValue": "{count}",
+      "localSpending": "Local Spending",
+      "totalSpentValue": "₩{amount}",
+      "carbonReduction": "Carbon Reduction",
+      "carbonValue": "~{amount}kg",
+      "carbonFormula": "Carbon reduction = walked distance (m) ÷ 1,000 × car emission factor 0.21 (kg/km)",
+      "saveImage": "Save Image",
+      "saveImagePending": "Saving...",
+      "saveImageError": "Couldn't save the image. Please try again.",
+      "downloadFileName": "{courseName}_Report.png"
+    },
+    "share": {
+      "trigger": "Share",
+      "dialogTitle": "Where would you like to share?",
+      "dialogDescription": "Your local spending amount isn't shared.",
+      "kakao": "KakaoTalk",
+      "closeAria": "Close",
+      "tokenError": "Couldn't create a share link. Please try again.",
+      "kakaoError": "Sharing to KakaoTalk failed. Please try again.",
+      "feedDescription": "A travel report for completing {courseName} after visiting {count} places."
+    }
+  }
+}

@@ -8,6 +8,7 @@
     "page": {
       "title": "Destinations matched to your taste",
       "description": "Tap a region to see its recommended courses.",
+      "loading": "Preparing your recommended courses",
       "needsPropensity": {
         "title": "Take the preference diagnosis first",
         "description": "Once you finish the diagnosis, we'll recommend destinations that match your taste.",

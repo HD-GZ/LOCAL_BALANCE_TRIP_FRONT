@@ -18,7 +18,7 @@ import {
   usePasswordResetSession,
 } from "@/features/auth/passwordResetStorage";
 import { useRouter } from "@/i18n/navigation";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 import { cn } from "@/lib/utils";
 
 type VerificationFeedback = {
@@ -28,6 +28,7 @@ type VerificationFeedback = {
 
 export default function FindPasswordVerifyPage() {
   const t = useTranslations("findPassword.verify");
+  const tApiError = useTranslations("apiError");
   const router = useRouter();
 
   const [now, setNow] = useState(() => Date.now());
@@ -69,7 +70,7 @@ export default function FindPasswordVerifyPage() {
     onError: (error) => {
       setFeedback({
         type: "error",
-        message: isApiError(error) ? error.message : t("confirmError"),
+        message: isApiError(error) ? getApiErrorMessage(error, tApiError) : t("confirmError"),
       });
     },
   });
@@ -84,7 +85,7 @@ export default function FindPasswordVerifyPage() {
     onError: (error) => {
       setFeedback({
         type: "error",
-        message: isApiError(error) ? error.message : t("resendError"),
+        message: isApiError(error) ? getApiErrorMessage(error, tApiError) : t("resendError"),
       });
     },
   });
@@ -115,10 +116,11 @@ export default function FindPasswordVerifyPage() {
   const isResendDisabled = resendMutation.isPending || resendCooldownSeconds > 0;
 
   return (
-    <AuthShell title={t("title")} description={t("description", { email })}>
-      <div className="pb-6">
-        <PasswordResetStepper currentStep="verify" />
-      </div>
+    <AuthShell
+      title={t("title")}
+      description={t("description", { email })}
+      stepper={<PasswordResetStepper currentStep="verify" />}
+    >
       <CodeInput value={code} onChange={handleCodeChange} disabled={isExpired} />
       <p className="text-ink-2 text-body-sm mt-3 text-center tabular-nums" aria-live="polite">
         {isExpired

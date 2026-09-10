@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import ReceiptIcon from "@/assets/receipt.svg";
 import SurfaceState from "@/components/common/SurfaceState";
@@ -17,13 +20,10 @@ export default function ReceiptsList({
   receipts: Receipt[];
   savedCourseId: number;
 }) {
+  const t = useTranslations("receipts");
+
   if (receipts.length === 0) {
-    return (
-      <SurfaceState
-        title="저장된 영수증이 없어요"
-        description="여행하면서 영수증을 남기면 여기에 기록이 쌓여요."
-      />
-    );
+    return <SurfaceState title={t("list.empty.title")} description={t("list.empty.description")} />;
   }
 
   const total = receipts.reduce((sum, receipt) => sum + receipt.amount, 0);
@@ -49,7 +49,7 @@ export default function ReceiptsList({
                 </span>
               </span>
               <span className="text-num text-ink shrink-0 font-semibold tabular-nums">
-                {receipt.amount.toLocaleString()}원
+                {t("list.itemAmount", { amount: receipt.amount.toLocaleString() })}
               </span>
               <ChevronRight
                 aria-hidden
@@ -62,15 +62,8 @@ export default function ReceiptsList({
       </ul>
 
       <p className="text-body-sm text-ink-2 flex items-baseline justify-between gap-4 pt-4">
-        <span>
-          영수증 <span className="text-ink font-semibold tabular-nums">{receipts.length}</span>건
-        </span>
-        <span>
-          합계{" "}
-          <span className="text-ink text-num font-semibold tabular-nums">
-            {total.toLocaleString()}원
-          </span>
-        </span>
+        <span>{t("list.summary.count", { count: receipts.length })}</span>
+        <span>{t("list.summary.total", { total: total.toLocaleString() })}</span>
       </p>
     </div>
   );

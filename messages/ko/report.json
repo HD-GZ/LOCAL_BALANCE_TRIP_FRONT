@@ -1,0 +1,51 @@
+{
+  "report": {
+    "page": {
+      "invalidRoute": {
+        "title": "잘못된 경로예요",
+        "description": "주소가 올바르지 않아요. 저장한 코스 목록에서 다시 선택해 주세요.",
+        "action": "저장한 코스로"
+      },
+      "courseError": {
+        "title": "코스 정보를 불러오지 못했어요",
+        "network": "네트워크 상태를 확인한 뒤 다시 시도해 주세요.",
+        "retry": "다시 시도"
+      },
+      "heading": "완주 리포트",
+      "notYet": {
+        "title": "아직 리포트가 없어요",
+        "description": "코스를 완주하면 걸은 거리와 지역 소비를 정리해 드려요."
+      },
+      "error": {
+        "title": "리포트를 불러오지 못했어요",
+        "network": "네트워크 상태를 확인한 뒤 다시 시도해 주세요.",
+        "retry": "다시 시도"
+      }
+    },
+    "summary": {
+      "dateCompleted": "{date} · 여행 완료",
+      "walkedDistance": "걸은 거리",
+      "visitedPlaces": "방문 장소",
+      "visitedPlaceValue": "{count}곳",
+      "localSpending": "지역 소비",
+      "totalSpentValue": "{amount}원",
+      "carbonReduction": "탄소 절감량",
+      "carbonValue": "약 {amount}kg",
+      "carbonFormula": "탄소 절감량 = 걸은 거리(m) ÷ 1,000 × 승용차 배출계수 0.21(kg/km)",
+      "saveImage": "이미지 저장",
+      "saveImagePending": "저장 중...",
+      "saveImageError": "이미지를 저장하지 못했어요. 다시 시도해 주세요.",
+      "downloadFileName": "{courseName}_리포트.png"
+    },
+    "share": {
+      "trigger": "공유하기",
+      "dialogTitle": "어디에 공유할까요?",
+      "dialogDescription": "지역 소비 금액은 공유되지 않아요.",
+      "kakao": "카카오톡",
+      "closeAria": "닫기",
+      "tokenError": "공유 링크를 만들지 못했어요. 다시 시도해 주세요.",
+      "kakaoError": "카카오톡 공유에 실패했어요. 다시 시도해 주세요.",
+      "feedDescription": "{courseName} {count}곳을 방문하고 완주한 여행 리포트예요."
+    }
+  }
+}

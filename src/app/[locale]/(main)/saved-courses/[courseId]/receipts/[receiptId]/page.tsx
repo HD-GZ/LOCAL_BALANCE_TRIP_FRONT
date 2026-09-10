@@ -2,17 +2,20 @@
 
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { receiptsQueries } from "@/features/receipts/queries";
 import { recommendationQueries } from "@/features/recommendation/queries";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 import { parsePositiveIntParam } from "@/lib/utils";
 
 import ReceiptDetailContent from "./ReceiptDetailContent";
 
 export default function ReceiptDetail() {
+  const t = useTranslations("receipts");
+  const tApiError = useTranslations("apiError");
   const { courseId: courseIdParam, receiptId: receiptIdParam } = useParams<{
     courseId: string;
     receiptId: string;
@@ -39,9 +42,9 @@ export default function ReceiptDetail() {
         {!isValidRoute && (
           <SurfaceState
             tone="error"
-            title="잘못된 경로예요"
-            description="주소가 올바르지 않아요. 증빙 목록에서 다시 선택해 주세요."
-            action={{ label: "저장한 코스로", href: "/saved-courses" }}
+            title={t("detail.invalidRoute.title")}
+            description={t("detail.invalidRoute.description")}
+            action={{ label: t("detail.invalidRoute.action"), href: "/saved-courses" }}
           />
         )}
 
@@ -62,16 +65,16 @@ export default function ReceiptDetail() {
         {hasError && (
           <SurfaceState
             tone="error"
-            title="증빙 정보를 불러오지 못했어요"
+            title={t("detail.error.title")}
             description={
               isApiError(courseDetailQuery.error)
-                ? courseDetailQuery.error.message
+                ? getApiErrorMessage(courseDetailQuery.error, tApiError)
                 : isApiError(receiptDetailQuery.error)
-                  ? receiptDetailQuery.error.message
-                  : "네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+                  ? getApiErrorMessage(receiptDetailQuery.error, tApiError)
+                  : t("detail.error.network")
             }
             action={{
-              label: "다시 시도",
+              label: t("detail.error.retry"),
               onRetry: () => {
                 courseDetailQuery.refetch();
                 receiptDetailQuery.refetch();

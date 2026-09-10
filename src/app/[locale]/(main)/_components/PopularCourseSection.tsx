@@ -19,11 +19,7 @@ export default function PopularCourseSection() {
 
   return (
     <section className="flex w-full flex-col gap-5">
-      <SectionHeader
-        title={t("title")}
-        description={t("description")}
-        moreHref="/course-recommend?step=1"
-      />
+      <SectionHeader title={t("title")} moreHref="/course-recommend?step=1" />
 
       {popularCoursesQuery.isPending && (
         <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -61,7 +57,6 @@ export default function PopularCourseSection() {
                 imageUrl={course.imageUrl}
                 badge={{ label: t("badgeLabel"), tone: "outline" }}
                 reason={course.reason}
-                meta={course.regionName}
               />
             </Reveal>
           ))}

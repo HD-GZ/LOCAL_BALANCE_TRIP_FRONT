@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { saveCourse } from "@/features/recommendation/api";
 import { recommendationQueries } from "@/features/recommendation/queries";
 import { useRouter } from "@/i18n/navigation";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 import { parsePositiveIntParam } from "@/lib/utils";
 
 import CourseBenefitList from "./CourseBenefitList";
@@ -36,6 +36,7 @@ function CourseDetailSkeleton() {
 export default function CourseDetail() {
   const t = useTranslations("courseRecommend.courseDetail");
   const tCommon = useTranslations();
+  const tApiError = useTranslations("apiError");
   const courseSteps = useCourseSteps();
   const router = useRouter();
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
@@ -83,7 +84,7 @@ export default function CourseDetail() {
           title={t("error.title")}
           description={
             isApiError(courseDetailQuery.error)
-              ? courseDetailQuery.error.message
+              ? getApiErrorMessage(courseDetailQuery.error, tApiError)
               : t("error.description")
           }
           action={{ label: tCommon("retry"), onRetry: () => courseDetailQuery.refetch() }}
@@ -130,7 +131,7 @@ export default function CourseDetail() {
             {saveCourseMutation.isError && (
               <p role="alert" className="text-danger-ink text-cap text-center font-medium">
                 {isApiError(saveCourseMutation.error)
-                  ? saveCourseMutation.error.message
+                  ? getApiErrorMessage(saveCourseMutation.error, tApiError)
                   : t("saveError")}
               </p>
             )}

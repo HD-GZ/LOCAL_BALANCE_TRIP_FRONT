@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,27 +24,28 @@ export default function ReceiptDeleteDialog({
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const deleteMutation = useDeleteReceiptMutation(savedCourseId, receiptId);
+  const t = useTranslations("receipts");
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button variant="destructive-outline" size="lg" className="flex-1">
           <Trash2 className="size-4" strokeWidth={1.75} />
-          삭제
+          {t("deleteDialog.trigger")}
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogTitle>증빙을 삭제할까요?</DialogTitle>
-        <DialogDescription>삭제하면 이 여행의 환급 신청 목록에서 제외돼요.</DialogDescription>
+        <DialogTitle>{t("deleteDialog.title")}</DialogTitle>
+        <DialogDescription>{t("deleteDialog.description")}</DialogDescription>
         {deleteMutation.isError && (
           <p role="alert" className="text-danger-ink text-cap mt-3 font-medium">
-            삭제 중 오류가 발생했어요. 다시 시도해 주세요.
+            {t("deleteDialog.error")}
           </p>
         )}
         <div className="mt-6 flex w-full gap-3">
           <DialogClose asChild>
             <Button variant="outline" size="lg" className="flex-1">
-              취소
+              {t("deleteDialog.cancel")}
             </Button>
           </DialogClose>
           <Button
@@ -53,7 +55,7 @@ export default function ReceiptDeleteDialog({
             disabled={deleteMutation.isPending}
             onClick={() => deleteMutation.mutate()}
           >
-            {deleteMutation.isPending ? "삭제하는 중..." : "삭제하기"}
+            {deleteMutation.isPending ? t("deleteDialog.confirmPending") : t("deleteDialog.confirm")}
           </Button>
         </div>
       </DialogContent>

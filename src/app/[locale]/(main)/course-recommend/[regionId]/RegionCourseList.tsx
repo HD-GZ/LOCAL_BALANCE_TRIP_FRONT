@@ -13,15 +13,12 @@ type RegionCourseListProps = {
 export default function RegionCourseList({ courses }: RegionCourseListProps) {
   return (
     <ol className="border-line bg-surface shadow-card divide-line flex w-full flex-col divide-y rounded-md border px-6">
-      {courses.map((course, index) => (
+      {courses.map((course) => (
         <li key={course.courseId}>
           <Link
             href={`/course-recommend/courses/${course.courseId}`}
             className="group flex items-center gap-4 py-4 transition-colors duration-(--dur-1)"
           >
-            <span className="text-ink-3 text-num w-6 shrink-0 tabular-nums">
-              {String(index + 1).padStart(2, "0")}
-            </span>
             <ThumbImage src={course.imageUrl} alt="" className="size-16" />
             <span className="flex min-w-0 flex-1 flex-col gap-1">
               <span className="text-title-2 text-ink group-hover:text-brand-ink transition-colors duration-(--dur-1)">

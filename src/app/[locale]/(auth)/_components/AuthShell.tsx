@@ -16,11 +16,13 @@ import { Link } from "@/i18n/navigation";
 export default function AuthShell({
   title,
   description,
+  stepper,
   children,
   footer,
 }: {
   title: string;
   description?: string;
+  stepper?: React.ReactNode;
   children: React.ReactNode;
   footer?: React.ReactNode;
 }) {
@@ -38,9 +40,12 @@ export default function AuthShell({
       </Link>
 
       <div className="border-line bg-surface shadow-card flex w-full max-w-[27rem] flex-col rounded-md border px-6 py-8 sm:px-8">
-        <div className="flex flex-col gap-2 pb-6">
+        {stepper && <div className="pb-6">{stepper}</div>}
+        <div className="flex flex-col items-center gap-2 pb-6 text-center">
           <h1 className="text-title-1 text-ink">{title}</h1>
-          {description && <p className="text-ink-2 text-body-sm">{description}</p>}
+          {description && (
+            <p className="text-ink-2 text-body-sm whitespace-pre-line">{description}</p>
+          )}
         </div>
         {children}
       </div>

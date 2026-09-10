@@ -14,7 +14,7 @@ import { homeQueryKeys } from "@/features/home/queries";
 import { userQueryKeys } from "@/features/user/queries";
 import { useRouter } from "@/i18n/navigation";
 import { apiClient } from "@/lib/api/client";
-import { isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, isApiError } from "@/lib/api/error";
 
 type LoginFormValues = {
   email: string;
@@ -27,6 +27,7 @@ function loginWithCookie(body: LoginFormValues) {
 
 export default function LoginForm() {
   const t = useTranslations();
+  const tApiError = useTranslations("apiError");
   const router = useRouter();
   const queryClient = useQueryClient();
   const schema = z.object({
@@ -56,7 +57,7 @@ export default function LoginForm() {
     },
     onError: (error) => {
       setError("root", {
-        message: isApiError(error) ? error.message : t("login.errorGeneric"),
+        message: isApiError(error) ? getApiErrorMessage(error, tApiError) : t("login.errorGeneric"),
       });
     },
   });

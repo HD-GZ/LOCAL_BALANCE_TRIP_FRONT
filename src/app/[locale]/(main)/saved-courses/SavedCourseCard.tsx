@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Bookmark } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import RouteMarker from "@/assets/routeMarker.svg";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ export default function SavedCourseCard({ course }: { course: SavedCourse }) {
       setIsDialogOpen(false);
     },
   });
+  const t = useTranslations("savedCourses");
   const hasPhoto = Boolean(course.imageUrl) && !hasError;
 
   return (
@@ -81,7 +83,7 @@ export default function SavedCourseCard({ course }: { course: SavedCourse }) {
           <DialogTrigger asChild>
             <button
               type="button"
-              aria-label="저장 취소"
+              aria-label={t("card.bookmarkAria")}
               className="press border-line bg-surface/90 text-ink-2 hover:text-brand-ink flex size-8 cursor-pointer items-center justify-center rounded-full border backdrop-blur-[2px]"
             >
               <Bookmark className="size-4 fill-current" strokeWidth={1.75} />
@@ -89,19 +91,17 @@ export default function SavedCourseCard({ course }: { course: SavedCourse }) {
           </DialogTrigger>
         </div>
         <DialogContent>
-          <DialogTitle>저장을 취소할까요?</DialogTitle>
-          <DialogDescription>
-            이 코스가 저장한 코스 목록에서 사라져요. 코스 추천에서 언제든 다시 저장할 수 있어요.
-          </DialogDescription>
+          <DialogTitle>{t("card.dialog.title")}</DialogTitle>
+          <DialogDescription>{t("card.dialog.description")}</DialogDescription>
           {deleteMutation.isError && (
             <p role="alert" className="text-danger-ink text-cap mt-3 font-medium">
-              삭제 중 오류가 발생했어요. 다시 시도해 주세요.
+              {t("card.dialog.error")}
             </p>
           )}
           <div className="mt-6 flex w-full gap-3">
             <DialogClose asChild>
               <Button variant="outline" size="lg" className="flex-1">
-                돌아가기
+                {t("card.dialog.cancel")}
               </Button>
             </DialogClose>
             <Button
@@ -111,7 +111,9 @@ export default function SavedCourseCard({ course }: { course: SavedCourse }) {
               disabled={deleteMutation.isPending}
               onClick={() => deleteMutation.mutate()}
             >
-              {deleteMutation.isPending ? "취소하는 중..." : "저장 취소"}
+              {deleteMutation.isPending
+                ? t("card.dialog.confirmPending")
+                : t("card.dialog.confirm")}
             </Button>
           </div>
         </DialogContent>

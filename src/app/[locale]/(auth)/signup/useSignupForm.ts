@@ -12,7 +12,7 @@ import { savePendingEmailVerification } from "@/features/auth/storage";
 import { GENDER, type Gender } from "@/features/auth/types";
 import { checkEmailAvailability } from "@/features/user/api";
 import { useRouter } from "@/i18n/navigation";
-import { getFieldErrors, isApiError } from "@/lib/api/error";
+import { getApiErrorMessage, getFieldErrors, isApiError } from "@/lib/api/error";
 
 export const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 export const GENDER_OPTIONS = [GENDER.MALE, GENDER.FEMALE, GENDER.NOT_SPECIFIED] as const;
@@ -74,6 +74,7 @@ type AgreementField = "agreeService" | "agreePrivacy" | "agreeMarketing";
 export function useSignupForm() {
   const router = useRouter();
   const t = useTranslations();
+  const tApiError = useTranslations("apiError");
   const [agreeAll, setAgreeAll] = useState(false);
   const { emailSchema, schema } = createSchema(t);
 
@@ -125,7 +126,7 @@ export function useSignupForm() {
       }
 
       if (error.code === DUPLICATE_EMAIL_ERROR_CODE) {
-        setError("email", { message: error.message }, { shouldFocus: true });
+        setError("email", { message: getApiErrorMessage(error, tApiError) }, { shouldFocus: true });
         return;
       }
 
@@ -141,7 +142,7 @@ export function useSignupForm() {
       });
 
       if (!hasMappedFieldError) {
-        setError("root", { message: error.message });
+        setError("root", { message: getApiErrorMessage(error, tApiError) });
       }
     },
   });

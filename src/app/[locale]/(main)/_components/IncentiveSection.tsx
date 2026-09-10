@@ -40,7 +40,7 @@ function DeadlineMark({ dday }: { dday: number | null }) {
   );
 }
 
-function IncentiveCard({ incentive, regionName }: { incentive: Incentive; regionName: string }) {
+function IncentiveCard({ incentive }: { incentive: Incentive }) {
   const t = useTranslations("home.incentive");
 
   return (
@@ -51,15 +51,11 @@ function IncentiveCard({ incentive, regionName }: { incentive: Incentive; region
         rel="noreferrer"
         className="lift border-line bg-surface group flex flex-1 flex-col items-start gap-3 rounded-md border px-5 py-5"
       >
-        <span className="flex w-full items-center justify-between gap-2.5">
-          <span className="border-brand-line bg-brand-wash text-brand-ink text-cap flex h-6.5 shrink-0 items-center rounded-full border px-3">
-            {regionName}
+        <span className="flex w-full items-baseline justify-between gap-2.5">
+          <span className="text-title-2 text-ink group-hover:text-brand-ink transition-colors duration-(--dur-1)">
+            {incentive.title}
           </span>
           <DeadlineMark dday={incentive.dday} />
-        </span>
-
-        <span className="text-title-2 text-ink group-hover:text-brand-ink transition-colors duration-(--dur-1)">
-          {incentive.title}
         </span>
         {incentive.description && (
           <span className="text-ink-2 text-body-sm line-clamp-2">{incentive.description}</span>
@@ -84,10 +80,7 @@ export default function IncentiveSection() {
 
   return (
     <section className="flex w-full flex-col gap-5">
-      <SectionHeader
-        title={t("title")}
-        description={[t("description1"), t("description2")]}
-      />
+      <SectionHeader title={t("title")} description={t("description2")} />
 
       {incentivesQuery.isPending && (
         <div className="flex flex-col gap-4">
@@ -173,11 +166,7 @@ export default function IncentiveSection() {
             ) : (
               <ul className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {selectedRegion.incentives.map((incentive) => (
-                  <IncentiveCard
-                    key={`${incentive.title}-${incentive.url}`}
-                    incentive={incentive}
-                    regionName={selectedRegion.regionName}
-                  />
+                  <IncentiveCard key={`${incentive.title}-${incentive.url}`} incentive={incentive} />
                 ))}
               </ul>
             )}
