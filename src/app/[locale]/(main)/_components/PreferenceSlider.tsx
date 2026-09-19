@@ -42,7 +42,7 @@ function toCaption(
   }
 }
 
-const labelClassName = "text-cap whitespace-nowrap";
+const labelClassName = "text-cap min-w-0";
 const activeLabelClassName = "text-brand font-semibold";
 const inactiveLabelClassName = "text-ink-3 font-medium";
 
@@ -53,14 +53,18 @@ export default function PreferenceSlider({ slider }: { slider: ProfileSlider }) 
 
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-2">
-      <div className="flex items-start justify-between gap-2">
+      <div className="flex min-h-[2.7em] items-end justify-between gap-2">
         <span
           className={cn(labelClassName, score < 3 ? activeLabelClassName : inactiveLabelClassName)}
         >
           {slider.minLabel}
         </span>
         <span
-          className={cn(labelClassName, score > 3 ? activeLabelClassName : inactiveLabelClassName)}
+          className={cn(
+            labelClassName,
+            "text-right",
+            score > 3 ? activeLabelClassName : inactiveLabelClassName,
+          )}
         >
           {slider.maxLabel}
         </span>
