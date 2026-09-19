@@ -8,6 +8,7 @@ import {
 } from "@/features/recommendation/api";
 import type { SavedCourse } from "@/features/recommendation/types";
 import { isApiError } from "@/lib/api/error";
+import type { Locale } from "next-intl";
 
 function retryUnlessUnauthorized(failureCount: number, error: unknown) {
   if (isApiError(error) && error.status === 401) {
@@ -19,47 +20,47 @@ function retryUnlessUnauthorized(failureCount: number, error: unknown) {
 
 export const recommendationQueryKeys = {
   all: ["recommendation"] as const,
-  regions: (locale: string) => [...recommendationQueryKeys.all, locale, "regions"] as const,
-  regionCourses: (locale: string, regionId: number) =>
+  regions: (locale: Locale) => [...recommendationQueryKeys.all, locale, "regions"] as const,
+  regionCourses: (locale: Locale, regionId: number) =>
     [...recommendationQueryKeys.all, locale, "regions", regionId, "courses"] as const,
-  courseDetail: (locale: string, courseId: number) =>
+  courseDetail: (locale: Locale, courseId: number) =>
     [...recommendationQueryKeys.all, locale, "courses", courseId] as const,
   savedCoursesAll: () => [...recommendationQueryKeys.all, "saved-courses"] as const,
   savedCourses: (
-    locale: string,
+    locale: Locale,
     page?: number,
     limit?: number,
     status?: SavedCourse["status"],
   ) => [...recommendationQueryKeys.savedCoursesAll(), locale, page, limit, status] as const,
-  savedCoursesDetail: (locale: string, savedCourseId: number) =>
+  savedCoursesDetail: (locale: Locale, savedCourseId: number) =>
     [...recommendationQueryKeys.savedCoursesAll(), locale, savedCourseId] as const,
 };
 
 export const recommendationQueries = {
-  regions: (locale: string) =>
+  regions: (locale: Locale) =>
     queryOptions({
       queryKey: recommendationQueryKeys.regions(locale),
       queryFn: getRecommendedRegions,
       retry: retryUnlessUnauthorized,
     }),
-  regionCourses: (locale: string, regionId: number, enabled = true) =>
+  regionCourses: (locale: Locale, regionId: number, enabled = true) =>
     queryOptions({
       enabled,
       queryKey: recommendationQueryKeys.regionCourses(locale, regionId),
       queryFn: () => getRegionCourses(regionId),
     }),
-  courseDetail: (locale: string, courseId: number, enabled = true) =>
+  courseDetail: (locale: Locale, courseId: number, enabled = true) =>
     queryOptions({
       enabled,
       queryKey: recommendationQueryKeys.courseDetail(locale, courseId),
       queryFn: () => getCourseDetail(courseId),
     }),
-  savedCourses: (locale: string, page?: number, limit?: number, status?: SavedCourse["status"]) =>
+  savedCourses: (locale: Locale, page?: number, limit?: number, status?: SavedCourse["status"]) =>
     queryOptions({
       queryKey: recommendationQueryKeys.savedCourses(locale, page, limit, status),
       queryFn: () => getSavedCourses(page, limit, status),
     }),
-  savedCoursesDetail: (locale: string, savedCourseId: number, enabled = true) =>
+  savedCoursesDetail: (locale: Locale, savedCourseId: number, enabled = true) =>
     queryOptions({
       enabled,
       queryKey: recommendationQueryKeys.savedCoursesDetail(locale, savedCourseId),
