@@ -230,13 +230,12 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
     clearPropensityAnswers();
     clearPropensityResult();
     postPropensityMutation.reset();
-    queryClient.removeQueries({ queryKey: propensityQueryKeys.result() });
+    queryClient.removeQueries({ queryKey: propensityQueryKeys.all });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const propensityResultQuery = useGetPropensityResultQuery(
     isHydrated &&
-      !localResult &&
       !isRetaking &&
       [1, 3].includes(getCurrentStep(getRawStep(searchParams))) &&
       !postPropensityMutation.data,
