@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import Reveal from "@/components/common/Reveal";
 import { SkeletonCard } from "@/components/common/Skeleton";
@@ -14,7 +14,8 @@ import SectionHeader from "./SectionHeader";
 export default function PopularCourseSection() {
   const t = useTranslations("home.popularCourse");
   const tCommon = useTranslations();
-  const popularCoursesQuery = useQuery(homeQueries.popularCourses());
+  const locale = useLocale();
+  const popularCoursesQuery = useQuery(homeQueries.popularCourses(locale));
   const courses = popularCoursesQuery.data?.courses ?? [];
 
   return (
