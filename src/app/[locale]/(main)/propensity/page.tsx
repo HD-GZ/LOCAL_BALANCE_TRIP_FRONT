@@ -263,12 +263,10 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
     setTrackedStep(currentStep);
   }
 
-  const goStep = (step: number) => {
-    if (step === 1 || step === 2 || step === 3) {
-      router.push(`/propensity?step=${step}`);
-    } else {
-      router.push("/propensity?step=1");
-    }
+  const goStep = (step: number) => {  
+    const validStep = step === 1 || step === 2 || step === 3 ? step : 1;
+    const query = isRetaking ? `step=${validStep}&retake=1` : `step=${validStep}`;
+    router.push(`/propensity?${query}`);
   };
   const handleChangeAnswer = (questionId: string, answerValue: number) => {
     if (currentStep === 1) {
@@ -414,8 +412,8 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
                       clearPropensityResult();
                       setResultOverride(null);
                       postPropensityMutation.reset();
-                      queryClient.removeQueries({ queryKey: propensityQueryKeys.result() });
-                      goStep(1);
+                      queryClient.removeQueries({ queryKey: propensityQueryKeys.all });
+                      router.push("/propensity?step=1&retake=1");
                     }}
                   >
                     {t("buttons.startOver")}
