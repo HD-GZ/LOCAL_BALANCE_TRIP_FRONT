@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import Reveal from "@/components/common/Reveal";
 import { SkeletonCard } from "@/components/common/Skeleton";
@@ -67,7 +67,8 @@ export default function SavedCourseFeedSection({
 }) {
   const t = useTranslations("home.savedCourseFeed");
   const tCommon = useTranslations();
-  const feedQuery = useQuery(homeQueries.savedCourses());
+  const locale = useLocale();
+  const feedQuery = useQuery(homeQueries.savedCourses(locale));
   const items = excludeRegionsShownInHero(feedQuery.data?.items ?? [], heroRegionTitles);
 
   return (

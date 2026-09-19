@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import PageShell from "@/components/common/PageShell";
 import { SkeletonCard } from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
@@ -35,9 +35,10 @@ export default function SavedCourses() {
   const selectedStatus = getStatusParam(searchParams);
   const t = useTranslations("savedCourses");
   const tApiError = useTranslations("apiError");
+  const locale = useLocale();
   const statusParam = selectedStatus === "all" ? undefined : STATUS_FILTER_MAP[selectedStatus];
   const savedCoursesQuery = useQuery(
-    recommendationQueries.savedCourses(page, PAGE_SIZE, statusParam),
+    recommendationQueries.savedCourses(locale, page, PAGE_SIZE, statusParam),
   );
   const courses = savedCoursesQuery.data?.courses ?? [];
   const totalPages = savedCoursesQuery.data?.totalPages ?? 1;

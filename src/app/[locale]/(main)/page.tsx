@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
@@ -66,9 +66,10 @@ function ProfileBandSkeleton() {
 export default function Home() {
   const t = useTranslations("home");
   const tCommon = useTranslations();
+  const locale = useLocale();
   const meQuery = useQuery(userQueries.me());
   const isLoggedIn = meQuery.isSuccess;
-  const profileSummaryQuery = useQuery(homeQueries.profileSummary(isLoggedIn));
+  const profileSummaryQuery = useQuery(homeQueries.profileSummary(locale, isLoggedIn));
   const summary = isLoggedIn ? profileSummaryQuery.data : undefined;
 
   const isSummaryResolved =
@@ -83,7 +84,7 @@ export default function Home() {
     hasSummary: Boolean(summary),
   });
 
-  const heroQuery = useQuery(homeQueries.hero());
+  const heroQuery = useQuery(homeQueries.hero(locale));
 
   const profileBand =
     homeState === "loading" ? (

@@ -4,7 +4,8 @@ import { getReports } from "./api";
 
 export const reportsQueryKeys = {
   all: ["reports"] as const,
-  reports: (savedCourseId: number) => [...reportsQueryKeys.all, savedCourseId] as const,
+  reports: (locale: string, savedCourseId: number) =>
+    [...reportsQueryKeys.all, locale, savedCourseId] as const,
 }
 
 function retryUnlessReportUnavailable(failureCount: number, error: unknown) {
@@ -15,10 +16,10 @@ function retryUnlessReportUnavailable(failureCount: number, error: unknown) {
   return failureCount < 3;
 }
 
-export const ReportQueries = (savedCourseId: number) => ({
+export const ReportQueries = (locale: string, savedCourseId: number) => ({
   report: () =>
     queryOptions({
-      queryKey: reportsQueryKeys.reports(savedCourseId),
+      queryKey: reportsQueryKeys.reports(locale, savedCourseId),
       queryFn: () => getReports(savedCourseId),
       retry: retryUnlessReportUnavailable,
     }),

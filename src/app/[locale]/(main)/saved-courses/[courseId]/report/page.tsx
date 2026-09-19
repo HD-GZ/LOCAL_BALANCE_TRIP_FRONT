@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import SavedCourseDetailHeader from "@/app/[locale]/(main)/saved-courses/[courseId]/SavedCourseDetailHeader";
 import Skeleton from "@/components/common/Skeleton";
@@ -17,13 +17,14 @@ import ReportSummary from "./ReportSummary";
 export default function SavedCourseReport() {
   const t = useTranslations("report");
   const tApiError = useTranslations("apiError");
+  const locale = useLocale();
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
   const courseId = parsePositiveIntParam(courseIdParam);
   const courseDetailQuery = useQuery(
-    recommendationQueries.savedCoursesDetail(courseId ?? 0, courseId !== null),
+    recommendationQueries.savedCoursesDetail(locale, courseId ?? 0, courseId !== null),
   );
   const reportQuery = useQuery({
-    ...ReportQueries(courseId ?? 0).report(),
+    ...ReportQueries(locale, courseId ?? 0).report(),
     enabled: courseId !== null,
   });
   const course = courseDetailQuery.data;

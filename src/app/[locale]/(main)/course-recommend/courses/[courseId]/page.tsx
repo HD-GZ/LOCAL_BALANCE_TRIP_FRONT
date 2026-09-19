@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Check } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { useCourseSteps } from "@/app/[locale]/(main)/course-recommend/steps";
 import FlowShell from "@/components/common/FlowShell";
@@ -37,12 +37,13 @@ export default function CourseDetail() {
   const t = useTranslations("courseRecommend.courseDetail");
   const tCommon = useTranslations();
   const tApiError = useTranslations("apiError");
+  const locale = useLocale();
   const courseSteps = useCourseSteps();
   const router = useRouter();
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
   const courseId = parsePositiveIntParam(courseIdParam);
   const courseDetailQuery = useQuery(
-    recommendationQueries.courseDetail(courseId ?? 0, courseId !== null),
+    recommendationQueries.courseDetail(locale, courseId ?? 0, courseId !== null),
   );
   const saveCourseMutation = useMutation({ mutationFn: saveCourse });
   const course = courseDetailQuery.data;

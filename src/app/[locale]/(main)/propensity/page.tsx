@@ -4,7 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import FlowShell from "@/components/common/FlowShell";
 import { Button } from "@/components/ui/button";
@@ -183,6 +183,7 @@ function getHydratedServerSnapshot() {
 function PropensityContent({ userId }: { userId: number | undefined }) {
   const t = useTranslations("propensity");
   const tApiError = useTranslations("apiError");
+  const locale = useLocale();
   const router = useRouter();
   const queryClient = useQueryClient();
   const reduce = useReducedMotion();
@@ -379,7 +380,7 @@ function PropensityContent({ userId }: { userId: number | undefined }) {
                     onClick={() => {
                       postPropensityMutation.mutate(answers, {
                         onSuccess: (data) => {
-                          queryClient.setQueryData(propensityQueryKeys.result(), data);
+                          queryClient.setQueryData(propensityQueryKeys.result(locale), data);
                           clearPropensityAnswers();
                           setIsRetaking(false);
                           goStep(3);

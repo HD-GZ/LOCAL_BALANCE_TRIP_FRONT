@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
@@ -16,6 +16,7 @@ import ReceiptDetailContent from "./ReceiptDetailContent";
 export default function ReceiptDetail() {
   const t = useTranslations("receipts");
   const tApiError = useTranslations("apiError");
+  const locale = useLocale();
   const { courseId: courseIdParam, receiptId: receiptIdParam } = useParams<{
     courseId: string;
     receiptId: string;
@@ -25,7 +26,7 @@ export default function ReceiptDetail() {
   const isValidRoute = courseId !== null && receiptId !== null;
 
   const courseDetailQuery = useQuery(
-    recommendationQueries.savedCoursesDetail(courseId ?? 0, courseId !== null),
+    recommendationQueries.savedCoursesDetail(locale, courseId ?? 0, courseId !== null),
   );
   const receiptDetailQuery = useQuery(
     receiptsQueries.receiptsDetail(courseId ?? 0, receiptId ?? 0, isValidRoute),

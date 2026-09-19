@@ -11,56 +11,56 @@ import {
 
 export const homeQueryKeys = {
   all: ["home"] as const,
-  hero: () => [...homeQueryKeys.all, "hero"] as const,
-  profileTypes: () => [...homeQueryKeys.all, "profile-types"] as const,
-  profileSummary: () => [...homeQueryKeys.all, "profile-summary"] as const,
-  popularCourses: () => [...homeQueryKeys.all, "popular-courses"] as const,
-  popularCourseDetail: (courseId: number) =>
-    [...homeQueryKeys.all, "popular-courses", courseId] as const,
-  incentives: () => [...homeQueryKeys.all, "incentives"] as const,
-  savedCourses: () => [...homeQueryKeys.all, "saved-courses"] as const,
+  hero: (locale: string) => [...homeQueryKeys.all, locale, "hero"] as const,
+  profileTypes: (locale: string) => [...homeQueryKeys.all, locale, "profile-types"] as const,
+  profileSummary: (locale: string) => [...homeQueryKeys.all, locale, "profile-summary"] as const,
+  popularCourses: (locale: string) => [...homeQueryKeys.all, locale, "popular-courses"] as const,
+  popularCourseDetail: (locale: string, courseId: number) =>
+    [...homeQueryKeys.all, locale, "popular-courses", courseId] as const,
+  incentives: (locale: string) => [...homeQueryKeys.all, locale, "incentives"] as const,
+  savedCourses: (locale: string) => [...homeQueryKeys.all, locale, "saved-courses"] as const,
 };
 
 export const homeQueries = {
-  hero: () =>
+  hero: (locale: string) =>
     queryOptions({
-      queryKey: homeQueryKeys.hero(),
+      queryKey: homeQueryKeys.hero(locale),
       queryFn: getHomeHero,
     }),
-  profileTypes: (enabled = true) =>
+  profileTypes: (locale: string, enabled = true) =>
     queryOptions({
       enabled,
-      queryKey: homeQueryKeys.profileTypes(),
+      queryKey: homeQueryKeys.profileTypes(locale),
       queryFn: getHomeProfileTypes,
     }),
-  profileSummary: (enabled = true) =>
+  profileSummary: (locale: string, enabled = true) =>
     queryOptions({
       enabled,
-      queryKey: homeQueryKeys.profileSummary(),
+      queryKey: homeQueryKeys.profileSummary(locale),
       queryFn: getHomeProfileSummary,
       retry: false,
     }),
-  popularCourses: (enabled = true) =>
+  popularCourses: (locale: string, enabled = true) =>
     queryOptions({
       enabled,
-      queryKey: homeQueryKeys.popularCourses(),
+      queryKey: homeQueryKeys.popularCourses(locale),
       queryFn: getHomePopularCourses,
     }),
-  popularCourseDetail: (courseId: number, enabled = true) =>
+  popularCourseDetail: (locale: string, courseId: number, enabled = true) =>
     queryOptions({
       enabled,
-      queryKey: homeQueryKeys.popularCourseDetail(courseId),
+      queryKey: homeQueryKeys.popularCourseDetail(locale, courseId),
       queryFn: () => getHomePopularCourseDetail(courseId),
     }),
-  incentives: () =>
+  incentives: (locale: string) =>
     queryOptions({
-      queryKey: homeQueryKeys.incentives(),
+      queryKey: homeQueryKeys.incentives(locale),
       queryFn: getHomeIncentives,
     }),
-  savedCourses: (enabled = true) =>
+  savedCourses: (locale: string, enabled = true) =>
     queryOptions({
       enabled,
-      queryKey: homeQueryKeys.savedCourses(),
+      queryKey: homeQueryKeys.savedCourses(locale),
       queryFn: getHomeSavedCourses,
     }),
 };

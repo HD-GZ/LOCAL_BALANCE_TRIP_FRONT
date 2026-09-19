@@ -19,46 +19,50 @@ function retryUnlessUnauthorized(failureCount: number, error: unknown) {
 
 export const recommendationQueryKeys = {
   all: ["recommendation"] as const,
-  regions: () => [...recommendationQueryKeys.all, "regions"] as const,
-  regionCourses: (regionId: number) =>
-    [...recommendationQueryKeys.all, "regions", regionId, "courses"] as const,
-  courseDetail: (courseId: number) =>
-    [...recommendationQueryKeys.all, "courses", courseId] as const,
+  regions: (locale: string) => [...recommendationQueryKeys.all, locale, "regions"] as const,
+  regionCourses: (locale: string, regionId: number) =>
+    [...recommendationQueryKeys.all, locale, "regions", regionId, "courses"] as const,
+  courseDetail: (locale: string, courseId: number) =>
+    [...recommendationQueryKeys.all, locale, "courses", courseId] as const,
   savedCoursesAll: () => [...recommendationQueryKeys.all, "saved-courses"] as const,
-  savedCourses: (page?: number, limit?: number, status?: SavedCourse["status"]) =>
-    [...recommendationQueryKeys.savedCoursesAll(), page, limit, status] as const,
-  savedCoursesDetail: (savedCourseId: number) =>
-    [...recommendationQueryKeys.savedCoursesAll(), savedCourseId] as const,
+  savedCourses: (
+    locale: string,
+    page?: number,
+    limit?: number,
+    status?: SavedCourse["status"],
+  ) => [...recommendationQueryKeys.savedCoursesAll(), locale, page, limit, status] as const,
+  savedCoursesDetail: (locale: string, savedCourseId: number) =>
+    [...recommendationQueryKeys.savedCoursesAll(), locale, savedCourseId] as const,
 };
 
 export const recommendationQueries = {
-  regions: () =>
+  regions: (locale: string) =>
     queryOptions({
-      queryKey: recommendationQueryKeys.regions(),
+      queryKey: recommendationQueryKeys.regions(locale),
       queryFn: getRecommendedRegions,
       retry: retryUnlessUnauthorized,
     }),
-  regionCourses: (regionId: number, enabled = true) =>
+  regionCourses: (locale: string, regionId: number, enabled = true) =>
     queryOptions({
       enabled,
-      queryKey: recommendationQueryKeys.regionCourses(regionId),
+      queryKey: recommendationQueryKeys.regionCourses(locale, regionId),
       queryFn: () => getRegionCourses(regionId),
     }),
-  courseDetail: (courseId: number, enabled = true) =>
+  courseDetail: (locale: string, courseId: number, enabled = true) =>
     queryOptions({
       enabled,
-      queryKey: recommendationQueryKeys.courseDetail(courseId),
+      queryKey: recommendationQueryKeys.courseDetail(locale, courseId),
       queryFn: () => getCourseDetail(courseId),
     }),
-  savedCourses: (page?: number, limit?: number, status?: SavedCourse["status"]) =>
+  savedCourses: (locale: string, page?: number, limit?: number, status?: SavedCourse["status"]) =>
     queryOptions({
-      queryKey: recommendationQueryKeys.savedCourses(page, limit, status),
+      queryKey: recommendationQueryKeys.savedCourses(locale, page, limit, status),
       queryFn: () => getSavedCourses(page, limit, status),
     }),
-  savedCoursesDetail: (savedCourseId: number, enabled = true) =>
+  savedCoursesDetail: (locale: string, savedCourseId: number, enabled = true) =>
     queryOptions({
       enabled,
-      queryKey: recommendationQueryKeys.savedCoursesDetail(savedCourseId),
+      queryKey: recommendationQueryKeys.savedCoursesDetail(locale, savedCourseId),
       queryFn: () => getSavedCoursesDetail(savedCourseId),
     }),
 };

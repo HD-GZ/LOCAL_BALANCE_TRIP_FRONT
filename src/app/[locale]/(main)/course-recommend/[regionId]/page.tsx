@@ -2,7 +2,7 @@
 
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { useCourseSteps } from "@/app/[locale]/(main)/course-recommend/steps";
 import FlowShell from "@/components/common/FlowShell";
@@ -35,13 +35,14 @@ export default function RegionCourses() {
   const t = useTranslations("courseRecommend.region");
   const tCommon = useTranslations();
   const tApiError = useTranslations("apiError");
+  const locale = useLocale();
   const courseSteps = useCourseSteps();
   const { regionId: regionIdParam } = useParams<{ regionId: string }>();
   const searchParams = useSearchParams();
   const regionName = searchParams.get("regionName") ?? t("fallbackTitle");
   const regionId = parsePositiveIntParam(regionIdParam);
   const coursesQuery = useQuery(
-    recommendationQueries.regionCourses(regionId ?? 0, regionId !== null),
+    recommendationQueries.regionCourses(locale, regionId ?? 0, regionId !== null),
   );
   const courses = coursesQuery.data ?? [];
 

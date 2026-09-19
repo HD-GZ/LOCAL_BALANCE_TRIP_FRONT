@@ -1,23 +1,26 @@
 import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
+import { useLocale } from "next-intl";
 import { getPropensity, postPropensity } from "@/features/propensity/api";
 
 export const propensityQueryKeys = {
   all: ["propensity"] as const,
-  result: () => [...propensityQueryKeys.all, "result"] as const,
+  result: (locale: string) => [...propensityQueryKeys.all, locale, "result"] as const,
 };
 
 export const propensityQueries = {
-  result: (enabled: boolean) =>
+  result: (locale: string, enabled: boolean) =>
     queryOptions({
       enabled,
-      queryKey: propensityQueryKeys.result(),
+      queryKey: propensityQueryKeys.result(locale),
       queryFn: getPropensity,
       retry: false,
     }),
 };
 
 export function useGetPropensityResultQuery(enabled: boolean) {
-  return useQuery(propensityQueries.result(enabled));
+  const locale = useLocale();
+
+  return useQuery(propensityQueries.result(locale, enabled));
 }
 
 export function usePostPropensityMutation() {
