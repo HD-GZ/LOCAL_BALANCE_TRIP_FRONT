@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 
 import ChevronDown from "@/assets/chevronDown.svg";
 import Logo from "@/assets/logo.svg";
+import Skeleton from "@/components/common/Skeleton";
 import LanguageToggle from "@/components/layout/LanguageToggle";
 import { useNavigationGuard } from "@/contexts/NavigationGuardContext";
 import { logout } from "@/features/auth/api";
@@ -122,6 +123,7 @@ export default function Header() {
 
         <div className="flex shrink-0 items-center gap-3">
           <LanguageToggle />
+          {meQuery.isPending && <Skeleton className="h-9 w-20" />}
           {!meQuery.isPending && !user && (
             <Link
               href="/login"
@@ -131,7 +133,7 @@ export default function Header() {
               {t("nav.login")}
             </Link>
           )}
-          <div className={cn("relative", !user && "hidden")} ref={menuRef}>
+          <div className={cn("relative", (meQuery.isPending || !user) && "hidden")} ref={menuRef}>
             <button
               type="button"
               aria-expanded={isMenuOpen}

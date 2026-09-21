@@ -132,7 +132,7 @@ export default function IncentiveSection() {
 
               return (
                 <button
-                  key={`${region.ldongRegnCd}-${region.ldongSignguCd}`}
+                  key={region.regionCandidateId}
                   id={`incentive-tab-${index}`}
                   type="button"
                   role="tab"
