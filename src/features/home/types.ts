@@ -71,8 +71,7 @@ export type Incentive = {
 
 export type IncentiveRegionTab = {
   regionName: string;
-  ldongRegnCd: string;
-  ldongSignguCd: string;
+  regionCandidateId: number;
   incentives: Incentive[];
 };
 
