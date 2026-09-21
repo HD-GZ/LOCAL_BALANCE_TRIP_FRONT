@@ -3,7 +3,7 @@
 import { notFound, useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
 import { policyQueries } from "@/features/policy/queries";
@@ -22,12 +22,13 @@ export default function PolicyDocumentPage() {
   const apiType = ROUTE_TYPE_TO_API_TYPE[routeType];
   const t = useTranslations("policy");
   const tApiError = useTranslations("apiError");
+  const locale = useLocale();
 
   if (!apiType) {
     notFound();
   }
 
-  const documentQuery = useQuery(policyQueries.document(apiType));
+  const documentQuery = useQuery(policyQueries.document(apiType, locale));
   const document = documentQuery.data;
 
   return (

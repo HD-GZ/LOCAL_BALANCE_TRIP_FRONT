@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import FlowShell from "@/components/common/FlowShell";
 import SurfaceState from "@/components/common/SurfaceState";
@@ -25,8 +25,9 @@ export default function CourseRecommend() {
   const t = useTranslations("courseRecommend.page");
   const tCommon = useTranslations();
   const tApiError = useTranslations("apiError");
+  const locale = useLocale();
   const courseSteps = useCourseSteps();
-  const regionsQuery = useQuery(recommendationQueries.regions());
+  const regionsQuery = useQuery(recommendationQueries.regions(locale));
   const regions = regionsQuery.data ?? [];
   /**
    * 진단을 아직 받지 않은 계정은 401로 돌아온다. 네트워크 오류가 아니라 순서 문제이므로

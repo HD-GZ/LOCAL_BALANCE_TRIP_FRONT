@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import Skeleton from "@/components/common/Skeleton";
 import SurfaceState from "@/components/common/SurfaceState";
@@ -73,7 +73,8 @@ function IncentiveCard({ incentive }: { incentive: Incentive }) {
 export default function IncentiveSection() {
   const t = useTranslations("home.incentive");
   const tCommon = useTranslations();
-  const incentivesQuery = useQuery(homeQueries.incentives());
+  const locale = useLocale();
+  const incentivesQuery = useQuery(homeQueries.incentives(locale));
   const regions = incentivesQuery.data?.regions ?? [];
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedRegion = regions[selectedIndex] ?? regions[0];
@@ -131,7 +132,7 @@ export default function IncentiveSection() {
 
               return (
                 <button
-                  key={`${region.ldongRegnCd}-${region.ldongSignguCd}`}
+                  key={region.regionCandidateId}
                   id={`incentive-tab-${index}`}
                   type="button"
                   role="tab"
