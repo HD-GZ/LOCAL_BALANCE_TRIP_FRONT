@@ -18,7 +18,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -40,7 +40,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: ".next/,public/,package.json,pnpm-lock.yaml,pnpm-workspace.yaml,next.config.ts"
+          source: ".nvmrc,.next/,public/,package.json,pnpm-lock.yaml,pnpm-workspace.yaml,next.config.ts"
           target: "~/LOCAL_BALANCE_TRIP_FRONT"
           overwrite: true
 
@@ -51,6 +51,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            set -e
             cat > ~/LOCAL_BALANCE_TRIP_FRONT/.env <<'ENVEOF'
             API_BASE_URL=${{ secrets.API_BASE_URL }}
             NEXT_PUBLIC_NAVER_MAP_CLIENT_ID=${{ secrets.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID }}
@@ -59,5 +60,25 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             source "$NVM_DIR/nvm.sh"
             cd ~/LOCAL_BALANCE_TRIP_FRONT
-            pnpm install --prod --config.minimumReleaseAge=0
-            pm2 reload nextjs
+            if [ "$(nvm current)" = "v$(cat .nvmrc)" ]; then
+              nvm install
+            else
+              nvm install --reinstall-packages-from=current
+            fi
+            nvm use
+            nvm alias default "$(cat .nvmrc)"
+            node --version
+            npm install --global pnpm@10.33.0 pm2
+            CI=true pnpm install --prod --frozen-lockfile --config.minimumReleaseAge=0
+            pm2 reload nextjs --update-env --interpreter "$(command -v node)"
+            pm2 update
+            pm2 save
+            pm2 jlist | node -e '
+              const fs = require("node:fs");
+              const apps = JSON.parse(fs.readFileSync(0, "utf8"));
+              const app = apps.find((app) => app.name === "nextjs");
+              if (!app || app.pm2_env.status !== "online" || app.pm2_env.node_version !== process.versions.node) {
+                throw new Error("PM2 app is not online on the configured Node.js version");
+              }
+              console.log(app.name + ": Node.js " + app.pm2_env.node_version + " (online)");
+            '
