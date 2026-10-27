@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: deployment-server
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -14,7 +18,7 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
-          version: latest
+          version: 10.33.0
 
       - uses: actions/setup-node@v4
         with:
@@ -22,7 +26,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm lint
@@ -40,7 +44,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: ".nvmrc,.next/,public/,package.json,pnpm-lock.yaml,pnpm-workspace.yaml,next.config.ts"
+          source: ".nvmrc,.next/,public/,package.json,pnpm-lock.yaml,pnpm-workspace.yaml,next.config.ts,ecosystem.config.js"
           target: "~/LOCAL_BALANCE_TRIP_FRONT"
           overwrite: true
 
@@ -68,10 +72,15 @@ jobs:
             nvm use
             nvm alias default "$(cat .nvmrc)"
             node --version
-            npm install --global pnpm@10.33.0 pm2
+            if ! command -v pnpm >/dev/null || [ "$(pnpm --version)" != "10.33.0" ]; then
+              npm install --global pnpm@10.33.0
+            fi
+            if ! command -v pm2 >/dev/null; then
+              npm install --global pm2
+            fi
             CI=true pnpm install --prod --frozen-lockfile --config.minimumReleaseAge=0
-            pm2 reload nextjs --update-env --interpreter "$(command -v node)"
-            pm2 update
+            DEPLOY_APP_NAME=nextjs PORT=3000 pm2 startOrReload ecosystem.config.js --update-env
+            curl --fail --silent --show-error --retry 10 --retry-all-errors --retry-delay 2 --max-time 10 --output /dev/null http://127.0.0.1:3000/ko/login
             pm2 save
             pm2 jlist | node -e '
               const fs = require("node:fs");
@@ -82,3 +91,6 @@ jobs:
               }
               console.log(app.name + ": Node.js " + app.pm2_env.node_version + " (online)");
             '
+
+      - name: Check public response
+        run: curl --fail --silent --show-error --location --retry 5 --retry-all-errors --retry-delay 2 --max-time 15 --output /dev/null https://lb-trip.live/ko/login
