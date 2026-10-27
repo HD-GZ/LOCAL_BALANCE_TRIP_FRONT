@@ -50,5 +50,8 @@
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "4.3.0",
     "typescript": "6.0.3"
+  },
+  "engines": {
+    "node": ">=24.22.1 <25"
   }
 }
