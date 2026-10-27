@@ -60,7 +60,11 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             source "$NVM_DIR/nvm.sh"
             cd ~/LOCAL_BALANCE_TRIP_FRONT
-            nvm install --reinstall-packages-from=current
+            if [ "$(nvm current)" = "v$(cat .nvmrc)" ]; then
+              nvm install
+            else
+              nvm install --reinstall-packages-from=current
+            fi
             nvm use
             nvm alias default "$(cat .nvmrc)"
             node --version
